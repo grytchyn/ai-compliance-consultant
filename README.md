@@ -45,7 +45,7 @@ A SaaS MVP that automatically checks whether an AI product or service complies w
 2. Create a virtual environment (optional but recommended):
    ```bash
    python -m venv venv
-   source venv/bin/activate   # on Windows: venv\Scripts\activate
+   source venv/bin/activate   # on Windows: venv\\Scripts\\activate
    ```
 
 3. Install dependencies:
@@ -129,4 +129,5 @@ ai-compliance-saas/
 ## License
 
 MIT
-# ai-compliance-consultant
+
+# ai-compliance-consultantRedeploy trigger: 2026-05-25T18:26:28Z
