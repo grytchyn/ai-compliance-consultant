@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from .database import SessionLocal, engine, Base
 from .models import Submission
-from .llm import sync_call_ollama as call_ollama
+from .llm import call_ollama
 from .search import duckduckgo_instant_answer
 from .prompts import build_user_prompt, SYSTEM_PROMPT
 from .utils import render_report, save_report
@@ -80,7 +80,7 @@ async def get_report(sub_id: str, db: Session = Depends(get_db)):
         return {"status": sub.status}
     return FileResponse(path=sub.report_path, media_type='text/markdown', filename=f"report_{sub_id}.md")
 
-def process_submission(sub_id: str, company: str, url: str, description: str, email: str):
+async def process_submission(sub_id: str, company: str, url: str, description: str, email: str):
     db = SessionLocal()
     try:
         logger.info(f"Processing submission {sub_id} for {company}")
@@ -99,7 +99,7 @@ def process_submission(sub_id: str, company: str, url: str, description: str, em
         full_prompt = SYSTEM_PROMPT + "\n\n" + user_prompt
         # Call LLM
         logger.info("Calling Ollama")
-        report_md = call_ollama(full_prompt, temperature=0.2)
+        report_md = await call_ollama(full_prompt, temperature=0.2)
         logger.info(f"Report generated, length: {len(report_md)}")
         # Save report
         logger.info("Saving report")

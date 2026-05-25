@@ -31,4 +31,7 @@ async def call_ollama(prompt: str, temperature: float = 0.2) -> str:
             raise ValueError(f"Unexpected response format: {data}")
 
 def sync_call_ollama(prompt: str, temperature: float = 0.2) -> str:
+    """Synchronous wrapper for use outside async contexts."""
     return asyncio.run(call_ollama(prompt, temperature))
+
+__all__ = ["call_ollama", "sync_call_ollama"]
