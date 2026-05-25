@@ -1,4 +1,5 @@
 import uuid
+import logging
 from fastapi import FastAPI, Form, Request, BackgroundTasks, HTTPException, Depends
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,11 +7,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from .database import SessionLocal, engine, Base
 from .models import Submission
-from .llm import call_ollama
+from .llm import sync_call_ollama as call_ollama
 from .search import duckduckgo_instant_answer
 from .prompts import build_user_prompt, SYSTEM_PROMPT
 from .utils import render_report, save_report
 import os
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 Base.metadata.create_all(bind=engine)
 
@@ -78,23 +83,33 @@ async def get_report(sub_id: str, db: Session = Depends(get_db)):
 def process_submission(sub_id: str, company: str, url: str, description: str, email: str):
     db = SessionLocal()
     try:
+        logger.info(f"Processing submission {sub_id} for {company}")
         sub = db.query(Submission).filter(Submission.id == sub_id).first()
         if not sub:
+            logger.error(f"Submission {sub_id} not found")
             return
         # Search
+        logger.info(f"Searching for {company}")
         search_results = duckduckgo_instant_answer(company)
+        logger.info(f"Search results: {len(search_results)} items")
         search_text = "\n".join([r.get("content", "") for r in search_results if r.get("content")])
         # Build prompt
+        logger.info("Building prompt")
         user_prompt = build_user_prompt(company, url, description, search_text)
         full_prompt = SYSTEM_PROMPT + "\n\n" + user_prompt
         # Call LLM
+        logger.info("Calling Ollama")
         report_md = call_ollama(full_prompt, temperature=0.2)
+        logger.info(f"Report generated, length: {len(report_md)}")
         # Save report
+        logger.info("Saving report")
         report_path = save_report(report_md, sub_id)
         sub.status = "completed"
         sub.report_path = report_path
         db.commit()
+        logger.info(f"Submission {sub_id} completed, report at {report_path}")
     except Exception as e:
+        logger.error(f"Submission {sub_id} failed: {str(e)}", exc_info=True)
         sub.status = "failed"
         db.commit()
     finally:
