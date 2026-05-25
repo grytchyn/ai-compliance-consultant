@@ -18,7 +18,7 @@ Base = declarative_base()
 class Submission(Base):
     __tablename__ = "submissions"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, index=True)
     company = Column(String, index=True)
     url = Column(String, nullable=True)
     description = Column(Text, nullable=True)
