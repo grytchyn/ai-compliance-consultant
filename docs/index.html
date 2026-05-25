@@ -26,6 +26,7 @@
         <div id="result"></div>
     </div>
     <script>
+        const API_BASE = "https://ai-compliance-consultant.onrender.com";
         const form = document.getElementById('complianceForm');
         const statusDiv = document.getElementById('status');
         const resultDiv = document.getElementById('result');
@@ -36,7 +37,7 @@
             const data = Object.fromEntries(formData);
             statusDiv.textContent = 'Submitting...';
             try {
-                const resp = await fetch('/submit', {
+                const resp = await fetch(`${API_BASE}/submit`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams(data)
@@ -46,18 +47,16 @@
                 statusDiv.textContent = 'Processing...';
                 resultDiv.textContent = '';
                 const checkStatus = () => {
-                    fetch(`/report/${json.id}`)
+                    fetch(`${API_BASE}/report/${json.id}`)
                         .then(r => r.json())
                         .then(data => {
                             if (data.status === 'completed') {
-                                // get markdown
-                                return fetch(`/report/${json.id}`, { headers: { Accept: 'text/markdown' } })
+                                return fetch(`${API_BASE}/report/${json.id}`, { headers: { Accept: 'text/markdown' } })
                                     .then(r => r.text())
                                     .then(md => { resultDiv.innerHTML = marked.parse(md); statusDiv.textContent = 'Done'; });
                             } else if (data.status === 'failed') {
                                 statusDiv.textContent = 'Processing failed';
                             } else {
-                                // still processing
                                 setTimeout(checkStatus, 2000);
                             }
                         })
