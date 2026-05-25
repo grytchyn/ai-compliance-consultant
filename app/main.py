@@ -16,6 +16,10 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="AI Compliance Consultant")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 def get_db():
     db = SessionLocal()
     try:
