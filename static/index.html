@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Compliance Consultant</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        .container { max-width: 600px; margin: auto; }
+        label { display: block; margin-top: 1rem; }
+        input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.25rem; }
+        button { margin-top: 1.5rem; padding: 0.75rem 1.5rem; font-size: 1rem; }
+        #result { margin-top: 2rem; padding: 1rem; border: 1px solid #ddd; min-height: 100px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Compliance Consultant (EU AI Act)</h1>
+        <form id="complianceForm">
+            <label>Company Name:* <input type="text" name="company" required></label>
+            <label>Website URL: <input type="url" name="url"></label>
+            <label>Description of AI‑related activities:* <textarea name="description" rows="4" required></textarea></label>
+            <label>Email (for report delivery): <input type="email" name="email"></label>
+            <button type="submit">Check Compliance</button>
+        </form>
+        <div id="status"></div>
+        <div id="result"></div>
+    </div>
+    <script>
+        const form = document.getElementById('complianceForm');
+        const statusDiv = document.getElementById('status');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            statusDiv.textContent = 'Submitting...';
+            try {
+                const resp = await fetch('/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(data)
+                });
+                const json = await resp.json();
+                if (!json.id) throw new Error('No ID returned');
+                statusDiv.textContent = 'Processing...';
+                resultDiv.textContent = '';
+                const checkStatus = () => {
+                    fetch(`/report/${json.id}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.status === 'completed') {
+                                // get markdown
+                                return fetch(`/report/${json.id}`, { headers: { Accept: 'text/markdown' } })
+                                    .then(r => r.text())
+                                    .then(md => { resultDiv.innerHTML = marked.parse(md); statusDiv.textContent = 'Done'; });
+                            } else if (data.status === 'failed') {
+                                statusDiv.textContent = 'Processing failed';
+                            } else {
+                                // still processing
+                                setTimeout(checkStatus, 2000);
+                            }
+                        })
+                        .catch(err => {
+                            statusDiv.textContent = 'Error checking status';
+                            console.error(err);
+                        });
+                };
+                setTimeout(checkStatus, 2000);
+            } catch (err) {
+                statusDiv.textContent = 'Submission error';
+                console.error(err);
+            }
+        });
+    </script>
+    <!-- marked.js for markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>
