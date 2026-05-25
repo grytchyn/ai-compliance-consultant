@@ -90,7 +90,7 @@ async def process_submission(sub_id: str, company: str, url: str, description: s
             return
         # Search
         logger.info(f"Searching for {company}")
-        search_results = duckduckgo_instant_answer(company)
+        search_results = await duckduckgo_instant_answer(company)
         logger.info(f"Search results: {len(search_results)} items")
         search_text = "\n".join([r.get("content", "") for r in search_results if r.get("content")])
         # Build prompt
