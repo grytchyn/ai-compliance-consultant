@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 0;
+    @bottom-center {
+      content: "Powered by AI Compliance Consultant | Generated on {{ generated_date }}";
+      font-family: 'Inter', 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-size: 8pt;
+      color: #94a3b8;
+      padding: 8px 0;
+    }
+  }
+
+  @page cover {
+    @bottom-center { content: none; }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.6;
+    color: #1e293b;
+    background: #ffffff;
+  }
+
+  /* ===== COVER PAGE ===== */
+  .cover-page {
+    page: cover;
+    width: 210mm;
+    height: 297mm;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #1a1f3a 100%);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 50px 60px;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+
+  .cover-page::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(94,106,210,0.3) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .cover-page::after {
+    content: '';
+    position: absolute;
+    bottom: -100px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(113,112,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .cover-top {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cover-badge {
+    display: inline-block;
+    background: rgba(94,106,210,0.3);
+    border: 1px solid rgba(94,106,210,0.5);
+    color: #a5b4fc;
+    font-size: 9pt;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .cover-title {
+    margin-top: 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cover-title h1 {
+    font-size: 36pt;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #ffffff 60%, #a5b4fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cover-title .subtitle {
+    font-size: 13pt;
+    color: #94a3b8;
+    margin-top: 12px;
+    font-weight: 400;
+  }
+
+  .cover-divider {
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #5e6ad2, #7170ff);
+    border-radius: 2px;
+    margin: 24px 0;
+  }
+
+  .cover-meta {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cover-meta table {
+    border: none;
+  }
+
+  .cover-meta td {
+    padding: 6px 0;
+    font-size: 10pt;
+    border: none;
+  }
+
+  .cover-meta td:first-child {
+    color: #94a3b8;
+    width: 120px;
+  }
+
+  .cover-meta td:last-child {
+    color: #e2e8f0;
+    font-weight: 500;
+  }
+
+  .cover-bottom {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cover-score {
+    text-align: center;
+  }
+
+  .score-gauge {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(
+      {% if compliance_score >= 80 %}#10b981 0deg {{ compliance_score * 3.6 }}deg{% elif compliance_score >= 40 %}#f59e0b 0deg {{ compliance_score * 3.6 }}deg{% else %}#f44336 0deg {{ compliance_score * 3.6 }}deg{% endif %},
+      rgba(255,255,255,0.1) {{ compliance_score * 3.6 }}deg 360deg
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 0 auto;
+  }
+
+  .score-gauge-inner {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score-gauge-inner .score-value {
+    font-size: 26pt;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+  }
+
+  .score-gauge-inner .score-label {
+    font-size: 7pt;
+    color: #64748b;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .risk-badge {
+    display: inline-block;
+    padding: 8px 24px;
+    border-radius: 24px;
+    font-size: 11pt;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .risk-high { background: rgba(244,67,54,0.2); color: #ef4444; border: 1px solid rgba(244,67,54,0.4); }
+  .risk-medium { background: rgba(245,158,11,0.2); color: #f59e0b; border: 1px solid rgba(245,158,11,0.4); }
+  .risk-low { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
+
+  /* ===== CONTENT PAGES ===== */
+  .content-page {
+    padding: 50px 60px;
+    page-break-after: always;
+  }
+
+  .page-header {
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f1f5f9;
+  }
+
+  .page-header h2 {
+    font-size: 20pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.3px;
+  }
+
+  .page-header .page-header-line {
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, #5e6ad2, #7170ff);
+    border-radius: 2px;
+    margin-top: 8px;
+  }
+
+  /* ===== EXECUTIVE SUMMARY ===== */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .summary-card {
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .summary-card.blue {
+    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+    border-color: #c7d2fe;
+  }
+
+  .summary-card.green {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-color: #a7f3d0;
+  }
+
+  .summary-card.amber {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-color: #fde68a;
+  }
+
+  .summary-card.red {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #fecaca;
+  }
+
+  .summary-card .card-icon {
+    font-size: 18pt;
+    margin-bottom: 8px;
+  }
+
+  .summary-card .card-label {
+    font-size: 8pt;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .summary-card.blue .card-label { color: #4f46e5; }
+  .summary-card.green .card-label { color: #059669; }
+  .summary-card.amber .card-label { color: #d97706; }
+  .summary-card.red .card-label { color: #dc2626; }
+
+  .summary-card .card-value {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  /* ===== KEY FINDINGS LIST ===== */
+  .findings-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .findings-list li {
+    padding: 10px 0 10px 28px;
+    position: relative;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 9.5pt;
+    color: #334155;
+  }
+
+  .findings-list li:last-child {
+    border-bottom: none;
+  }
+
+  .findings-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .findings-list li.pass::before { background: #10b981; }
+  .findings-list li.warn::before { background: #f59e0b; }
+  .findings-list li.fail::before { background: #f44336; }
+  .findings-list li.info::before { background: #5e6ad2; }
+
+  .findings-list li .finding-tag {
+    display: inline-block;
+    font-size: 7pt;
+    font-weight: 700;
+    padding: 1px 8px;
+    border-radius: 10px;
+    margin-right: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .findings-list li.pass .finding-tag { background: #d1fae5; color: #059669; }
+  .findings-list li.warn .finding-tag { background: #fef3c7; color: #d97706; }
+  .findings-list li.fail .finding-tag { background: #fee2e2; color: #dc2626; }
+  .findings-list li.info .finding-tag { background: #e0e7ff; color: #4f46e5; }
+
+  /* ===== TABLE ===== */
+  .compliance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 9pt;
+  }
+
+  .compliance-table thead th {
+    background: linear-gradient(135deg, #5e6ad2, #7170ff);
+    color: #ffffff;
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .compliance-table thead th:first-child {
+    border-radius: 8px 0 0 0;
+  }
+
+  .compliance-table thead th:last-child {
+    border-radius: 0 8px 0 0;
+  }
+
+  .compliance-table tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+  }
+
+  .compliance-table tbody tr:nth-child(even) {
+    background: #f8fafc;
+  }
+
+  .compliance-table tbody tr:hover {
+    background: #eef2ff;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+
+  .status-compliant { background: #10b981; }
+  .status-partial { background: #f59e0b; }
+  .status-noncompliant { background: #f44336; }
+  .status-unknown { background: #94a3b8; }
+
+  /* ===== RECOMMENDATIONS ===== */
+  .recommendations-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: rec-counter;
+  }
+
+  .recommendations-list li {
+    counter-increment: rec-counter;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #fafafa;
+    page-break-inside: avoid;
+  }
+
+  .recommendations-list li::before {
+    content: counter(rec-counter);
+    min-width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #5e6ad2, #7170ff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 11pt;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .rec-content {
+    flex: 1;
+  }
+
+  .rec-content .rec-title {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+  }
+
+  .rec-content .rec-desc {
+    font-size: 9pt;
+    color: #475569;
+    line-height: 1.5;
+  }
+
+  .priority-badge {
+    display: inline-block;
+    font-size: 7pt;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .priority-critical { background: #fee2e2; color: #dc2626; }
+  .priority-high { background: #fef3c7; color: #d97706; }
+  .priority-medium { background: #dbeafe; color: #2563eb; }
+  .priority-low { background: #d1fae5; color: #059669; }
+
+  /* ===== SECTION ===== */
+  .section {
+    margin-bottom: 28px;
+  }
+
+  .section h3 {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 12px;
+    letter-spacing: -0.2px;
+  }
+
+  .section p {
+    color: #475569;
+    margin-bottom: 10px;
+    font-size: 9.5pt;
+  }
+
+  /* ===== TWO COLUMN ===== */
+  .two-col {
+    display: flex;
+    gap: 20px;
+  }
+
+  .two-col .col {
+    flex: 1;
+  }
+
+  /* ===== INFO ROW ===== */
+  .info-row {
+    display: flex;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 9.5pt;
+  }
+
+  .info-row .label {
+    width: 180px;
+    color: #64748b;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .info-row .value {
+    color: #0f172a;
+    font-weight: 500;
+  }
+
+  /* ===== SUMMARY SECTION ON COVER-ADJACENT PAGE ===== */
+  .exec-summary {
+    padding: 50px 60px;
+    page-break-after: always;
+  }
+
+  /* ===== PRINT HELPERS ===== */
+  .no-break { page-break-inside: avoid; }
+  .break-after { page-break-after: always; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- COVER PAGE -->
+<!-- ============================================================ -->
+<div class="cover-page">
+  <div class="cover-top">
+    <div class="cover-badge">AI Compliance Report</div>
+  </div>
+
+  <div class="cover-title">
+    <h1>{{ company }}</h1>
+    <div class="subtitle">AI Compliance Risk Assessment<br>under the EU AI Act Framework</div>
+    <div class="cover-divider"></div>
+  </div>
+
+  <div class="cover-meta">
+    <table>
+      <tr><td>Report Date</td><td>{{ generated_date }}</td></tr>
+      <tr><td>Report ID</td><td>{{ sub_id }}</td></tr>
+      <tr><td>Assessment Type</td><td>Automated Compliance Screening</td></tr>
+      <tr><td>Jurisdiction</td><td>European Union (EU AI Act)</td></tr>
+    </table>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-score">
+      <div class="score-gauge">
+        <div class="score-gauge-inner">
+          <span class="score-value">{{ compliance_score }}</span>
+          <span class="score-label">Score</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="risk-badge risk-{{ risk_level_class }}">{{ risk_level_label }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- EXECUTIVE SUMMARY -->
+<!-- ============================================================ -->
+<div class="content-page">
+  <div class="page-header">
+    <h2>Executive Summary</h2>
+    <div class="page-header-line"></div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card blue">
+      <div class="card-icon">📊</div>
+      <div class="card-label">Compliance Score</div>
+      <div class="card-value">{{ compliance_score }}/100</div>
+    </div>
+    <div class="summary-card {% if high_risk_count > 0 %}red{% elif medium_risk_count > 0 %}amber{% else %}green{% endif %}">
+      <div class="card-icon">⚠️</div>
+      <div class="card-label">Risk Categories Flagged</div>
+      <div class="card-value">{{ high_risk_count }} high-risk areas</div>
+    </div>
+    <div class="summary-card green">
+      <div class="card-icon">✅</div>
+      <div class="card-label">Compliance Status</div>
+      <div class="card-value">{{ compliance_status_label }}</div>
+    </div>
+    <div class="summary-card {% if recommendations|length > 5 %}red{% elif recommendations|length > 2 %}amber{% else %}green{% endif %}">
+      <div class="card-icon">📝</div>
+      <div class="card-label">Recommendations</div>
+      <div class="card-value">{{ recommendations|length }} actions required</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Key Findings</h3>
+    <ul class="findings-list">
+      {% for finding in key_findings %}
+      <li class="{{ finding.type }}">
+        <span class="finding-tag">{{ finding.type }}</span>
+        {{ finding.text }}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="section no-break">
+    <h3>Company Overview</h3>
+    <div class="info-row"><span class="label">Organization</span><span class="value">{{ company }}</span></div>
+    {% if sector %}<div class="info-row"><span class="label">Sector</span><span class="value">{{ sector }}</span></div>{% endif %}
+    {% if company_size %}<div class="info-row"><span class="label">Company Size</span><span class="value">{{ company_size }}</span></div>{% endif %}
+    {% if hq_location %}<div class="info-row"><span class="label">Headquarters</span><span class="value">{{ hq_location }}</span></div>{% endif %}
+    {% if ai_systems_count %}<div class="info-row"><span class="label">AI Systems Deployed</span><span class="value">{{ ai_systems_count }}</span></div>{% endif %}
+    {% if deployment_type %}<div class="info-row"><span class="label">Deployment Type</span><span class="value">{{ deployment_type }}</span></div>{% endif %}
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DETAILED COMPLIANCE ANALYSIS -->
+<!-- ============================================================ -->
+<div class="content-page">
+  <div class="page-header">
+    <h2>Detailed Compliance Analysis</h2>
+    <div class="page-header-line"></div>
+  </div>
+
+  <div class="section">
+    <h3>EU AI Act Article Mapping</h3>
+    <p>The following table maps your AI systems against key EU AI Act provisions, indicating compliance status for each relevant article.</p>
+
+    <table class="compliance-table">
+      <thead>
+        <tr>
+          <th style="width:40px">#</th>
+          <th style="width:140px">Article</th>
+          <th>Requirement</th>
+          <th style="width:100px">Status</th>
+          <th style="width:80px">Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for article in eu_ai_act_articles %}
+        <tr>
+          <td style="color:#64748b;font-weight:600;">{{ loop.index }}</td>
+          <td style="font-weight:600;">{{ article.article }}</td>
+          <td>{{ article.requirement }}</td>
+          <td>
+            <span class="status-dot status-{{ article.status_class }}"></span>
+            {{ article.status_label }}
+          </td>
+          <td style="font-weight:700;">{{ article.score }}/100</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section no-break">
+    <h3>High-Risk Category Assessment</h3>
+    <p>Under the EU AI Act, certain AI systems are classified as high-risk. The following categories apply to {{ company }}:</p>
+    {% if risk_categories %}
+    <table class="compliance-table">
+      <thead>
+        <tr><th>Risk Category</th><th>Status</th><th>EU AI Act Reference</th></tr>
+      </thead>
+      <tbody>
+        {% for rc in risk_categories %}
+        <tr>
+          <td>{{ rc.name }}</td>
+          <td><span class="status-dot status-{{ rc.status_class }}"></span>{{ rc.status }}</td>
+          <td>{{ rc.reference }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color: #64748b; font-style: italic; padding: 12px 0;">No high-risk categories were identified for this organization.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- RECOMMENDATIONS -->
+<!-- ============================================================ -->
+<div class="content-page">
+  <div class="page-header">
+    <h2>Recommendations &amp; Action Plan</h2>
+    <div class="page-header-line"></div>
+  </div>
+
+  <div class="section">
+    <p>Based on the compliance assessment, the following {{ recommendations|length }} recommendations are provided to improve your AI compliance posture under the EU AI Act.</p>
+  </div>
+
+  <ol class="recommendations-list">
+    {% for rec in recommendations %}
+    <li>
+      <div class="rec-content">
+        <div class="rec-title">
+          {{ rec.title }}
+          <span class="priority-badge priority-{{ rec.priority_class }}">{{ rec.priority }}</span>
+        </div>
+        <div class="rec-desc">{{ rec.description }}</div>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+
+  <div class="section no-break" style="margin-top: 32px;">
+    <h3>Next Steps</h3>
+    <p>We recommend prioritizing the critical and high-priority items above. The timeline for compliance with the EU AI Act varies by risk category:</p>
+    <table class="compliance-table">
+      <thead>
+        <tr><th>Action Item</th><th>Recommended Timeline</th><th>Responsible Role</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Critical risk remediation</td><td>Within 30 days</td><td>CTO / Compliance Officer</td></tr>
+        <tr><td>High-priority improvements</td><td>Within 90 days</td><td>AI Governance Team</td></tr>
+        <tr><td>Medium-priority items</td><td>Within 6 months</td><td>Engineering &amp; Legal</td></tr>
+        <tr><td>Low-priority monitoring</td><td>Within 12 months</td><td>Continuous Improvement</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

@@ -14,6 +14,7 @@ from .utils import save_report
 import os
 import json
 import markdown
+from .pdf_generator import generate_pdf_report
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -189,6 +190,111 @@ async def get_report(sub_id: str, db: Session = Depends(get_db)):
         return {"status": sub.status}
     return FileResponse(path=sub.report_path, media_type='text/markdown', filename=f"report_{sub_id}.md")
 
+def calculate_compliance_score(sub: Submission) -> dict:
+    """Calculate compliance score 0-100 with level and recommendations."""
+    score = 100
+    
+    # Risk checkboxes: each checked = -15 points
+    risk_fields = [
+        'risk_biometrics', 'risk_critical_infra', 'risk_education',
+        'risk_employment', 'risk_credit', 'risk_law_enforcement',
+        'risk_migration', 'risk_justice', 'risk_democratic'
+    ]
+    risk_count = sum(1 for field in risk_fields if getattr(sub, field, False))
+    score -= risk_count * 15
+    
+    # Compliance status bonuses
+    if sub.has_documentation == "yes":
+        score += 15
+    if sub.dpo_appointed == "yes":
+        score += 10
+    if sub.gdpr_compliant == "yes":
+        score += 10
+    
+    # Clamp to 0-100
+    score = max(0, min(100, score))
+    
+    # Determine level
+    if score < 40:
+        level = "high_risk"
+    elif score <= 70:
+        level = "medium"
+    else:
+        level = "low_risk"
+    
+    # Generate recommendations
+    recommendations = []
+    risk_labels = {
+        'risk_biometrics': 'Implement risk management for biometric identification systems',
+        'risk_critical_infra': 'Address critical infrastructure AI risk categories',
+        'risk_education': 'Mitigate risks in education and vocational training AI systems',
+        'risk_employment': 'Address employment-related AI risk concerns',
+        'risk_credit': 'Implement safeguards for credit assessment AI systems',
+        'risk_law_enforcement': 'Address law enforcement AI risk compliance requirements',
+        'risk_migration': 'Implement risk controls for migration and border control AI',
+        'risk_justice': 'Address risks in administration of justice AI systems',
+        'risk_democratic': 'Mitigate risks to democratic processes from AI systems',
+    }
+    for field, rec in risk_labels.items():
+        if getattr(sub, field, False):
+            recommendations.append(rec)
+    
+    if sub.has_documentation != "yes":
+        recommendations.append("Maintain comprehensive technical documentation for AI systems")
+    if sub.dpo_appointed != "yes":
+        recommendations.append("Appoint a Data Protection Officer (DPO)")
+    if sub.gdpr_compliant != "yes":
+        recommendations.append("Ensure GDPR compliance for AI data processing")
+    
+    if not recommendations:
+        recommendations.append("Continue maintaining current compliance posture")
+    
+    return {
+        "score": score,
+        "level": level,
+        "recommendations": recommendations
+    }
+
+
+@app.get("/report-score/{sub_id}")
+async def get_report_score(sub_id: str, db: Session = Depends(get_db)):
+    """Calculate and return compliance score 0-100."""
+    sub = db.query(Submission).filter(Submission.id == sub_id).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Not found")
+    score_data = calculate_compliance_score(sub)
+    return {
+        "status": sub.status,
+        **score_data
+    }
+
+
+@app.get("/download-pdf/{sub_id}")
+async def download_pdf(sub_id: str, db: Session = Depends(get_db)):
+    """Generate and download a professional PDF compliance report."""
+    sub = db.query(Submission).filter(Submission.id == sub_id).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Not found")
+    if sub.status != "completed" or not sub.report_path:
+        return {"status": sub.status, "error": "Report not ready yet"}
+    
+    try:
+        pdf_path = generate_pdf_report(sub_id, db)
+        filename = f"AI_Compliance_Report_{sub.company.replace(' ', '_')}.pdf"
+        return FileResponse(
+            path=pdf_path, 
+            media_type='application/pdf', 
+            filename=filename,
+            headers={
+                "Cache-Control": "no-cache",
+                "Content-Disposition": f'attachment; filename="{filename}"'
+            }
+        )
+    except Exception as e:
+        logger.error(f"PDF generation failed: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="PDF generation failed")
+
+
 @app.get("/report-html/{sub_id}")
 async def get_report_html(sub_id: str, db: Session = Depends(get_db)):
     """Return report as JSON with HTML-rendered content for the result page."""
@@ -215,13 +321,17 @@ async def get_report_html(sub_id: str, db: Session = Depends(get_db)):
             if len(summary) > 500:
                 break
     
+    # Calculate compliance score
+    score_data = calculate_compliance_score(sub)
+    
     return {
         "status": sub.status,
         "html": html,
         "markdown": md,
         "title": f"AI Compliance Report: {sub.company}",
         "company": sub.company,
-        "summary": summary
+        "summary": summary,
+        **score_data
     }
 
 async def process_submission(sub_id: str):

@@ -185,7 +185,11 @@
             background: rgba(94,106,210,0.06);
         }
         .checkbox-item input[type="checkbox"] {
-            display: none;
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
         }
         .checkbox-item .check {
             width: 20px;
@@ -810,16 +814,7 @@
             localStorage.setItem('ai-compliance-lang', lang);
         }
 
-        // Checkbox UI toggle — also keep click for label convenience
-        document.querySelectorAll('.checkbox-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                if (e.target.tagName !== 'INPUT') {
-                    const input = this.querySelector('input[type="checkbox"]');
-                    input.checked = !input.checked;
-                    input.dispatchEvent(new Event('change'));
-                }
-            });
-        });
+        // Checkbox UI — handled natively by <label> wrapping + change event above
 
         // Progress bar
         function updateProgress() {

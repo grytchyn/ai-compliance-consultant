@@ -23,6 +23,9 @@
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #f44336;
+            --score-red: #f44336;
+            --score-yellow: #f59e0b;
+            --score-green: #10b981;
             --radius: 8px;
             --radius-sm: 6px;
             --radius-lg: 12px;
@@ -129,6 +132,159 @@
         }
         .btn-new:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
 
+        /* ========= SCORE RING (SVG Circular Gauge) ========= */
+        .score-section {
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px 40px;
+            flex-wrap: wrap;
+        }
+        .score-ring-wrapper {
+            flex-shrink: 0;
+            position: relative;
+            width: 140px;
+            height: 140px;
+        }
+        .score-ring {
+            transform: rotate(-90deg);
+            width: 140px;
+            height: 140px;
+        }
+        .score-ring .bg-circle {
+            fill: none;
+            stroke: var(--surface3);
+            stroke-width: 8;
+        }
+        .score-ring .value-circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.2s ease;
+        }
+        .score-ring-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.1;
+        }
+        .score-ring-value .score-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+        .score-ring-value .score-level {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .score-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        .score-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .score-info p {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            line-height: 1.7;
+        }
+        .score-breakdown {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .score-breakdown-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        .score-breakdown-item .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-green { background: var(--score-green); }
+        .dot-yellow { background: var(--score-yellow); }
+        .dot-red { background: var(--score-red); }
+
+        /* ========= INFO / WARNING / SUCCESS CARDS ========= */
+        .cards-section {
+            margin-top: 24px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .info-card, .warning-card, .success-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .info-card .icon, .warning-card .icon, .success-card .icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+        .warning-card {
+            border-left: 3px solid var(--score-yellow);
+        }
+        .warning-card .icon {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--score-yellow);
+        }
+        .success-card {
+            border-left: 3px solid var(--score-green);
+        }
+        .success-card .icon {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--score-green);
+        }
+        .info-card {
+            border-left: 3px solid var(--accent);
+        }
+        .info-card .icon {
+            background: rgba(113, 112, 255, 0.12);
+            color: var(--accent);
+        }
+        .info-card .card-text, .warning-card .card-text, .success-card .card-text {
+            flex: 1;
+            color: var(--text-secondary);
+        }
+        .info-card .card-text strong, .warning-card .card-text strong, .success-card .card-text strong {
+            color: var(--text-primary);
+        }
+
         .report-body {
             margin-top: 24px;
             background: var(--surface);
@@ -193,9 +349,71 @@
             font-size: 13px; color: var(--text-tertiary);
         }
 
+        /* ========= SHARE BUTTONS ========= */
+        .share-section {
+            margin-top: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px 32px;
+            text-align: center;
+        }
+        .share-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+        .share-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .share-btn:hover {
+            background: var(--surface3);
+            color: var(--text-primary);
+            border-color: var(--text-muted);
+        }
+        .share-btn .share-icon {
+            font-size: 18px;
+        }
+        .share-btn.telegram:hover { border-color: #0088cc; color: #0088cc; }
+        .share-btn.linkedin:hover { border-color: #0077b5; color: #0077b5; }
+        .share-btn.email:hover { border-color: var(--brand); color: var(--brand); }
+        .share-btn.copy:hover { border-color: var(--success); color: var(--success); }
+        .share-toast {
+            font-size: 13px;
+            color: var(--success);
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .share-toast.visible { opacity: 1; }
+
         @media (max-width: 768px) {
             .report-header { flex-direction: column; }
             .report-body { padding: 24px; }
+            .score-section { flex-direction: column; align-items: center; text-align: center; }
+            .score-breakdown { justify-content: center; }
+            .score-ring-wrapper { width: 120px; height: 120px; }
+            .score-ring { width: 120px; height: 120px; }
+            .score-ring-value { font-size: 30px; }
         }
 
         /* Email section after report */
@@ -265,14 +483,71 @@
                 </div>
                 <div class="report-header-actions">
                     <a href="/submit-page" class="btn-new">← New Report</a>
-                    <button class="btn-download" onclick="downloadReport()">⬇ Download Report</button>
+                    <button class="btn-download" onclick="downloadPDF()" id="pdfBtn" style="margin-right:8px;">⬇ Download PDF</button>
+                    <button class="btn-download" onclick="downloadReport()" style="background:rgba(255,255,255,0.04);" id="mdBtn">⬇ Download Markdown</button>
                 </div>
             </div>
+
+            <!-- SCORE GAUGE SECTION -->
+            <div class="score-section" id="scoreSection">
+                <div class="score-ring-wrapper">
+                    <svg class="score-ring" viewBox="0 0 140 140">
+                        <circle class="bg-circle" cx="70" cy="70" r="58" />
+                        <circle class="value-circle" id="scoreValueCircle" cx="70" cy="70" r="58"
+                            stroke="var(--score-green)"
+                            stroke-dasharray="364.4"
+                            stroke-dashoffset="364.4" />
+                    </svg>
+                    <div class="score-ring-value" id="scoreRingValue">
+                        <span id="scoreNumber">—</span>
+                        <span class="score-label" id="scoreLabel">COMPLIANCE</span>
+                        <span class="score-level" id="scoreLevel"></span>
+                    </div>
+                </div>
+                <div class="score-info">
+                    <h3 id="scoreTitle">Compliance Score</h3>
+                    <p id="scoreDesc">Your AI compliance score is calculated based on risk factors and current compliance measures.</p>
+                    <div class="score-breakdown">
+                        <span class="score-breakdown-item">
+                            <span class="dot dot-green"></span> <span id="bdLow">Low Risk (71-100)</span>
+                        </span>
+                        <span class="score-breakdown-item">
+                            <span class="dot dot-yellow"></span> <span id="bdMedium">Medium (40-70)</span>
+                        </span>
+                        <span class="score-breakdown-item">
+                            <span class="dot dot-red"></span> <span id="bdHigh">High Risk (0-39)</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARDS SECTION (warnings / suggestions / success) -->
+            <div class="cards-section" id="cardsSection"></div>
 
             <div class="report-summary" id="reportSummary"></div>
 
             <div class="report-body" id="reportBody">
                 <!-- Report content rendered here -->
+            </div>
+
+            <!-- SHARE SECTION -->
+            <div class="share-section" id="shareSection">
+                <h3 id="shareTitle">📤 Share This Report</h3>
+                <div class="share-buttons">
+                    <a class="share-btn telegram" id="shareTelegram" href="#" target="_blank" rel="noopener">
+                        <span class="share-icon">✈️</span> Telegram
+                    </a>
+                    <a class="share-btn linkedin" id="shareLinkedin" href="#" target="_blank" rel="noopener">
+                        <span class="share-icon">🔗</span> LinkedIn
+                    </a>
+                    <a class="share-btn email" id="shareEmail" href="#">
+                        <span class="share-icon">📧</span> Email
+                    </a>
+                    <button class="share-btn copy" id="shareCopy">
+                        <span class="share-icon">📋</span> Copy Link
+                    </button>
+                </div>
+                <div class="share-toast" id="shareToast">✓ Link copied to clipboard!</div>
             </div>
         </div>
 
@@ -312,6 +587,23 @@
                 emailBtn: 'Send Report',
                 emailSent: '✓ Report sent! Check your inbox.',
                 sending: 'Sending...',
+                // Score gauge
+                scoreTitle: 'Compliance Score',
+                scoreDesc: 'Your AI compliance score is calculated based on risk factors and current compliance measures.',
+                scoreLabel: 'COMPLIANCE',
+                levelLowRisk: 'Low Risk',
+                levelMedium: 'Medium Risk',
+                levelHighRisk: 'High Risk',
+                bdLow: 'Low Risk (71-100)',
+                bdMedium: 'Medium (40-70)',
+                bdHigh: 'High Risk (0-39)',
+                // Cards
+                cardWarning: '⚠️ Areas requiring attention',
+                cardSuccess: '✅ Compliant areas',
+                cardInfo: '💡 Recommendations',
+                // Share
+                shareTitle: '📤 Share This Report',
+                copySuccess: '✓ Link copied to clipboard!',
             },
             de: {
                 title: 'Ihr KI-Compliance-Bericht',
@@ -340,6 +632,23 @@
                 emailBtn: 'Bericht senden',
                 emailSent: '✓ Bericht gesendet! Prüfen Sie Ihr Postfach.',
                 sending: 'Wird gesendet...',
+                // Score gauge
+                scoreTitle: 'Compliance-Punktzahl',
+                scoreDesc: 'Ihre KI-Compliance-Punktzahl basiert auf Risikofaktoren und aktuellen Compliance-Maßnahmen.',
+                scoreLabel: 'COMPLIANCE',
+                levelLowRisk: 'Niedriges Risiko',
+                levelMedium: 'Mittleres Risiko',
+                levelHighRisk: 'Hohes Risiko',
+                bdLow: 'Niedrig (71-100)',
+                bdMedium: 'Mittel (40-70)',
+                bdHigh: 'Hoch (0-39)',
+                // Cards
+                cardWarning: '⚠️ Bereiche mit Handlungsbedarf',
+                cardSuccess: '✅ Konforme Bereiche',
+                cardInfo: '💡 Empfehlungen',
+                // Share
+                shareTitle: '📤 Bericht teilen',
+                copySuccess: '✓ Link in Zwischenablage kopiert!',
             }
         };
 
@@ -354,6 +663,30 @@
             document.getElementById('lang' + lang.charAt(0).toUpperCase() + lang.slice(1)).classList.add('active');
             document.querySelector('[data-i18n="newReport"]').textContent = t.newReport;
             localStorage.setItem('ai-compliance-lang', lang);
+            // Update UI strings if report is visible
+            updateScoreStrings(t);
+            updateCardsStrings(t);
+            updateShareStrings(t);
+        }
+
+        function updateScoreStrings(t) {
+            const el = id => document.getElementById(id);
+            if (el('scoreTitle')) el('scoreTitle').textContent = t.scoreTitle;
+            if (el('scoreDesc')) el('scoreDesc').textContent = t.scoreDesc;
+            if (el('scoreLabel')) el('scoreLabel').textContent = t.scoreLabel;
+            if (el('bdLow')) el('bdLow').textContent = t.bdLow;
+            if (el('bdMedium')) el('bdMedium').textContent = t.bdMedium;
+            if (el('bdHigh')) el('bdHigh').textContent = t.bdHigh;
+        }
+
+        function updateCardsStrings(t) {
+            // Cards are dynamic, handled in renderCards()
+        }
+
+        function updateShareStrings(t) {
+            const el = id => document.getElementById(id);
+            if (el('shareTitle')) el('shareTitle').textContent = t.shareTitle;
+            if (el('shareToast')) el('shareToast').textContent = t.copySuccess;
         }
 
         const subId = new URLSearchParams(window.location.search).get('id');
@@ -413,8 +746,16 @@
             document.getElementById('companyName').textContent = data.company || '';
             document.getElementById('reportTime').textContent = t.generated + new Date().toLocaleString(currentLang === 'de' ? 'de-DE' : 'en-US');
             
+            // Render score gauge
+            renderScoreGauge(data);
+            
+            // Render info/warning/success cards
+            renderCards(data);
+            
+            // Render report body
             document.getElementById('reportBody').innerHTML = reportHtml;
             
+            // Render summary cards
             const summary = document.getElementById('reportSummary');
             const sectionCount = data.markdown ? (data.markdown.match(/##/g) || []).length + t.sections : t.comprehensive;
             summary.innerHTML = `
@@ -432,6 +773,9 @@
                 </div>
             `;
 
+            // Setup share buttons
+            setupShareButtons(data);
+
             // Add email section after report body
             const emailSection = document.createElement('div');
             emailSection.className = 'email-section';
@@ -446,6 +790,153 @@
                 <div class="email-sent" id="emailSent" style="display:none;">${t.emailSent}</div>
             `;
             document.getElementById('reportContent').appendChild(emailSection);
+        }
+
+        function renderScoreGauge(data) {
+            const score = data.score !== undefined ? data.score : 0;
+            const level = data.level || 'medium';
+            const t = i18n[currentLang] || i18n.en;
+
+            // Determine color
+            let color, levelText;
+            if (score < 40) {
+                color = 'var(--score-red)';
+                levelText = t.levelHighRisk;
+            } else if (score <= 70) {
+                color = 'var(--score-yellow)';
+                levelText = t.levelMedium;
+            } else {
+                color = 'var(--score-green)';
+                levelText = t.levelLowRisk;
+            }
+
+            // SVG circle: radius=58, circumference=2*pi*58 ≈ 364.42
+            const circumference = 2 * Math.PI * 58;
+            const offset = circumference - (score / 100) * circumference;
+
+            const circle = document.getElementById('scoreValueCircle');
+            circle.style.stroke = color;
+            circle.setAttribute('stroke-dasharray', circumference);
+            // Trigger animation after a microtask
+            requestAnimationFrame(() => {
+                circle.style.strokeDashoffset = offset;
+            });
+
+            const ringValue = document.getElementById('scoreRingValue');
+            document.getElementById('scoreNumber').textContent = score;
+            document.getElementById('scoreNumber').style.color = color;
+            const levelEl = document.getElementById('scoreLevel');
+            levelEl.textContent = levelText;
+            levelEl.style.color = color;
+
+            // Update breakdown colors
+            document.getElementById('scoreLabel').textContent = t.scoreLabel;
+        }
+
+        function renderCards(data) {
+            const t = i18n[currentLang] || i18n.en;
+            const recommendations = data.recommendations || [];
+            const level = data.level || 'medium';
+            const score = data.score !== undefined ? data.score : 0;
+
+            const container = document.getElementById('cardsSection');
+            let cardsHtml = '';
+
+            // Warning card: items needing action
+            const warnings = recommendations.filter(r => 
+                r.toLowerCase().includes('implement') || 
+                r.toLowerCase().includes('address') || 
+                r.toLowerCase().includes('mitigate') || 
+                r.toLowerCase().includes('appoint') ||
+                r.toLowerCase().includes('ensure')
+            );
+            if (warnings.length > 0) {
+                cardsHtml += `
+                    <div class="warning-card">
+                        <div class="icon">⚠️</div>
+                        <div class="card-text">
+                            <strong>${t.cardWarning}</strong>
+                            <ul style="margin-top:6px;padding-left:18px;">
+                                ${warnings.map(r => `<li>${r}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Success card: compliant areas
+            const successes = [];
+            if (data.has_documentation === 'yes' || !recommendations.some(r => r.includes('documentation'))) {
+                successes.push('Documentation standards maintained');
+            }
+            if (data.dpo_appointed === 'yes' || !recommendations.some(r => r.includes('DPO'))) {
+                successes.push('Data Protection Officer appointed');
+            }
+            if (data.gdpr_compliant === 'yes' || !recommendations.some(r => r.includes('GDPR'))) {
+                successes.push('GDPR compliance in place');
+            }
+            // If score is good and no warnings, show positive message
+            if (successes.length > 0 || score >= 70) {
+                const successItems = successes.length > 0 ? successes : ['Overall compliance posture is strong'];
+                cardsHtml += `
+                    <div class="success-card">
+                        <div class="icon">✅</div>
+                        <div class="card-text">
+                            <strong>${t.cardSuccess}</strong>
+                            <ul style="margin-top:6px;padding-left:18px;">
+                                ${successItems.map(s => `<li>${s}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Info card: all recommendations summary
+            if (recommendations.length > 0) {
+                cardsHtml += `
+                    <div class="info-card">
+                        <div class="icon">💡</div>
+                        <div class="card-text">
+                            <strong>${t.cardInfo}</strong>
+                            <ul style="margin-top:6px;padding-left:18px;">
+                                ${recommendations.map(r => `<li>${r}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = cardsHtml;
+        }
+
+        function setupShareButtons(data) {
+            const t = i18n[currentLang] || i18n.en;
+            const reportUrl = window.location.href;
+            const title = encodeURIComponent(data.title || 'AI Compliance Report');
+            const summary = encodeURIComponent(`AI Compliance Report for ${data.company || 'Your Company'} — Score: ${data.score}/100`);
+
+            // Telegram
+            const tgLink = document.getElementById('shareTelegram');
+            tgLink.href = `https://t.me/share/url?url=${encodeURIComponent(reportUrl)}&text=${summary}`;
+
+            // LinkedIn
+            const liLink = document.getElementById('shareLinkedin');
+            liLink.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(reportUrl)}`;
+
+            // Email
+            const emailLink = document.getElementById('shareEmail');
+            emailLink.href = `mailto:?subject=${title}&body=${summary}%0A%0A${encodeURIComponent(reportUrl)}`;
+
+            // Copy link
+            const copyBtn = document.getElementById('shareCopy');
+            copyBtn.onclick = function() {
+                navigator.clipboard.writeText(reportUrl).then(() => {
+                    const toast = document.getElementById('shareToast');
+                    toast.textContent = t.copySuccess;
+                    toast.classList.add('visible');
+                    setTimeout(() => toast.classList.remove('visible'), 2500);
+                });
+            };
         }
 
         function showError() {
@@ -470,6 +961,22 @@
             a.download = 'ai-compliance-report-' + companyName.replace(/[^a-zA-Z0-9]/g, '-') + '.md';
             a.click();
             URL.revokeObjectURL(url);
+        }
+
+        function downloadPDF() {
+            const t = i18n[currentLang] || i18n.en;
+            if (!submissionId) {
+                alert(t.noId);
+                return;
+            }
+            const btn = document.getElementById('pdfBtn');
+            btn.textContent = '⏳ Generating PDF...';
+            btn.disabled = true;
+            window.location.href = '/download-pdf/' + submissionId;
+            setTimeout(() => {
+                btn.textContent = '⬇ Download PDF';
+                btn.disabled = false;
+            }, 3000);
         }
 
         async function sendReportEmail() {
@@ -501,7 +1008,7 @@
                 sent.style.display = 'block';
                 btn.textContent = '✓';
             } catch (err) {
-                alert(t.errorTxt + err.message);
+                alert('Error: ' + err.message);
                 btn.disabled = false;
                 btn.textContent = t.emailBtn;
             }
