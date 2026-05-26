@@ -4,32 +4,42 @@
     <meta charset="UTF-8">
     <title>AI Compliance Consultant</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 2rem; }
-        .container { max-width: 600px; margin: auto; }
-        label { display: block; margin-top: 1rem; }
-        input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.25rem; }
-        button { margin-top: 1.5rem; padding: 0.75rem 1.5rem; font-size: 1rem; }
-        #status { margin-top: 1rem; min-height: 1.5rem; }
-        #result { margin-top: 2rem; padding: 1rem; border: 1px solid #ddd; min-height: 100px; white-space: pre-wrap; background: #fafafa; }
+        body { font-family: Arial, sans-serif; margin: 2rem; background: #1a1a2e; color: #e0e0e0; }
+        .container { max-width: 700px; margin: auto; }
+        h1 { color: #00d2ff; border-bottom: 2px solid #16213e; padding-bottom: 0.5rem; }
+        label { display: block; margin-top: 1rem; color: #a0a0b0; }
+        input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.25rem; border: 1px solid #333; border-radius: 6px; background: #16213e; color: #e0e0e0; box-sizing: border-box; }
+        button { margin-top: 1.5rem; padding: 0.75rem 1.5rem; font-size: 1rem; background: #00d2ff; color: #1a1a2e; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #00b8e6; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        #status { margin-top: 1rem; min-height: 1.5rem; color: #a0a0b0; }
+        #result { margin-top: 2rem; padding: 1rem; border: 1px solid #333; border-radius: 8px; min-height: 100px; background: #16213e; }
+        #result h2 { color: #00d2ff; }
+        #result h3 { color: #e0aaff; }
+        #result hr { border-color: #333; }
+        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #00d2ff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error { color: #ff6b6b; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>AI Compliance Consultant (EU AI Act)</h1>
         <form id="complianceForm">
-            <label>Company Name:* <input type="text" name="company" required></label>
+            <label>Company Name: <input type="text" name="company" required></label>
             <label>Website URL: <input type="url" name="url"></label>
-            <label>Description of AI‑related activities:* <textarea name="description" rows="4" required></textarea></label>
+            <label>Description of AI activities: <textarea name="description" rows="4" required></textarea></label>
             <label>Email (optional): <input type="email" name="email"></label>
-            <button type="submit">Check Compliance</button>
+            <button type="submit" id="submitBtn">Check Compliance</button>
         </form>
         <div id="status"></div>
         <div id="result"></div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        // Base URL of the backend – change if you deploy elsewhere
-        const BASE_URL = window.location.origin; // assumes same‑origin (e.g., when backend is served from same domain)
+        const BASE_URL = window.location.origin;
         const form = document.getElementById('complianceForm');
+        const submitBtn = document.getElementById('submitBtn');
         const statusDiv = document.getElementById('status');
         const resultDiv = document.getElementById('result');
 
@@ -37,61 +47,64 @@
             e.preventDefault();
             const formData = new FormData(form);
             const data = Object.fromEntries(formData);
-            statusDiv.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+            statusDiv.innerHTML = '<span class="spinner"></span> Submitting...';
             resultDiv.innerHTML = '';
 
             try {
-                const resp = await fetch(`${BASE_URL}/submit`, {
+                const resp = await fetch(BASE_URL + '/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams(data)
                 });
-                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
                 const json = await resp.json();
                 if (!json.id) throw new Error('No ID returned');
-                statusDiv.textContent = 'Processing...';
-                const checkStatus = () => {
-                    fetch(`${BASE_URL}/report/${json.id}`)
-                        .then(r => {
-                            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                            return r.json();
-                        })
-                        .then(data => {
-                            if (data.status === 'completed') {
-                                // fetch markdown
-                                return fetch(`${BASE_URL}/report/${json.id}`, { headers: { Accept: 'text/markdown' } })
-                                    .then(r => {
-                                        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                                        return r.text();
-                                    })
-                                    .then(md => {
-                                        // simple markdown to HTML (using marked)
-                                        resultDiv.innerHTML = window.marked ? marked.parse(md) : `<pre>${md.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>`;
-                                        statusDiv.textContent = 'Done';
-                                    });
-                            } else if (data.status === 'failed') {
-                                statusDiv.textContent = 'Processing failed';
-                                resultDiv.innerHTML = '<p style="color:red;">An error occurred while generating the report.</p>';
-                            } else {
-                                // still processing
-                                setTimeout(checkStatus, 2000);
-                            }
-                        })
-                        .catch(err => {
-                            statusDiv.textContent = 'Error checking status';
-                            console.error(err);
-                            resultDiv.innerHTML = `<p style="color:red;">${err.message}</p>`;
-                        });
-                };
-                setTimeout(checkStatus, 2000);
+                statusDiv.innerHTML = '<span class="spinner"></span> Processing...';
+                pollReport(json.id);
             } catch (err) {
                 statusDiv.textContent = 'Submission error';
-                console.error(err);
-                resultDiv.innerHTML = `<p style="color:red;">${err.message}</p>`;
+                resultDiv.innerHTML = '<p class="error">' + err.message + '</p>';
+                submitBtn.disabled = false;
             }
         });
+
+        async function pollReport(id) {
+            try {
+                const resp = await fetch(BASE_URL + '/report/' + id);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const ct = resp.headers.get('content-type') || '';
+                if (ct.includes('text/markdown') || !ct.includes('json')) {
+                    // Report is ready — read as markdown text
+                    const md = await resp.text();
+                    statusDiv.textContent = 'Done';
+                    resultDiv.innerHTML = window.marked ? marked.parse(md) : '<pre>' + md.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
+                    submitBtn.disabled = false;
+                } else {
+                    // JSON status response
+                    const data = await resp.json();
+                    if (data.status === 'completed') {
+                        // Re-fetch with explicit accept header for markdown
+                        const mdResp = await fetch(BASE_URL + '/report/' + id, { headers: { 'Accept': 'text/markdown' } });
+                        const md = await mdResp.text();
+                        statusDiv.textContent = 'Done';
+                        resultDiv.innerHTML = window.marked ? marked.parse(md) : '<pre>' + md.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
+                        submitBtn.disabled = false;
+                    } else if (data.status === 'failed') {
+                        statusDiv.textContent = 'Processing failed';
+                        resultDiv.innerHTML = '<p class="error">An error occurred while generating the report.</p>';
+                        submitBtn.disabled = false;
+                    } else {
+                        statusDiv.innerHTML = '<span class="spinner"></span> Processing... (status: ' + data.status + ')';
+                        setTimeout(function() { pollReport(id); }, 3000);
+                    }
+                }
+            } catch (err) {
+                statusDiv.textContent = 'Error checking status';
+                resultDiv.innerHTML = '<p class="error">' + err.message + '</p>';
+                submitBtn.disabled = false;
+            }
+        }
     </script>
-    <!-- marked.js for markdown rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>
