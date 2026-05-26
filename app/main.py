@@ -14,7 +14,8 @@ from .utils import save_report
 import os
 import json
 import markdown
-from .pdf_generator import generate_pdf_report
+# Lazy import — weasyprint might not be installed on Render
+# from .pdf_generator import generate_pdf_report
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -279,6 +280,7 @@ async def download_pdf(sub_id: str, db: Session = Depends(get_db)):
         return {"status": sub.status, "error": "Report not ready yet"}
     
     try:
+        from .pdf_generator import generate_pdf_report
         pdf_path = generate_pdf_report(sub_id, db)
         filename = f"AI_Compliance_Report_{sub.company.replace(' ', '_')}.pdf"
         return FileResponse(
