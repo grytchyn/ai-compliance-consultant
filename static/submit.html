@@ -300,13 +300,9 @@
             <!-- Section 1: Company Information -->
             <div class="form-section">
                 <h2>📋 Company Information</h2>
-                <p class="section-desc">Basic information about your organization.</p>
+                <p class="section-desc">Basic information about your organization. <span style="color: var(--brand); font-size: 12px;">Company name, sector, and HQ will be auto-detected from your website URL.</span></p>
                 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Company Name *</label>
-                        <input type="text" name="company" required placeholder="e.g. TechVision GmbH">
-                    </div>
                     <div class="form-group">
                         <label>Company Size</label>
                         <select name="company_size">
@@ -317,45 +313,133 @@
                             <option value="enterprise">Enterprise (1000+)</option>
                         </select>
                     </div>
-                </div>
-                
-                <div class="form-row">
                     <div class="form-group">
                         <label>Sector / Industry</label>
-                        <input type="text" name="sector" placeholder="e.g. Healthcare, FinTech, E-commerce">
-                    </div>
-                    <div class="form-group">
-                        <label>Annual Revenue</label>
-                        <input type="text" name="annual_revenue" placeholder="e.g. 10M-50M EUR">
+                        <select name="sector">
+                            <option value="">Select sector...</option>
+                            <option value="aerospace">Aerospace & Defense</option>
+                            <option value="agriculture">Agriculture</option>
+                            <option value="automotive">Automotive</option>
+                            <option value="banking">Banking & Finance</option>
+                            <option value="education">Education</option>
+                            <option value="energy">Energy & Utilities</option>
+                            <option value="healthcare">Healthcare & Pharma</option>
+                            <option value="insurance">Insurance</option>
+                            <option value="legal">Legal & Compliance</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="media">Media & Entertainment</option>
+                            <option value="public_sector">Public Sector / Government</option>
+                            <option value="retail">Retail & E-commerce</option>
+                            <option value="technology">Technology & SaaS</option>
+                            <option value="telecom">Telecom & Transport</option>
+                            <option value="other">Other</option>
+                        </select>
                     </div>
                 </div>
                 
                 <div class="form-row">
+                    <div class="form-group">
+                        <label>Annual Revenue</label>
+                        <select name="annual_revenue">
+                            <option value="">Select revenue band...</option>
+                            <option value="under_1m">&lt; €1M</option>
+                            <option value="1m_10m">€1M – €10M</option>
+                            <option value="10m_50m">€10M – €50M</option>
+                            <option value="50m_250m">€50M – €250M</option>
+                            <option value="250m_1b">€250M – €1B</option>
+                            <option value="over_1b">&gt; €1B</option>
+                            <option value="undisclosed">Prefer not to say</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label>HQ Location</label>
                         <input type="text" name="hq_location" placeholder="e.g. Munich, Germany">
                     </div>
-                    <div class="form-group">
-                        <label>Website URL</label>
-                        <input type="url" name="url" placeholder="https://example.com">
-                    </div>
                 </div>
                 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Website URL</label>
+                        <input type="url" name="url" placeholder="https://example.com" required>
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label>Description of AI-related Activities</label>
-                    <textarea name="description" rows="3" placeholder="Briefly describe how your company uses AI systems..."></textarea>
+                    <label>AI Use Cases <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="chatbot">
+                            <span class="check">✓</span>
+                            <span class="check-text">Customer support chatbot</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="content_gen">
+                            <span class="check">✓</span>
+                            <span class="check-text">Content generation</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="fraud_detection">
+                            <span class="check">✓</span>
+                            <span class="check-text">Fraud detection / Risk analysis</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="recommendation">
+                            <span class="check">✓</span>
+                            <span class="check-text">Recommendation engine</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="image_video">
+                            <span class="check">✓</span>
+                            <span class="check-text">Image / Video analysis</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="document_processing">
+                            <span class="check">✓</span>
+                            <span class="check-text">Document processing / OCR</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="predictive">
+                            <span class="check">✓</span>
+                            <span class="check-text">Predictive analytics</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="speech">
+                            <span class="check">✓</span>
+                            <span class="check-text">Speech / Voice recognition</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="code_gen">
+                            <span class="check">✓</span>
+                            <span class="check-text">Code generation</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="autonomous">
+                            <span class="check">✓</span>
+                            <span class="check-text">Autonomous systems</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="cv_screening">
+                            <span class="check">✓</span>
+                            <span class="check-text">Resume / CV screening</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="other">
+                            <span class="check">✓</span>
+                            <span class="check-text">Other (specify in report)</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
             <!-- Section 2: AI System Details -->
-            <div class="form-section">
+            <div class="form-section" id="ai-details-section">
                 <h2>🤖 AI System Details</h2>
                 <p class="section-desc">Tell us about the AI systems you deploy.</p>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label>Number of AI Systems in Production</label>
-                        <select name="ai_systems_count">
+                        <select name="ai_systems_count" id="ai_systems_count">
                             <option value="">Select...</option>
                             <option value="0">None yet</option>
                             <option value="1-3">1-3 systems</option>
@@ -363,18 +447,6 @@
                             <option value="10+">More than 10</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>System Names</label>
-                        <input type="text" name="ai_system_names" placeholder="e.g. CustomerBot, FraudDetect">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Purpose of Your AI Systems</label>
-                    <textarea name="ai_purpose" rows="3" placeholder="What do your AI systems do? e.g. Customer support chatbot, resume screening, fraud detection..."></textarea>
-                </div>
-                
-                <div class="form-row">
                     <div class="form-group">
                         <label>Deployment Type</label>
                         <select name="deployment_type">
@@ -385,6 +457,9 @@
                             <option value="third-party">Third-party AI integrated</option>
                         </select>
                     </div>
+                </div>
+                
+                <div class="form-row">
                     <div class="form-group">
                         <label>Decision Type</label>
                         <select name="decision_type">
@@ -395,14 +470,6 @@
                             <option value="recommendation">Recommendation only</option>
                         </select>
                     </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Data Sources (training data origin)</label>
-                    <textarea name="data_sources" rows="2" placeholder="e.g. Public datasets, customer data, third-party APIs, user-generated content..."></textarea>
-                </div>
-                
-                <div class="form-row">
                     <div class="form-group">
                         <label>Risk Self-Assessment</label>
                         <select name="risk_self_assessment">
@@ -415,6 +482,57 @@
                         </select>
                     </div>
                 </div>
+                
+                <div class="form-group">
+                    <label>Data Sources <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="public_datasets">
+                            <span class="check">✓</span>
+                            <span class="check-text">Public datasets</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="customer_data">
+                            <span class="check">✓</span>
+                            <span class="check-text">Customer data</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="third_party_apis">
+                            <span class="check">✓</span>
+                            <span class="check-text">Third-party APIs</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="user_generated">
+                            <span class="check">✓</span>
+                            <span class="check-text">User-generated content</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="web_scraping">
+                            <span class="check">✓</span>
+                            <span class="check-text">Web scraping</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="proprietary">
+                            <span class="check">✓</span>
+                            <span class="check-text">Proprietary datasets</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="synthetic">
+                            <span class="check">✓</span>
+                            <span class="check-text">Synthetic data</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="open_gov">
+                            <span class="check">✓</span>
+                            <span class="check-text">Open government data</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="purchased">
+                            <span class="check">✓</span>
+                            <span class="check-text">Purchased data</span>
+                        </label>
+                    </div>
+                </div>
             </div>
 
             <!-- Section 3: Technical Details -->
@@ -423,28 +541,169 @@
                 <p class="section-desc">Technical characteristics of your AI systems.</p>
                 
                 <div class="form-group">
-                    <label>AI Model Types Used</label>
-                    <input type="text" name="model_types" placeholder="e.g. LLMs (GPT, LLaMA), CNNs, Regression, Decision Trees">
+                    <label>AI Model Types Used <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="llm">
+                            <span class="check">✓</span>
+                            <span class="check-text">Large Language Models (LLM)</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="cnn">
+                            <span class="check">✓</span>
+                            <span class="check-text">Convolutional Neural Networks (CNN)</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="transformer">
+                            <span class="check">✓</span>
+                            <span class="check-text">Transformer models</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="diffusion">
+                            <span class="check">✓</span>
+                            <span class="check-text">Diffusion models</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="regression">
+                            <span class="check">✓</span>
+                            <span class="check-text">Regression / Statistical models</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="decision_tree">
+                            <span class="check">✓</span>
+                            <span class="check-text">Decision Trees / Random Forest</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="reinforcement">
+                            <span class="check">✓</span>
+                            <span class="check-text">Reinforcement Learning</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="gan">
+                            <span class="check">✓</span>
+                            <span class="check-text">GANs / Generative models</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="recommender">
+                            <span class="check">✓</span>
+                            <span class="check-text">Recommendation systems</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="other">
+                            <span class="check">✓</span>
+                            <span class="check-text">Other / Not sure</span>
+                        </label>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label>Training Data Origin</label>
-                    <textarea name="training_data_origin" rows="2" placeholder="Where does your training data come from? e.g. Public web, proprietary datasets, customer data..."></textarea>
+                    <label>Human Oversight Mechanisms <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="manual_review">
+                            <span class="check">✓</span>
+                            <span class="check-text">Manual review queue</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="approval_workflow">
+                            <span class="check">✓</span>
+                            <span class="check-text">Approval workflow</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="exception_handling">
+                            <span class="check">✓</span>
+                            <span class="check-text">Exception / escalation handling</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="human_in_loop">
+                            <span class="check">✓</span>
+                            <span class="check-text">Human-in-the-loop for decisions</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="audit_logs">
+                            <span class="check">✓</span>
+                            <span class="check-text">Audit logs / monitoring</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="override">
+                            <span class="check">✓</span>
+                            <span class="check-text">Human override capability</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="none">
+                            <span class="check">✓</span>
+                            <span class="check-text">No human oversight</span>
+                        </label>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label>Human Oversight Mechanisms</label>
-                    <textarea name="human_oversight" rows="2" placeholder="How do humans oversee AI decisions? e.g. Manual review queue, approval workflow, exception handling..."></textarea>
+                    <label>Explainability Methods <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="shap">
+                            <span class="check">✓</span>
+                            <span class="check-text">SHAP</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="lime">
+                            <span class="check">✓</span>
+                            <span class="check-text">LIME</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="attention">
+                            <span class="check">✓</span>
+                            <span class="check-text">Attention visualization</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="feature_importance">
+                            <span class="check">✓</span>
+                            <span class="check-text">Feature importance</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="decision_tree_explain">
+                            <span class="check">✓</span>
+                            <span class="check-text">Decision tree explanations</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="counterfactual">
+                            <span class="check">✓</span>
+                            <span class="check-text">Counterfactual explanations</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="not_applicable">
+                            <span class="check">✓</span>
+                            <span class="check-text">Not applicable / None</span>
+                        </label>
+                    </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Explainability / Interpretability</label>
-                        <input type="text" name="explainability" placeholder="e.g. SHAP, LIME, attention visualization">
+                        <label>Training Data Origin</label>
+                        <select name="training_data_origin">
+                            <option value="">Select...</option>
+                            <option value="public_web">Public web data</option>
+                            <option value="proprietary">Proprietary / company data</option>
+                            <option value="customer">Customer-provided data</option>
+                            <option value="third_party">Third-party licensed data</option>
+                            <option value="synthetic">Synthetic generated data</option>
+                            <option value="open_source">Open-source datasets</option>
+                            <option value="mixed">Mixed / Multiple sources</option>
+                            <option value="not_sure">Not sure</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Data Retention Policy</label>
-                        <input type="text" name="data_retention" placeholder="e.g. 30 days, 1 year, indefinite">
+                        <select name="data_retention">
+                            <option value="">Select...</option>
+                            <option value="not_retained">Not retained</option>
+                            <option value="30_days">30 days</option>
+                            <option value="90_days">90 days</option>
+                            <option value="1_year">1 year</option>
+                            <option value="indefinite">Indefinite / No policy</option>
+                            <option value="not_sure">Not sure</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -552,13 +811,97 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Existing Certifications</label>
-                    <input type="text" name="existing_certifications" placeholder="e.g. ISO 27001, SOC 2, ISO 42001...">
+                    <label>Existing Certifications <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="iso_27001">
+                            <span class="check">✓</span>
+                            <span class="check-text">ISO 27001</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="iso_42001">
+                            <span class="check">✓</span>
+                            <span class="check-text">ISO 42001 (AI Management)</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="soc2">
+                            <span class="check">✓</span>
+                            <span class="check-text">SOC 2</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="iso_27701">
+                            <span class="check">✓</span>
+                            <span class="check-text">ISO 27701 (Privacy)</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="pcidss">
+                            <span class="check">✓</span>
+                            <span class="check-text">PCI DSS</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="hipaa">
+                            <span class="check">✓</span>
+                            <span class="check-text">HIPAA</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="none">
+                            <span class="check">✓</span>
+                            <span class="check-text">None yet</span>
+                        </label>
+                    </div>
+                    <div style="margin-top: 8px;">
+                        <input type="text" name="other_certifications" placeholder="Other certifications (comma-separated)" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--text-primary);font-size:14px;">
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label>Previous Audit History</label>
-                    <textarea name="previous_audits" rows="2" placeholder="Have you had any compliance audits before? e.g. GDPR audit 2024, internal AI audit..."></textarea>
+                <div class="form-group" id="previous-audits-group">
+                    <label>Have you had any compliance audits before?</label>
+                    <div style="display:flex;gap:12px;margin-top:8px;">
+                        <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;">
+                            <input type="radio" name="previous_audits" value="yes" style="accent-color:var(--brand);">
+                            <span style="color:var(--text-secondary);font-size:14px;">Yes</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;">
+                            <input type="radio" name="previous_audits" value="no" style="accent-color:var(--brand);">
+                            <span style="color:var(--text-secondary);font-size:14px;">No</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="audit-details" style="display:none;">
+                    <label>Audit Types <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="gdpr">
+                            <span class="check">✓</span>
+                            <span class="check-text">GDPR audit</span>
+                        </label>
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="iso">
+                            <span class="check">✓</span>
+                            <span class="check-text">ISO certification audit</span>
+                        </label>
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="internal_ai">
+                            <span class="check">✓</span>
+                            <span class="check-text">Internal AI audit</span>
+                        </label>
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="third_party_ai">
+                            <span class="check">✓</span>
+                            <span class="check-text">Third-party AI audit</span>
+                        </label>
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="security">
+                            <span class="check">✓</span>
+                            <span class="check-text">Security / penetration test</span>
+                        </label>
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="other">
+                            <span class="check">✓</span>
+                            <span class="check-text">Other</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -580,9 +923,7 @@
                 pageTitle: 'Check Your AI Compliance',
                 pageDesc: 'Fill in the details about your company and AI systems for a comprehensive EU AI Act analysis.',
                 s1Title: '📋 Company Information',
-                s1Desc: 'Basic information about your organization.',
-                companyLabel: 'Company Name *',
-                companyPlace: 'e.g. TechVision GmbH',
+                s1Desc: 'Basic information about your organization. Company name, sector, and HQ will be auto-detected from your website URL.',
                 sizeLabel: 'Company Size',
                 sizeOpt0: 'Select size...',
                 sizeOpt1: 'Startup (1-10)',
@@ -590,39 +931,26 @@
                 sizeOpt3: 'Mid-sized (251-1000)',
                 sizeOpt4: 'Enterprise (1000+)',
                 sectorLabel: 'Sector / Industry',
-                sectorPlace: 'e.g. Healthcare, FinTech, E-commerce',
                 revenueLabel: 'Annual Revenue',
-                revenuePlace: 'e.g. 10M-50M EUR',
                 hqLabel: 'HQ Location',
                 hqPlace: 'e.g. Munich, Germany',
                 urlLabel: 'Website URL',
-                urlPlace: 'e.g. https://example.com',
-                descLabel: 'Description of AI-related Activities',
-                descPlace: 'Briefly describe how your company uses AI systems...',
+                urlPlace: 'https://example.com',
+                aiUseCasesLabel: 'AI Use Cases (select all that apply)',
                 s2Title: '🤖 AI System Details',
                 s2Desc: 'Tell us about the AI systems you deploy.',
                 aiCountLabel: 'Number of AI Systems in Production',
-                aiNamesLabel: 'System Names',
-                aiNamesPlace: 'e.g. CustomerBot, FraudDetect',
-                aiPurposeLabel: 'Purpose of Your AI Systems',
-                aiPurposePlace: 'What do your AI systems do? e.g. Customer support chatbot, resume screening...',
                 deployLabel: 'Deployment Type',
                 decisionLabel: 'Decision Type',
-                dataSourcesLabel: 'Data Sources (training data origin)',
-                dataSourcesPlace: 'e.g. Public datasets, customer data, third-party APIs...',
+                dataSourcesLabel: 'Data Sources (select all that apply)',
                 riskSelfLabel: 'Risk Self-Assessment',
                 s3Title: '🔧 Technical Details',
                 s3Desc: 'Technical characteristics of your AI systems.',
-                modelTypesLabel: 'AI Model Types Used',
-                modelTypesPlace: 'e.g. LLMs (GPT, LLaMA), CNNs, Regression',
+                modelTypesLabel: 'AI Model Types Used (select all that apply)',
+                oversightLabel: 'Human Oversight Mechanisms (select all that apply)',
+                explLabel: 'Explainability Methods (select all that apply)',
                 trainingDataLabel: 'Training Data Origin',
-                trainingDataPlace: 'Where does your training data come from?',
-                oversightLabel: 'Human Oversight Mechanisms',
-                oversightPlace: 'e.g. Manual review queue, approval workflow',
-                explLabel: 'Explainability / Interpretability',
-                explPlace: 'e.g. SHAP, LIME, attention visualization',
                 retentionLabel: 'Data Retention Policy',
-                retentionPlace: 'e.g. 30 days, 1 year, indefinite',
                 s4Title: '⚠️ High-Risk Categories',
                 s4Desc: 'Select which EU AI Act high-risk categories apply to your AI systems.',
                 s4Learn: 'Learn more',
@@ -631,17 +959,17 @@
                 docLabel: 'Existing Compliance Documentation',
                 dpoLabel: 'DPO Appointed?',
                 gdprLabel: 'GDPR Compliance Status',
-                certsLabel: 'Existing Certifications',
-                certsPlace: 'e.g. ISO 27001, SOC 2, ISO 42001...',
-                auditsLabel: 'Previous Audit History',
-                auditsPlace: 'e.g. GDPR audit 2024, internal AI audit...',
+                certsLabel: 'Existing Certifications (select all that apply)',
+                certsOther: 'Other certifications (comma-separated)',
+                auditsQ: 'Have you had any compliance audits before?',
+                auditTypes: 'Audit Types (select all that apply)',
                 ceLabel: 'CE Marking (for AI)',
                 cancel: '← Cancel',
                 submit: '→ Generate Compliance Report',
                 processing: '⏳ Processing...',
                 errorTxt: 'Error: ',
                 errorTry: '\\nPlease try again.',
-                validRequired: 'Company name is required',
+                validRequired: 'Website URL is required',
             },
             de: {
                 title: 'KI-Compliance-Prüfung — Unternehmen einreichen',
@@ -649,9 +977,7 @@
                 pageTitle: 'KI-Compliance prüfen',
                 pageDesc: 'Geben Sie Details zu Ihrem Unternehmen und Ihren KI-Systemen für eine umfassende EU AI Act-Analyse an.',
                 s1Title: '📋 Unternehmensinformationen',
-                s1Desc: 'Grundlegende Informationen zu Ihrem Unternehmen.',
-                companyLabel: 'Unternehmensname *',
-                companyPlace: 'z.B. TechVision GmbH',
+                s1Desc: 'Grundlegende Informationen zu Ihrem Unternehmen. Firmenname, Branche und Hauptsitz werden automatisch aus Ihrer Webseite erkannt.',
                 sizeLabel: 'Unternehmensgröße',
                 sizeOpt0: 'Größe wählen...',
                 sizeOpt1: 'Startup (1-10)',
@@ -659,39 +985,26 @@
                 sizeOpt3: 'Mittelstand (251-1000)',
                 sizeOpt4: 'Großunternehmen (1000+)',
                 sectorLabel: 'Branche',
-                sectorPlace: 'z.B. Gesundheitswesen, FinTech, E-Commerce',
                 revenueLabel: 'Jahresumsatz',
-                revenuePlace: 'z.B. 10M-50M EUR',
                 hqLabel: 'Hauptsitz',
                 hqPlace: 'z.B. München, Deutschland',
                 urlLabel: 'Webseite',
-                urlPlace: 'z.B. https://example.com',
-                descLabel: 'Beschreibung der KI-Aktivitäten',
-                descPlace: 'Beschreiben Sie kurz, wie Ihr Unternehmen KI-Systeme einsetzt...',
+                urlPlace: 'https://example.com',
+                aiUseCasesLabel: 'KI-Anwendungsfälle (alle zutreffenden auswählen)',
                 s2Title: '🤖 KI-System-Details',
                 s2Desc: 'Details zu Ihren eingesetzten KI-Systemen.',
                 aiCountLabel: 'Anzahl der KI-Systeme in Produktion',
-                aiNamesLabel: 'Systemnamen',
-                aiNamesPlace: 'z.B. CustomerBot, FraudDetect',
-                aiPurposeLabel: 'Zweck Ihrer KI-Systeme',
-                aiPurposePlace: 'Was tun Ihre KI-Systeme? z.B. Chatbot, Lebenslauf-Screening...',
                 deployLabel: 'Bereitstellungstyp',
                 decisionLabel: 'Entscheidungstyp',
-                dataSourcesLabel: 'Datenquellen (Trainingsdaten-Herkunft)',
-                dataSourcesPlace: 'z.B. Öffentliche Datensätze, Kundendaten, APIs...',
+                dataSourcesLabel: 'Datenquellen (alle zutreffenden auswählen)',
                 riskSelfLabel: 'Risiko-Selbsteinschätzung',
                 s3Title: '🔧 Technische Details',
                 s3Desc: 'Technische Merkmale Ihrer KI-Systeme.',
-                modelTypesLabel: 'Verwendete KI-Modelltypen',
-                modelTypesPlace: 'z.B. LLMs (GPT, LLaMA), CNNs, Regression',
+                modelTypesLabel: 'Verwendete KI-Modelltypen (alle zutreffenden auswählen)',
+                oversightLabel: 'Menschliche Aufsichtsmechanismen (alle zutreffenden auswählen)',
+                explLabel: 'Erklärbarkeitsmethoden (alle zutreffenden auswählen)',
                 trainingDataLabel: 'Trainingsdaten-Herkunft',
-                trainingDataPlace: 'Woher stammen Ihre Trainingsdaten?',
-                oversightLabel: 'Menschliche Aufsichtsmechanismen',
-                oversightPlace: 'z.B. Manuelle Überprüfung, Genehmigungsworkflow',
-                explLabel: 'Erklärbarkeit / Interpretierbarkeit',
-                explPlace: 'z.B. SHAP, LIME, Attention-Visualisierung',
                 retentionLabel: 'Datenaufbewahrungsrichtlinie',
-                retentionPlace: 'z.B. 30 Tage, 1 Jahr, unbegrenzt',
                 s4Title: '⚠️ Hochrisiko-Kategorien',
                 s4Desc: 'Wählen Sie, welche Hochrisiko-Kategorien des EU AI Act auf Ihre KI-Systeme zutreffen.',
                 s4Learn: 'Mehr erfahren',
@@ -700,114 +1013,154 @@
                 docLabel: 'Vorhandene Compliance-Dokumentation',
                 dpoLabel: 'DSB ernannt?',
                 gdprLabel: 'DSGVO-Compliance-Status',
-                certsLabel: 'Vorhandene Zertifizierungen',
-                certsPlace: 'z.B. ISO 27001, SOC 2, ISO 42001...',
-                auditsLabel: 'Bisherige Audits',
-                auditsPlace: 'z.B. DSGVO-Audit 2024, internes KI-Audit...',
+                certsLabel: 'Vorhandene Zertifizierungen (alle zutreffenden auswählen)',
+                certsOther: 'Weitere Zertifizierungen (kommagetrennt)',
+                auditsQ: 'Hatten Sie bereits Compliance-Audits?',
+                auditTypes: 'Audit-Typen (alle zutreffenden auswählen)',
                 ceLabel: 'CE-Kennzeichnung (für KI)',
                 cancel: '← Abbrechen',
                 submit: '→ Compliance-Bericht erstellen',
                 processing: '⏳ Wird verarbeitet...',
                 errorTxt: 'Fehler: ',
                 errorTry: '\\nBitte versuchen Sie es erneut.',
-                validRequired: 'Unternehmensname ist erforderlich',
+                validRequired: 'Webseiten-URL ist erforderlich',
             }
         };
 
-        // Checkbox fix — use change event on real checkboxes, not click on label
+        // ── Checkbox UI — change event ──
         document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(input => {
             input.addEventListener('change', function() {
                 this.closest('.checkbox-item').classList.toggle('checked', this.checked);
                 updateProgress();
             });
-            // Init checked state from input
             if (input.checked) {
                 input.closest('.checkbox-item').classList.add('checked');
             }
         });
 
-        // Language switching
+        // ── Progressive Disclosure: hide Sections 3+4 when no AI systems ──
+        function updateAISections() {
+            const count = document.getElementById('ai_systems_count').value;
+            const s3 = document.querySelector('.form-section:nth-of-type(3)');
+            const s4 = document.querySelector('.form-section:nth-of-type(4)');
+            const hide = !count || count === '0';
+            s3.style.display = hide ? 'none' : '';
+            s4.style.display = hide ? 'none' : '';
+        }
+        document.getElementById('ai_systems_count').addEventListener('change', updateAISections);
+
+        // ── Audit detail conditional ──
+        document.querySelectorAll('input[name="previous_audits"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('audit-details').style.display =
+                    this.value === 'yes' ? '' : 'none';
+            });
+        });
+
+        // ── Language switching ──
         function setLang(lang) {
             const t = i18n[lang] || i18n.en;
             document.getElementById('htmlRoot').lang = lang;
             document.getElementById('langInput').value = lang;
 
-            // Toggle buttons
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('lang' + lang.charAt(0).toUpperCase() + lang.slice(1)).classList.add('active');
 
-            // Apply translations to elements with data-i18n or specific selectors
             document.title = t.title;
             document.querySelector('.page-title h1').textContent = t.pageTitle;
             document.querySelector('.page-title p').textContent = t.pageDesc;
 
             // Section 1
-            document.querySelector('.form-section:nth-of-type(1) h2').textContent = t.s1Title;
-            document.querySelector('.form-section:nth-of-type(1) .section-desc').textContent = t.s1Desc;
-            const s1labels = document.querySelectorAll('.form-section:nth-of-type(1) label');
-            s1labels[0].textContent = t.companyLabel;
-            document.querySelector('[name="company"]').placeholder = t.companyPlace;
-            s1labels[1].textContent = t.sizeLabel;
+            const s1 = document.querySelector('.form-section:nth-of-type(1)');
+            s1.querySelector('h2').textContent = t.s1Title;
+            s1.querySelector('.section-desc').innerHTML = t.s1Desc;
             const sizeOpts = document.querySelector('[name="company_size"]').options;
             sizeOpts[0].text = t.sizeOpt0; sizeOpts[1].text = t.sizeOpt1;
             sizeOpts[2].text = t.sizeOpt2; sizeOpts[3].text = t.sizeOpt3; sizeOpts[4].text = t.sizeOpt4;
-            s1labels[2].textContent = t.sectorLabel;
-            document.querySelector('[name="sector"]').placeholder = t.sectorPlace;
-            s1labels[3].textContent = t.revenueLabel;
-            document.querySelector('[name="annual_revenue"]').placeholder = t.revenuePlace;
-            s1labels[4].textContent = t.hqLabel;
+            // Labels without breaking checkbox-group label counts
+            const s1Labels = s1.querySelectorAll('.form-group > label');
+            s1Labels[0].textContent = t.sizeLabel;
+            s1Labels[1].textContent = t.sectorLabel;
+            s1Labels[2].textContent = t.revenueLabel;
+            s1Labels[3].textContent = t.hqLabel;
+            s1Labels[4].textContent = t.urlLabel;
+            // AI Use Cases label has inner <span> — preserve it
+            const aiLabel = s1.querySelector('.form-group:last-child > label');
+            const aiSpan = aiLabel.querySelector('span');
+            aiLabel.textContent = t.aiUseCasesLabel;
+            if (aiSpan) aiLabel.appendChild(aiSpan);
             document.querySelector('[name="hq_location"]').placeholder = t.hqPlace;
-            s1labels[5].textContent = t.urlLabel;
             document.querySelector('[name="url"]').placeholder = t.urlPlace;
-            s1labels[6].textContent = t.descLabel;
-            document.querySelector('[name="description"]').placeholder = t.descPlace;
 
             // Section 2
-            document.querySelector('.form-section:nth-of-type(2) h2').textContent = t.s2Title;
-            document.querySelector('.form-section:nth-of-type(2) .section-desc').textContent = t.s2Desc;
-            const s2labels = document.querySelectorAll('.form-section:nth-of-type(2) label');
-            s2labels[0].textContent = t.aiCountLabel;
-            s2labels[1].textContent = t.aiNamesLabel;
-            document.querySelector('[name="ai_system_names"]').placeholder = t.aiNamesPlace;
-            s2labels[2].textContent = t.aiPurposeLabel;
-            document.querySelector('[name="ai_purpose"]').placeholder = t.aiPurposePlace;
-            s2labels[3].textContent = t.deployLabel;
-            s2labels[4].textContent = t.decisionLabel;
-            s2labels[5].textContent = t.dataSourcesLabel;
-            document.querySelector('[name="data_sources"]').placeholder = t.dataSourcesPlace;
-            s2labels[6].textContent = t.riskSelfLabel;
+            const s2 = document.querySelector('.form-section:nth-of-type(2)');
+            s2.querySelector('h2').textContent = t.s2Title;
+            s2.querySelector('.section-desc').textContent = t.s2Desc;
+            const s2Labels = s2.querySelectorAll('.form-group > label');
+            s2Labels[0].textContent = t.aiCountLabel;
+            s2Labels[1].textContent = t.deployLabel;
+            s2Labels[2].textContent = t.decisionLabel;
+            s2Labels[3].textContent = t.riskSelfLabel;
+            // Data Sources label
+            const dsLabel = s2.querySelector('.form-group:last-child > label');
+            const dsSpan = dsLabel.querySelector('span');
+            dsLabel.textContent = t.dataSourcesLabel;
+            if (dsSpan) dsLabel.appendChild(dsSpan);
 
             // Section 3
-            document.querySelector('.form-section:nth-of-type(3) h2').textContent = t.s3Title;
-            document.querySelector('.form-section:nth-of-type(3) .section-desc').textContent = t.s3Desc;
-            const s3labels = document.querySelectorAll('.form-section:nth-of-type(3) label');
-            s3labels[0].textContent = t.modelTypesLabel;
-            document.querySelector('[name="model_types"]').placeholder = t.modelTypesPlace;
-            s3labels[1].textContent = t.trainingDataLabel;
-            document.querySelector('[name="training_data_origin"]').placeholder = t.trainingDataPlace;
-            s3labels[2].textContent = t.oversightLabel;
-            document.querySelector('[name="human_oversight"]').placeholder = t.oversightPlace;
-            s3labels[3].textContent = t.explLabel;
-            document.querySelector('[name="explainability"]').placeholder = t.explPlace;
-            s3labels[4].textContent = t.retentionLabel;
-            document.querySelector('[name="data_retention"]').placeholder = t.retentionPlace;
+            const s3 = document.querySelector('.form-section:nth-of-type(3)');
+            s3.querySelector('h2').textContent = t.s3Title;
+            s3.querySelector('.section-desc').textContent = t.s3Desc;
+            const s3Labels = s3.querySelectorAll('.form-group > label');
+            // Model types label
+            const mtLabel = s3Labels[0];
+            const mtSpan = mtLabel.querySelector('span');
+            mtLabel.textContent = t.modelTypesLabel;
+            if (mtSpan) mtLabel.appendChild(mtSpan);
+            // Human oversight label
+            const hoLabel = s3Labels[1];
+            const hoSpan = hoLabel.querySelector('span');
+            hoLabel.textContent = t.oversightLabel;
+            if (hoSpan) hoLabel.appendChild(hoSpan);
+            // Explainability label
+            const exLabel = s3Labels[2];
+            const exSpan = exLabel.querySelector('span');
+            exLabel.textContent = t.explLabel;
+            if (exSpan) exLabel.appendChild(exSpan);
+            s3Labels[3].textContent = t.trainingDataLabel;
+            s3Labels[4].textContent = t.retentionLabel;
 
             // Section 4
-            document.querySelector('.form-section:nth-of-type(4) h2').textContent = t.s4Title;
-            document.querySelector('.form-section:nth-of-type(4) .section-desc').childNodes[0].textContent = t.s4Desc + ' ';
+            const s4 = document.querySelector('.form-section:nth-of-type(4)');
+            s4.querySelector('h2').textContent = t.s4Title;
+            const s4Desc = s4.querySelector('.section-desc');
+            const s4Link = s4Desc.querySelector('a');
+            s4Desc.textContent = t.s4Desc + ' ';
+            if (s4Link) s4Desc.appendChild(s4Link);
 
             // Section 5
-            document.querySelector('.form-section:nth-of-type(5) h2').textContent = t.s5Title;
-            document.querySelector('.form-section:nth-of-type(5) .section-desc').textContent = t.s5Desc;
-            const s5labels = document.querySelectorAll('.form-section:nth-of-type(5) label');
-            s5labels[0].textContent = t.docLabel;
-            s5labels[1].textContent = t.dpoLabel;
-            s5labels[2].textContent = t.gdprLabel;
-            s5labels[3].textContent = t.certLabel;
-            document.querySelector('[name="existing_certifications"]').placeholder = t.certsPlace;
-            s5labels[4].textContent = t.auditsLabel;
-            document.querySelector('[name="previous_audits"]').placeholder = t.auditsPlace;
-            s5labels[5].textContent = t.ceLabel;
+            const s5 = document.querySelector('.form-section:nth-of-type(5)');
+            s5.querySelector('h2').textContent = t.s5Title;
+            s5.querySelector('.section-desc').textContent = t.s5Desc;
+            const s5Labels = s5.querySelectorAll('.form-group > label');
+            s5Labels[0].textContent = t.docLabel;
+            s5Labels[1].textContent = t.dpoLabel;
+            s5Labels[2].textContent = t.gdprLabel;
+            s5Labels[3].textContent = t.ceLabel;
+            // Certifications label
+            const certLabel = s5Labels[4];
+            const certSpan = certLabel.querySelector('span');
+            certLabel.textContent = t.certsLabel;
+            if (certSpan) certLabel.appendChild(certSpan);
+            document.querySelector('[name="other_certifications"]').placeholder = t.certsOther;
+            // Audit question
+            const auditLabel = document.querySelector('#previous-audits-group label');
+            auditLabel.textContent = t.auditsQ;
+            // Audit types label
+            const atLabel = document.querySelector('#audit-details label');
+            const atSpan = atLabel.querySelector('span');
+            atLabel.textContent = t.auditTypes;
+            if (atSpan) atLabel.appendChild(atSpan);
 
             // Buttons
             document.querySelector('.btn-secondary').textContent = t.cancel;
@@ -816,52 +1169,54 @@
             localStorage.setItem('ai-compliance-lang', lang);
         }
 
-        // Checkbox UI — handled natively by <label> wrapping + change event above
-
-        // Progress bar
+        // ── Progress bar ──
         function updateProgress() {
             const form = document.getElementById('complianceForm');
             const inputs = form.querySelectorAll('input[type="text"], input[type="url"], select, textarea');
             const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+            const radios = form.querySelectorAll('input[type="radio"]');
             let filled = 0;
-            let total = inputs.length + checkboxes.length;
-            
+            let total = inputs.length + checkboxes.length + radios.length;
+
             inputs.forEach(i => {
                 if (i.value && i.value.trim() !== '') filled++;
             });
             checkboxes.forEach(c => {
                 if (c.checked) filled++;
             });
-            
+            radios.forEach(r => {
+                if (r.checked) filled++;
+            });
+
             const pct = Math.min(100, Math.round((filled / total) * 100));
             document.getElementById('progressFill').style.width = pct + '%';
         }
-        
+
         document.querySelectorAll('input, select, textarea').forEach(el => {
             el.addEventListener('change', updateProgress);
             el.addEventListener('input', updateProgress);
         });
 
-        // Form submission
+        // ── Form submission ──
         document.getElementById('complianceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             const form = document.getElementById('complianceForm');
             const t = i18n[document.getElementById('langInput').value] || i18n.en;
-            
-            // Validate required
-            const company = form.querySelector('[name="company"]');
-            if (!company.value.trim()) {
-                company.focus();
-                company.style.borderColor = 'var(--danger)';
+
+            // Validate required fields
+            const url = form.querySelector('[name="url"]');
+            if (!url.value.trim()) {
+                url.focus();
+                url.style.borderColor = 'var(--danger)';
                 return;
             }
-            
+
             btn.disabled = true;
             btn.textContent = t.processing;
-            
+
             const formData = new FormData(form);
-            
+
             try {
                 const resp = await fetch('/submit', {
                     method: 'POST',
@@ -870,8 +1225,6 @@
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
                 const data = await resp.json();
                 if (!data.id) throw new Error('No ID returned');
-                
-                // Navigate to result page
                 window.location.href = '/result-page?id=' + data.id;
             } catch (err) {
                 btn.disabled = false;
@@ -880,9 +1233,10 @@
             }
         });
 
-        // Initialize language from localStorage
+        // ── Init ──
         const savedLang = localStorage.getItem('ai-compliance-lang') || 'en';
         setLang(savedLang);
+        updateAISections();
     </script>
 </body>
 </html>
