@@ -1,5 +1,6 @@
 import uuid
 import logging
+from typing import List
 from fastapi import FastAPI, Form, Request, BackgroundTasks, HTTPException, Depends
 from fastapi.responses import HTMLResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -82,34 +83,34 @@ async def submit_full(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     # Company info
-    company: str = Form(...),
+    company: str = Form(""),
     url: str = Form(""),
     email: str = Form(""),
     company_size: str = Form(""),
     sector: str = Form(""),
-    employees: str = Form(""),
     annual_revenue: str = Form(""),
     hq_location: str = Form(""),
-    description: str = Form(""),
     # AI system details
     ai_systems_count: str = Form(""),
-    ai_system_names: str = Form(""),
-    ai_purpose: str = Form(""),
     deployment_type: str = Form(""),
-    data_sources: str = Form(""),
     decision_type: str = Form(""),
     risk_self_assessment: str = Form(""),
-    # Technical
-    model_types: str = Form(""),
+    # Multi-checkbox fields (receive as list, join with comma)
+    ai_purpose: List[str] = Form([]),
+    data_sources: List[str] = Form([]),
+    model_types: List[str] = Form([]),
+    human_oversight: List[str] = Form([]),
+    explainability: List[str] = Form([]),
+    existing_certifications: List[str] = Form([]),
+    audit_types: List[str] = Form([]),
+    # Technical (single value)
     training_data_origin: str = Form(""),
-    human_oversight: str = Form(""),
-    explainability: str = Form(""),
     data_retention: str = Form(""),
-    # Compliance
+    # Compliance (single value)
     has_documentation: str = Form(""),
     dpo_appointed: str = Form(""),
     gdpr_compliant: str = Form(""),
-    existing_certifications: str = Form(""),
+    other_certifications: str = Form(""),
     previous_audits: str = Form(""),
     ce_marking: str = Form(""),
     # Risk checkboxes
@@ -134,34 +135,53 @@ async def submit_full(
     except:
         extra_json = {}
     
+    # If company is empty, try to extract from URL
+    if not company.strip() and url.strip():
+        from urllib.parse import urlparse
+        try:
+            parsed = urlparse(url if url.startswith(("http://", "https://")) else f"https://{url}")
+            domain = parsed.netloc or parsed.path
+            company = domain.replace("www.", "").split(".")[0].title()
+        except:
+            pass
+    
+    # Combine certifications from checkboxes + text field
+    certs_parts = list(existing_certifications) if isinstance(existing_certifications, list) else []
+    if other_certifications:
+        certs_parts.append(other_certifications)
+    combined_certs = ", ".join(filter(None, certs_parts))
+
+    # Convert checkbox lists to comma-separated strings
+    def join_list(v):
+        if isinstance(v, list):
+            return ", ".join(filter(None, v))
+        return v
+    
     sub = Submission(
         id=sub_id,
         status="processing",
-        company=company,
+        company=company or "Unknown Company",
         url=url,
         email=email,
         company_size=company_size,
         sector=sector,
-        employees=employees,
         annual_revenue=annual_revenue,
         hq_location=hq_location,
-        description=description,
         ai_systems_count=ai_systems_count,
-        ai_system_names=ai_system_names,
-        ai_purpose=ai_purpose,
+        ai_purpose=join_list(ai_purpose),
         deployment_type=deployment_type,
-        data_sources=data_sources,
+        data_sources=join_list(data_sources),
         decision_type=decision_type,
         risk_self_assessment=risk_self_assessment,
-        model_types=model_types,
+        model_types=join_list(model_types),
         training_data_origin=training_data_origin,
-        human_oversight=human_oversight,
-        explainability=explainability,
+        human_oversight=join_list(human_oversight),
+        explainability=join_list(explainability),
         data_retention=data_retention,
         has_documentation=has_documentation,
         dpo_appointed=dpo_appointed,
         gdpr_compliant=gdpr_compliant,
-        existing_certifications=existing_certifications,
+        existing_certifications=combined_certs,
         previous_audits=previous_audits,
         ce_marking=ce_marking,
         risk_biometrics=risk_biometrics,
