@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de" id="htmlRoot">
+<html lang="en" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KI Compliance Checker — EU AI Act Ready</title>
+<title>AI Compliance Checker — EU AI Act Ready</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -212,48 +212,6 @@ nav {
 .testimonial-text { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
 .testimonial-author { font-size: 14px; color: var(--text-tertiary); border-top: 1px solid var(--border); padding-top: 16px; }
 
-/* Pricing */
-.pricing-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px; max-width: 800px; margin-left: auto; margin-right: auto;
-}
-.pricing-card {
-  background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: 40px 32px; position: relative; transition: all 0.3s;
-}
-.pricing-card:hover { border-color: rgba(37,99,235,0.3); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
-.pricing-card.popular {
-  border: 1px solid var(--brand); background: linear-gradient(135deg, var(--surface2) 0%, rgba(37,99,235,0.06) 100%);
-}
-.pricing-badge {
-  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-  background: var(--brand); color: white; font-size: 12px; font-weight: 600;
-  padding: 4px 16px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px;
-}
-.pricing-name { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
-.pricing-price { font-size: 42px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
-.pricing-price span { font-size: 16px; font-weight: 400; color: var(--text-tertiary); }
-.pricing-desc { font-size: 14px; color: var(--text-tertiary); margin-bottom: 24px; }
-.pricing-features { list-style: none; margin-bottom: 32px; }
-.pricing-features li {
-  font-size: 14px; color: var(--text-secondary); padding: 8px 0;
-  display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-subtle);
-}
-.pricing-features li:last-child { border-bottom: none; }
-.pricing-features li .check { color: var(--success); font-weight: 700; }
-.pricing-cta {
-  display: block; text-align: center; padding: 14px; border-radius: var(--radius);
-  font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-  text-decoration: none;
-}
-.pricing-cta.primary {
-  background: var(--brand); color: white; border: none;
-}
-.pricing-cta.primary:hover { background: var(--brand-hover); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,0.3); }
-.pricing-cta.secondary {
-  background: rgba(255,255,255,0.04); color: var(--text-secondary); border: 1px solid var(--border);
-}
-.pricing-cta.secondary:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
-
 /* FAQ */
 .faq-list { max-width: 720px; margin: 48px auto 0; }
 .faq-item {
@@ -330,7 +288,6 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
   .steps-grid { grid-template-columns: 1fr; }
   .features-grid { grid-template-columns: 1fr; }
   .testimonials-grid { grid-template-columns: 1fr; }
-  .pricing-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; gap: 32px; }
   .cta-section h2 { font-size: 28px; }
   .hero-form { flex-direction: column; }
@@ -357,10 +314,10 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
     </button>
     <div class="nav-links" id="navLinks">
       <a href="#problem">Problem</a>
-      <a href="#how">So funktioniert's</a>
+      <a href="#how">How It Works</a>
       <a href="#features">Features</a>
-      <a href="#pricing">Preise</a>
-      <a href="/submit-page" class="nav-cta">Jetzt prüfen →</a>
+      <a href="#faq">FAQ</a>
+      <a href="/submit-page" class="nav-cta">Check for free →</a>
     </div>
   </div>
 </nav>
@@ -368,26 +325,26 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
 <!-- Hero -->
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-badge">⚡ EU AI Act Enforcement ab August 2026</div>
-    <h1>KI-Compliance Made Simple<br>für Ihr Unternehmen</h1>
-    <p>Prüfen Sie Ihre Website auf EU AI Act Konformität in nur 30 Sekunden. Kostenlos. Keine Fachkenntnisse nötig.</p>
+    <div class="hero-badge">⚡ EU AI Act Enforcement from August 2026</div>
+    <h1>AI Compliance Made Simple<br>for Your Business</h1>
+    <p>Check your website for EU AI Act compliance in just 30 seconds. Free. No technical knowledge required.</p>
     <form class="hero-form" action="/submit-page" method="GET">
-      <input type="text" class="hero-input" placeholder="https://ihre-firma.de" name="url" required>
-      <button type="submit" class="btn-primary">Jetzt kostenlos prüfen</button>
+      <input type="text" class="hero-input" placeholder="https://your-company.com" name="url" required>
+      <button type="submit" class="btn-primary">Check for free now</button>
     </form>
-    <div class="hero-note">🔒 Nur öffentliche Inhalte. Keine Server-Anmeldung nötig.</div>
+    <div class="hero-note">🔒 Public content only. No server login required.</div>
     <div class="stats">
       <div class="stat-item">
         <div class="stat-number">50+</div>
-        <div class="stat-label">AI-Regulationen</div>
+        <div class="stat-label">AI Regulations</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number">35M€</div>
-        <div class="stat-label">Maximalstrafe</div>
+        <div class="stat-number">€35M</div>
+        <div class="stat-label">Maximum Fine</div>
       </div>
       <div class="stat-item">
         <div class="stat-number">&lt; 1 Min</div>
-        <div class="stat-label">Ergebnis</div>
+        <div class="stat-label">Result</div>
       </div>
     </div>
   </div>
@@ -396,39 +353,39 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
 <!-- Problem Section -->
 <section id="problem" class="section section-dark">
   <div class="section-inner">
-    <div class="section-label">Das Problem</div>
-    <h2>KI-Regulierung ist bereits <span class="gradient">da — und Sie müssen handeln</span></h2>
-    <p>Das EU AI Act stuft KI-Systeme nach Risikostufen ein. Die meisten geschäftlichen KI-Anwendungen gelten als „Hohes Risiko" — mit strengen Auflagen.</p>
+    <div class="section-label">The Problem</div>
+    <h2>AI Regulation is Already <span class="gradient">Here — and You Need to Act</span></h2>
+    <p>The EU AI Act classifies AI systems by risk level. Most business AI applications are considered "High Risk" — with strict requirements.</p>
     <div class="problem-grid">
       <div class="problem-card fade-up">
         <div class="problem-icon">⚠️</div>
-        <h3>90 % der KMU sind nicht vorbereitet</h3>
-        <p>Die meisten Unternehmen erkennen nicht, dass ihre KI-Systeme bereits unter das EU AI Act fallen. Die Übergangsfrist endet 2026.</p>
+        <h3>90% of SMEs Are Not Prepared</h3>
+        <p>Most businesses don't realize their AI systems already fall under the EU AI Act. The transition period ends in 2026.</p>
       </div>
       <div class="problem-card fade-up">
         <div class="problem-icon">📋</div>
-        <h3>Komplexe Dokumentation</h3>
-        <p>Risikomanagement, Data Governance, technische Dokumentation — die Anforderungen sind umfangreich und nicht offensichtlich.</p>
+        <h3>Complex Documentation</h3>
+        <p>Risk management, data governance, technical documentation — the requirements are extensive and not obvious.</p>
       </div>
       <div class="problem-card fade-up">
         <div class="problem-icon">💰</div>
-        <h3>Strafen bis zu 35 Mio. €</h3>
-        <p>Nicht-Einhaltung hat schwerwiegende Konsequenzen. Kennen Sie Ihre Pflichten, bevor die Aufsichtsbehörden kommen.</p>
+        <h3>Fines up to €35 Million</h3>
+        <p>Non-compliance has serious consequences. Know your obligations before regulators come knocking.</p>
       </div>
       <div class="problem-card fade-up">
         <div class="problem-icon">🔍</div>
-        <h3>Überraschend breite Einstufung</h3>
-        <p>Von HR-KI-Tools bis zu Chatbots — viele alltägliche KI-Anwendungen gelten unerwartet als hochriskant.</p>
+        <h3>Surprisingly Broad Classification</h3>
+        <p>From HR AI tools to chatbots — many everyday AI applications are unexpectedly classified as high-risk.</p>
       </div>
       <div class="problem-card fade-up">
         <div class="problem-icon">🔄</div>
-        <h3>Laufende Compliance</h3>
-        <p>Kein einmaliger Check. Das AI Act erfordert kontinuierliche Überwachung, Meldungen und regelmäßige Neubewertungen.</p>
+        <h3>Ongoing Compliance</h3>
+        <p>Not a one-time check. The AI Act requires continuous monitoring, reporting, and regular reassessments.</p>
       </div>
       <div class="problem-card fade-up">
         <div class="problem-icon">🌍</div>
-        <h3>Global gültig</h3>
-        <p>Wenn Ihre KI-Systeme EU-Bürger betreffen, unterliegen Sie dem EU AI Act — unabhängig vom Standort Ihres Unternehmens.</p>
+        <h3>Globally Applicable</h3>
+        <p>If your AI systems affect EU citizens, you are subject to the EU AI Act — regardless of your company's location.</p>
       </div>
     </div>
   </div>
@@ -437,23 +394,23 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
 <!-- How It Works -->
 <section id="how" class="section">
   <div class="section-inner">
-    <div class="section-label">So funktioniert's</div>
-    <h2>Ihr Compliance-Report in <span class="gradient">3 einfachen Schritten</span></h2>
+    <div class="section-label">How It Works</div>
+    <h2>Your Compliance Report in <span class="gradient">3 Simple Steps</span></h2>
     <div class="steps-grid">
       <div class="step-card fade-up">
         <div class="step-number">1</div>
-        <h3>🔍 URL eingeben</h3>
-        <p>Geben Sie Ihre Website-Adresse ein — das war's schon.</p>
+        <h3>🔍 Enter URL</h3>
+        <p>Enter your website address — that's all it takes.</p>
       </div>
       <div class="step-card fade-up">
         <div class="step-number">2</div>
-        <h3>⚡ KI-Scan in 30 Sekunden</h3>
-        <p>Unser AI Scanner analysiert automatisch Chatbots, Formulare, Tracking und mehr.</p>
+        <h3>⚡ AI Scan in 30 Seconds</h3>
+        <p>Our AI scanner automatically analyzes chatbots, forms, tracking, and more.</p>
       </div>
       <div class="step-card fade-up">
         <div class="step-number">3</div>
-        <h3>📋 Report erhalten</h3>
-        <p>Klare Risikobewertung mit Handlungsempfehlungen — verständlich und sofort umsetzbar.</p>
+        <h3>📋 Get Your Report</h3>
+        <p>Clear risk assessment with actionable recommendations — easy to understand and implement immediately.</p>
       </div>
     </div>
   </div>
@@ -463,27 +420,27 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
 <section id="features" class="section section-dark">
   <div class="section-inner">
     <div class="section-label">Features</div>
-    <h2>Das bietet der <span class="gradient">KI Compliance Checker</span></h2>
+    <h2>What the <span class="gradient">AI Compliance Checker</span> Offers</h2>
     <div class="features-grid">
       <div class="feature-card fade-up">
         <div class="feature-icon">🔍</div>
-        <h3>Automatisches Scannen</h3>
-        <p>Ergebnis in unter einer Minute statt Wochen bei externen Beratern.</p>
+        <h3>Automated Scanning</h3>
+        <p>Results in under one minute instead of weeks with external consultants.</p>
       </div>
       <div class="feature-card fade-up">
         <div class="feature-icon">📊</div>
-        <h3>Verständlicher Bericht</h3>
-        <p>Klare Risikobewertung von A bis F, erklärt in einfacher Sprache.</p>
+        <h3>Easy-to-Understand Report</h3>
+        <p>Clear risk rating from A to F, explained in plain language.</p>
       </div>
       <div class="feature-card fade-up">
         <div class="feature-icon">💰</div>
-        <h3>Kostenlos starten</h3>
-        <p>Basisbericht immer kostenlos. Professional Plan ab 29 €/Monat.</p>
+        <h3>Completely Free</h3>
+        <p>Full compliance report at no cost. Unlimited scans. No hidden fees.</p>
       </div>
       <div class="feature-card fade-up">
-        <div class="feature-icon">🇩🇪</div>
-        <h3>Für KMU gemacht</h3>
-        <p>Speziell entwickelt für kleine Unternehmen ohne IT-Abteilung.</p>
+        <div class="feature-icon">🏢</div>
+        <h3>Built for SMEs</h3>
+        <p>Specifically designed for small businesses without an IT department.</p>
       </div>
     </div>
   </div>
@@ -492,58 +449,20 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
 <!-- Testimonials -->
 <section class="section">
   <div class="section-inner">
-    <div class="section-label">Erfahrungsberichte</div>
-    <h2>Was unsere Nutzer <span class="gradient">sagen</span></h2>
+    <div class="section-label">Testimonials</div>
+    <h2>What Our Users <span class="gradient">Say</span></h2>
     <div class="testimonials-grid">
       <div class="testimonial-card fade-up">
         <div class="testimonial-text">
-          Als Bäckereibesitzer hatte ich große Sorgen wegen des KI-Gesetzes. Dieser Dienst hat mir genau gezeigt, was ich reparieren muss – und das kostenlos!
+          As a bakery owner, I was really worried about the AI Act. This tool showed me exactly what I need to fix — and it's free!
         </div>
-        <div class="testimonial-author">— Anna M., Bäckerei Müller, Berlin</div>
+        <div class="testimonial-author">— Anna M., Bakery Müller, Berlin</div>
       </div>
       <div class="testimonial-card fade-up">
         <div class="testimonial-text">
-          Hat mir Stunden Anwaltszeit gespart. Jetzt schlafe ich wieder ruhig.
+          Saved me hours of legal consultation fees. I can sleep soundly again.
         </div>
-        <div class="testimonial-author">— Thomas S., Inhaber, Einzelhandel</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Pricing -->
-<section id="pricing" class="section section-dark">
-  <div class="section-inner">
-    <div class="section-label">Preise</div>
-    <h2>Der richtige Plan für <span class="gradient">Ihre Compliance</span></h2>
-    <div class="pricing-grid">
-      <div class="pricing-card fade-up">
-        <div class="pricing-name">Free</div>
-        <div class="pricing-price">0 € <span>/ Monat</span></div>
-        <div class="pricing-desc">Erste Risikoeinschätzung für Einsteiger</div>
-        <ul class="pricing-features">
-          <li><span class="check">✓</span> Compliance Score</li>
-          <li><span class="check">✓</span> Risikostufe (Risk Level)</li>
-          <li><span class="check">✓</span> Top 3 Probleme</li>
-          <li><span class="check">✓</span> Basisempfehlungen</li>
-          <li><span class="check">✓</span> 3 Scans / Monat</li>
-        </ul>
-        <a href="/submit-page" class="pricing-cta secondary">Kostenlos starten</a>
-      </div>
-      <div class="pricing-card popular fade-up">
-        <div class="pricing-badge">Empfohlen</div>
-        <div class="pricing-name">Pro</div>
-        <div class="pricing-price">29 € <span>/ Monat</span></div>
-        <div class="pricing-desc">Vollständige Analyse für Unternehmen</div>
-        <ul class="pricing-features">
-          <li><span class="check">✓</span> Vollständiger Bericht</li>
-          <li><span class="check">✓</span> Persönlicher Aktionsplan</li>
-          <li><span class="check">✓</span> PDF Export</li>
-          <li><span class="check">✓</span> E-Mail Erinnerungen</li>
-          <li><span class="check">✓</span> Unlimitierte Scans</li>
-          <li><span class="check">✓</span> Prioritätssupport</li>
-        </ul>
-        <a href="/submit-page" class="pricing-cta primary">Pro starten</a>
+        <div class="testimonial-author">— Thomas S., Owner, Retail Business</div>
       </div>
     </div>
   </div>
@@ -553,51 +472,51 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
 <section id="faq" class="section">
   <div class="section-inner">
     <div class="section-label">FAQ</div>
-    <h2>Häufig gestellte <span class="gradient">Fragen</span></h2>
+    <h2>Frequently Asked <span class="gradient">Questions</span></h2>
     <div class="faq-list">
       <div class="faq-item">
         <button class="faq-question">
-          Brauche ich technische Vorkenntnisse?
+          Do I need technical knowledge?
           <span class="faq-icon">+</span>
         </button>
         <div class="faq-answer">
-          <p>Nein. Der KI Compliance Checker wurde speziell für Unternehmen ohne IT-Abteilung entwickelt. Sie geben einfach Ihre Website-URL ein und erhalten einen verständlichen Report in einfacher Sprache.</p>
+          <p>No. The AI Compliance Checker is specifically designed for businesses without an IT department. Simply enter your website URL and receive an easy-to-understand report in plain language.</p>
         </div>
       </div>
       <div class="faq-item">
         <button class="faq-question">
-          Was wird gescannt?
+          What gets scanned?
           <span class="faq-icon">+</span>
         </button>
         <div class="faq-answer">
-          <p>Unser Scanner analysiert Chatbots, Personalisierungssysteme, Tracking-Dienste, Formulare und andere KI-gestützte Elemente auf Ihrer Website, die unter das EU AI Act fallen könnten.</p>
+          <p>Our scanner analyzes chatbots, personalization systems, tracking services, forms, and other AI-powered elements on your website that may fall under the EU AI Act.</p>
         </div>
       </div>
       <div class="faq-item">
         <button class="faq-question">
-          Ist die Eingabe sicher?
+          Is my input secure?
           <span class="faq-icon">+</span>
         </button>
         <div class="faq-answer">
-          <p>Ja, wir scannen nur öffentlich zugängliche Inhalte. Es ist keine Server-Anmeldung nötig, und Ihre Daten werden nicht gespeichert oder an Dritte weitergegeben.</p>
+          <p>Yes, we only scan publicly accessible content. No server login is required, and your data is not stored or shared with third parties.</p>
         </div>
       </div>
       <div class="faq-item">
         <button class="faq-question">
-          Was passiert bei Problemen?
+          What happens if issues are found?
           <span class="faq-icon">+</span>
         </button>
         <div class="faq-answer">
-          <p>Sie erhalten konkrete Handlungsempfehlungen mit Prioritäten. Jeder Problembereich wird erklärt und mit einer verständlichen Lösung versehen – kein Juristendeutsch.</p>
+          <p>You'll receive concrete, prioritized recommendations. Each issue is explained with a clear solution — no legal jargon.</p>
         </div>
       </div>
       <div class="faq-item">
         <button class="faq-question">
-          Wie oft sollte ich scannen?
+          How often should I scan?
           <span class="faq-icon">+</span>
         </button>
         <div class="faq-answer">
-          <p>Wir empfehlen mindestens quartalsweise Scans, da sich sowohl Ihre Website als auch die regulatorischen Anforderungen laufend ändern können.</p>
+          <p>We recommend quarterly scans, as both your website and regulatory requirements may change over time.</p>
         </div>
       </div>
     </div>
@@ -607,9 +526,9 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
 <!-- CTA -->
 <section class="cta-section">
   <div class="section-inner">
-    <h2>Jetzt kostenlos prüfen</h2>
-    <p>In unter einer Minute erfahren Sie, ob Ihre Website EU AI Act konform ist. Keine Haken, keine Kosten.</p>
-    <a href="/submit-page" class="btn-primary-lg">→ Jetzt kostenlos prüfen</a>
+    <h2>Check for Free Now</h2>
+    <p>Find out if your website is EU AI Act compliant in under one minute. No strings attached, no cost.</p>
+    <a href="/submit-page" class="btn-primary-lg">→ Check for free now</a>
   </div>
 </section>
 
@@ -622,25 +541,25 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
           <div class="logo-icon">AC</div>
           AI Compliance
         </a>
-        <p>Automatisierte EU AI Act Analyse für kleine und mittelständische Unternehmen. Keine Rechtsberatung.</p>
+        <p>Automated EU AI Act analysis for small and medium-sized businesses. Not legal advice.</p>
       </div>
       <div class="footer-links">
         <h4>Links</h4>
-        <a href="#problem">Über uns</a>
-        <a href="#how">Wie es funktioniert</a>
-        <a href="#pricing">Preise</a>
+        <a href="#problem">Problem</a>
+        <a href="#how">How It Works</a>
+        <a href="#features">Features</a>
+        <a href="#faq">FAQ</a>
         <a href="#">Blog</a>
-        <a href="#">Kontakt</a>
       </div>
       <div class="footer-links">
-        <h4>Rechtliches</h4>
-        <a href="#">Impressum</a>
-        <a href="#">Datenschutz</a>
-        <a href="#">AGB</a>
+        <h4>Legal</h4>
+        <a href="#">Imprint</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 KI Compliance Checker. Alle Rechte vorbehalten.</p>
+      <p>© 2026 AI Compliance Checker. All rights reserved.</p>
     </div>
   </div>
 </footer>
