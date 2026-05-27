@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="title">Your AI Compliance Report</title>
+    <title>Your AI Compliance Report</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -23,6 +23,10 @@
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #f44336;
+            --danger-bg: rgba(244,67,54,0.08);
+            --warning-bg: rgba(245,158,11,0.08);
+            --success-bg: rgba(16,185,129,0.08);
+            --brand-bg: rgba(94,106,210,0.08);
             --score-red: #f44336;
             --score-yellow: #f59e0b;
             --score-green: #10b981;
@@ -39,6 +43,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* ─── NAV ─── */
         nav {
             position: fixed; top: 0; left: 0; right: 0; z-index: 100;
             background: rgba(8,9,10,0.85); backdrop-filter: blur(16px);
@@ -60,21 +65,90 @@
         }
         .nav-back { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; }
         .nav-back:hover { color: var(--text-primary); }
+
+        /* ─── NEURAL LOADING ANIMATION ─── */
+        @keyframes neuralPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.15); }
+        }
+        @keyframes neuralLine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        @keyframes neuralWave {
+            0% { opacity: 0.2; }
+            50% { opacity: 0.6; }
+            100% { opacity: 0.2; }
+        }
+        @keyframes neuralScan {
+            0% { top: 0; opacity: 0.8; }
+            50% { top: 60%; opacity: 1; }
+            100% { top: 0; opacity: 0.8; }
+        }
         .status-bar {
             margin-top: 72px;
-            padding: 40px 24px;
+            padding: 60px 24px 80px;
             text-align: center;
         }
-        .status-bar .spinner {
-            display: inline-block; width: 24px; height: 24px;
-            border: 3px solid var(--border); border-top-color: var(--brand);
-            border-radius: 50%; animation: spin 0.8s linear infinite;
-            margin-bottom: 16px;
+        .neural-loader {
+            display: flex; flex-direction: column; align-items: center; gap: 24px;
+            max-width: 400px; margin: 0 auto;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .status-bar h2 { font-size: 24px; margin-bottom: 8px; }
-        .status-bar p { color: var(--text-tertiary); }
+        .neural-network {
+            position: relative;
+            width: 300px; height: 90px;
+            overflow: hidden;
+        }
+        .neural-node {
+            position: absolute;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--brand);
+            box-shadow: 0 0 12px rgba(94,106,210,0.5);
+            animation: neuralPulse 1.5s ease-in-out infinite;
+        }
+        .neural-node:nth-child(1) { top: 10px; left: 30px; animation-delay: 0s; }
+        .neural-node:nth-child(2) { top: 40px; left: 80px; animation-delay: 0.2s; }
+        .neural-node:nth-child(3) { top: 15px; left: 140px; animation-delay: 0.35s; }
+        .neural-node:nth-child(4) { top: 50px; left: 190px; animation-delay: 0.5s; }
+        .neural-node:nth-child(5) { top: 20px; left: 240px; animation-delay: 0.65s; }
+        .neural-node:nth-child(6) { top: 60px; left: 270px; animation-delay: 0.8s; }
 
+        .neural-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--brand), transparent);
+            animation: neuralWave 2s ease-in-out infinite;
+        }
+        .neural-line:nth-child(7) { top: 17px; left: 37px; width: 50px; transform: rotate(-20deg); animation-delay: 0s; }
+        .neural-line:nth-child(8) { top: 28px; left: 44px; width: 60px; transform: rotate(15deg); animation-delay: 0.3s; }
+        .neural-line:nth-child(9) { top: 25px; left: 87px; width: 55px; transform: rotate(-10deg); animation-delay: 0.6s; }
+        .neural-line:nth-child(10) { top: 32px; left: 147px; width: 50px; transform: rotate(25deg); animation-delay: 0.1s; }
+        .neural-line:nth-child(11) { top: 28px; left: 197px; width: 45px; transform: rotate(-15deg); animation-delay: 0.4s; }
+
+        .neural-scan {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            filter: blur(2px);
+            animation: neuralScan 2.5s ease-in-out infinite;
+        }
+
+        .status-bar h2 {
+            font-size: 22px; font-weight: 600; margin-bottom: 6px;
+            background: linear-gradient(90deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .status-bar p {
+            font-size: 14px; color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .status-bar .attempt-counter {
+            font-size: 12px; color: var(--text-muted); margin-top: 4px;
+        }
+
+        /* ─── REPORT CONTAINER ─── */
         .report-container {
             max-width: 900px; margin: 0 auto 80px; padding: 0 24px;
         }
@@ -84,14 +158,13 @@
             background: linear-gradient(135deg, var(--surface), var(--surface2));
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 40px;
+            padding: 32px 36px;
             display: flex; justify-content: space-between; align-items: flex-start;
             gap: 24px; flex-wrap: wrap;
         }
         .report-header-info h1 {
             font-size: 28px; font-weight: 600;
-            letter-spacing: -0.5px;
-            margin-bottom: 8px;
+            letter-spacing: -0.5px; margin-bottom: 8px;
         }
         .report-header-info .company {
             font-size: 16px; color: var(--text-secondary);
@@ -99,9 +172,7 @@
         .report-header-info .time {
             font-size: 13px; color: var(--text-muted); margin-top: 8px;
         }
-        .report-header-actions {
-            display: flex; gap: 12px; flex-wrap: wrap;
-        }
+        .report-header-actions { display: flex; gap: 12px; flex-wrap: wrap; }
         .btn-new {
             background: rgba(255,255,255,0.04); color: var(--text-secondary);
             border: 1px solid var(--border); padding: 10px 24px;
@@ -111,197 +182,232 @@
         }
         .btn-new:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
 
-        /* ========= SCORE RING (SVG Circular Gauge) ========= */
+        /* ─── SCORE RING ─── */
         .score-section {
             margin-top: 24px;
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 32px 40px;
-            flex-wrap: wrap;
+            display: flex; align-items: center; gap: 32px;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 32px 40px; flex-wrap: wrap;
         }
         .score-ring-wrapper {
-            flex-shrink: 0;
-            position: relative;
-            width: 140px;
-            height: 140px;
+            flex-shrink: 0; position: relative;
+            width: 140px; height: 140px;
         }
-        .score-ring {
-            transform: rotate(-90deg);
-            width: 140px;
-            height: 140px;
-        }
+        .score-ring { transform: rotate(-90deg); width: 140px; height: 140px; }
         .score-ring .bg-circle {
-            fill: none;
-            stroke: var(--surface3);
-            stroke-width: 8;
+            fill: none; stroke: var(--surface3); stroke-width: 8;
         }
         .score-ring .value-circle {
-            fill: none;
-            stroke-width: 8;
-            stroke-linecap: round;
+            fill: none; stroke-width: 8; stroke-linecap: round;
             transition: stroke-dashoffset 1.2s ease;
         }
         .score-ring-value {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 36px;
-            font-weight: 700;
-            text-align: center;
-            line-height: 1.1;
+            font-size: 36px; font-weight: 700; text-align: center; line-height: 1.1;
         }
         .score-ring-value .score-label {
-            display: block;
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-tertiary);
-            margin-top: 2px;
+            display: block; font-size: 11px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-tertiary); margin-top: 2px;
         }
         .score-ring-value .score-level {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-top: 2px;
+            display: block; font-size: 13px; font-weight: 600; margin-top: 2px;
         }
-        .score-info {
-            flex: 1;
-            min-width: 200px;
-        }
-        .score-info h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .score-info p {
-            font-size: 14px;
-            color: var(--text-tertiary);
-            line-height: 1.7;
-        }
+        .score-info { flex: 1; min-width: 200px; }
+        .score-info h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+        .score-info p { font-size: 14px; color: var(--text-tertiary); line-height: 1.7; }
         .score-breakdown {
-            display: flex;
-            gap: 16px;
-            margin-top: 12px;
-            flex-wrap: wrap;
+            display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;
         }
         .score-breakdown-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: var(--text-tertiary);
+            display: flex; align-items: center; gap: 6px;
+            font-size: 13px; color: var(--text-tertiary);
         }
-        .score-breakdown-item .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .dot-green { background: var(--score-green); }
-        .dot-yellow { background: var(--score-yellow); }
-        .dot-red { background: var(--score-red); }
+        .score-breakdown-item .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot-danger { background: var(--score-red); }
+        .dot-warning { background: var(--score-yellow); }
+        .dot-success { background: var(--score-green); }
 
-        /* ========= INFO / WARNING / SUCCESS CARDS ========= */
-        .cards-section {
+        /* ─── INFOGRAPHIC SECTIONS ─── */
+        .infographic {
             margin-top: 24px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-        .info-card, .warning-card, .success-card {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            padding: 16px 20px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            background: var(--surface2);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .info-card .icon, .warning-card .icon, .success-card .icon {
-            font-size: 20px;
-            flex-shrink: 0;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-        }
-        .warning-card {
-            border-left: 3px solid var(--score-yellow);
-        }
-        .warning-card .icon {
-            background: rgba(245, 158, 11, 0.12);
-            color: var(--score-yellow);
-        }
-        .success-card {
-            border-left: 3px solid var(--score-green);
-        }
-        .success-card .icon {
-            background: rgba(16, 185, 129, 0.12);
-            color: var(--score-green);
-        }
-        .info-card {
-            border-left: 3px solid var(--accent);
-        }
-        .info-card .icon {
-            background: rgba(113, 112, 255, 0.12);
-            color: var(--accent);
-        }
-        .info-card .card-text, .warning-card .card-text, .success-card .card-text {
-            flex: 1;
-            color: var(--text-secondary);
-        }
-        .info-card .card-text strong, .warning-card .card-text strong, .success-card .card-text strong {
-            color: var(--text-primary);
+            display: flex; flex-direction: column; gap: 20px;
         }
 
-        .report-body {
-            margin-top: 24px;
-            background: var(--surface);
+        .section-block {
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 40px;
-            line-height: 1.8;
+            padding: 24px;
+            position: relative;
         }
-        .report-body h1 { font-size: 24px; font-weight: 600; margin: 24px 0 12px; color: var(--text-primary); }
-        .report-body h2 { font-size: 20px; font-weight: 600; margin: 20px 0 10px; color: var(--text-primary); }
-        .report-body h3 { font-size: 17px; font-weight: 600; margin: 16px 0 8px; color: var(--accent); }
-        .report-body p { margin: 8px 0; color: var(--text-secondary); }
-        .report-body strong { color: var(--text-primary); }
-        .report-body ul, .report-body ol { margin: 8px 0; padding-left: 24px; }
-        .report-body li { margin: 4px 0; color: var(--text-secondary); }
-        .report-body hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
-        .report-body table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-        .report-body th {
-            background: var(--surface2); color: var(--text-primary);
-            padding: 10px 14px; text-align: left; font-weight: 600;
-            border: 1px solid var(--border); font-size: 14px;
+        .section-block.danger {
+            background: var(--danger-bg);
+            border-left: 4px solid var(--danger);
+            border-color: rgba(244,67,54,0.2) !important;
         }
-        .report-body td {
-            padding: 10px 14px; border: 1px solid var(--border);
-            color: var(--text-secondary); font-size: 14px;
+        .section-block.warning {
+            background: var(--warning-bg);
+            border-left: 4px solid var(--warning);
+            border-color: rgba(245,158,11,0.2) !important;
         }
-        .report-body code {
-            background: var(--surface2); padding: 2px 6px;
-            border-radius: 4px; font-size: 13px; font-family: 'JetBrains Mono', monospace;
+        .section-block.success {
+            background: var(--success-bg);
+            border-left: 4px solid var(--success);
+            border-color: rgba(16,185,129,0.2) !important;
         }
-        .report-body blockquote {
-            border-left: 3px solid var(--brand);
-            padding: 12px 16px; margin: 16px 0;
-            background: rgba(94,106,210,0.06);
+        .section-block.info {
+            background: var(--brand-bg);
+            border-left: 4px solid var(--brand);
+            border-color: rgba(94,106,210,0.2) !important;
+        }
+        .section-block.collapsed {
+            background: var(--surface);
+        }
+
+        .section-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 16px;
+        }
+        .section-icon {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+        .section-block.danger .section-icon { background: rgba(244,67,54,0.2); }
+        .section-block.warning .section-icon { background: rgba(245,158,11,0.2); }
+        .section-block.success .section-icon { background: rgba(16,185,129,0.2); }
+        .section-block.info .section-icon { background: rgba(94,106,210,0.2); }
+        .section-block.collapsed .section-icon { background: rgba(255,255,255,0.06); }
+
+        .section-title-block h3 {
+            font-size: 16px; font-weight: 600;
+        }
+        .section-title-block p {
+            font-size: 12px; color: var(--text-tertiary); margin-top: 1px;
+        }
+        .section-block.danger .section-title-block h3 { color: var(--danger); }
+        .section-block.warning .section-title-block h3 { color: var(--warning); }
+        .section-block.success .section-title-block h3 { color: var(--success); }
+        .section-block.info .section-title-block h3 { color: var(--accent); }
+
+        .section-body {
+            font-size: 14px; line-height: 1.7;
             color: var(--text-secondary);
-            border-radius: 0 4px 4px 0;
         }
-        .report-body a { color: var(--accent); }
+        .section-body h1, .section-body h2, .section-body h3, .section-body h4 {
+            display: none;
+        }
+        .section-body p { margin: 6px 0; }
+        .section-body ul, .section-body ol {
+            margin: 6px 0; padding-left: 20px;
+        }
+        .section-body li { margin: 3px 0; }
+        .section-body strong { color: var(--text-primary); }
+        .section-body a { color: var(--accent); }
+
+        /* ─── RECOMMENDATION CARDS ─── */
+        .rec-card {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 12px 16px;
+            background: var(--bg);
+            border-radius: var(--radius);
+            margin-bottom: 8px;
+            border: 1px solid var(--border-subtle);
+        }
+        .rec-card:last-child { margin-bottom: 0; }
+        .rec-card .rec-icon {
+            width: 24px; height: 24px; flex-shrink: 0;
+            border-radius: 6px; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 13px; margin-top: 1px;
+        }
+        .rec-card.danger .rec-icon { background: rgba(244,67,54,0.15); }
+        .rec-card.warning .rec-icon { background: rgba(245,158,11,0.15); }
+        .rec-card.success .rec-icon { background: rgba(16,185,129,0.15); }
+        .rec-card.info .rec-icon { background: rgba(94,106,210,0.15); }
+        .rec-card .rec-text { font-size: 13px; color: var(--text-secondary); flex: 1; }
+        .rec-card.danger .rec-text { color: rgba(244,67,54,0.9); }
+        .rec-card.warning .rec-text { color: rgba(245,158,11,0.9); }
+        .rec-card.success .rec-text { color: rgba(16,185,129,0.9); }
+        .rec-card.info .rec-text { color: var(--text-secondary); }
+
+        /* ─── SCORE DETAILS GRID ─── */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 12px;
+        }
+        .detail-item {
+            display: flex; align-items: center;
+            gap: 8px; padding: 6px 10px;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--text-tertiary);
+            border: 1px solid var(--border-subtle);
+        }
+        .detail-item .detail-icon {
+            font-size: 14px; width: 20px; text-align: center;
+        }
+        .detail-item.negative { color: var(--danger); }
+        .detail-item.positive { color: var(--success); }
+        .detail-item.neutral { color: var(--text-muted); }
+
+        /* ─── RAW REPORT (collapsible) ─── */
+        .raw-report-section {
+            margin-top: 24px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            background: var(--surface);
+        }
+        .raw-report-toggle {
+            display: flex; align-items: center; gap: 10px;
+            cursor: pointer; user-select: none;
+            font-size: 14px; font-weight: 500; color: var(--text-tertiary);
+        }
+        .raw-report-toggle:hover { color: var(--text-secondary); }
+        .raw-report-body {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            font-size: 14px; line-height: 1.8;
+        }
+        .raw-report-body.open { display: block; }
+        .raw-report-body h1 { font-size: 22px; font-weight: 600; margin: 20px 0 10px; color: var(--text-primary); }
+        .raw-report-body h2 { font-size: 18px; font-weight: 600; margin: 16px 0 8px; color: var(--text-primary); }
+        .raw-report-body h3 { font-size: 15px; font-weight: 600; margin: 12px 0 6px; color: var(--accent); }
+        .raw-report-body p { margin: 6px 0; color: var(--text-secondary); }
+        .raw-report-body strong { color: var(--text-primary); }
+        .raw-report-body ul, .raw-report-body ol { margin: 6px 0; padding-left: 20px; }
+        .raw-report-body li { margin: 3px 0; color: var(--text-secondary); }
+        .raw-report-body table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .raw-report-body th {
+            background: var(--surface2); color: var(--text-primary);
+            padding: 8px 12px; text-align: left; font-weight: 600;
+            border: 1px solid var(--border); font-size: 13px;
+        }
+        .raw-report-body td {
+            padding: 8px 12px; border: 1px solid var(--border);
+            color: var(--text-secondary); font-size: 13px;
+        }
+        .raw-report-body code {
+            background: var(--surface2); padding: 2px 6px;
+            border-radius: 4px; font-size: 12px; font-family: 'JetBrains Mono', monospace;
+        }
+        .raw-report-body blockquote {
+            border-left: 3px solid var(--brand);
+            padding: 10px 14px; margin: 12px 0;
+            background: rgba(94,106,210,0.06);
+            color: var(--text-secondary); border-radius: 0 4px 4px 0;
+        }
+        .raw-report-body a { color: var(--accent); }
+        .raw-report-body hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+        .raw-report-body img { max-width: 100%; height: auto; }
 
         .error-section {
             text-align: center; padding: 60px 24px;
@@ -310,36 +416,15 @@
         .error-section p { color: var(--text-tertiary); margin-bottom: 24px; }
         .error-section .btn-new { display: inline-flex; }
 
-        .report-summary {
-            margin-top: 24px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-        .summary-card {
-            background: var(--surface2); border: 1px solid var(--border);
-            border-radius: var(--radius); padding: 20px;
-            text-align: center;
-        }
-        .summary-card .value {
-            font-size: 28px; font-weight: 700; margin-bottom: 4px;
-        }
-        .summary-card .label {
-            font-size: 13px; color: var(--text-tertiary);
-        }
-
         @media (max-width: 768px) {
             .report-header { flex-direction: column; }
-            .report-body { padding: 24px; }
             .score-section { flex-direction: column; align-items: center; text-align: center; }
             .score-breakdown { justify-content: center; }
             .score-ring-wrapper { width: 120px; height: 120px; }
             .score-ring { width: 120px; height: 120px; }
             .score-ring-value { font-size: 30px; }
+            .details-grid { grid-template-columns: 1fr; }
         }
-        .report-body { overflow-x: auto; word-wrap: break-word; }
-        .report-body img { max-width: 100%; height: auto; }
-        .report-body table { word-break: break-word; }
     </style>
 </head>
 <body>
@@ -349,15 +434,30 @@
                 <div class="logo-icon">AC</div>
                 AI Compliance
             </a>
-            <a href="/submit-page" class="nav-back" data-i18n="newReport">→ New Report</a>
+            <a href="/submit-page" class="nav-back">→ New Report</a>
         </div>
     </nav>
 
     <div id="app">
         <div class="status-bar" id="loading">
-            <div class="spinner"></div>
-            <h2>Generating your compliance report...</h2>
-            <p>AI is analyzing your company data against EU AI Act requirements</p>
+            <div class="neural-loader">
+                <div class="neural-network">
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-scan"></div>
+                </div>
+                <h2>Scanning your compliance data</h2>
+                <p>Analyzing against EU AI Act requirements</p>
+            </div>
         </div>
 
         <div class="report-container" id="reportContent" style="display:none;">
@@ -372,7 +472,6 @@
                 </div>
             </div>
 
-            <!-- SCORE GAUGE SECTION -->
             <div class="score-section" id="scoreSection">
                 <div class="score-ring-wrapper">
                     <svg class="score-ring" viewBox="0 0 140 140">
@@ -393,28 +492,33 @@
                     <p id="scoreDesc">Your AI compliance score is calculated based on risk factors and current compliance measures.</p>
                     <div class="score-breakdown">
                         <span class="score-breakdown-item">
-                            <span class="dot dot-green"></span> <span id="bdLow">Low Risk (71-100)</span>
+                            <span class="dot dot-success"></span> <span>Low Risk (71-100)</span>
                         </span>
                         <span class="score-breakdown-item">
-                            <span class="dot dot-yellow"></span> <span id="bdMedium">Medium (40-70)</span>
+                            <span class="dot dot-warning"></span> <span>Medium (40-70)</span>
                         </span>
                         <span class="score-breakdown-item">
-                            <span class="dot dot-red"></span> <span id="bdHigh">High Risk (0-39)</span>
+                            <span class="dot dot-danger"></span> <span>High Risk (0-39)</span>
                         </span>
                     </div>
                 </div>
             </div>
 
-            <!-- CARDS SECTION -->
-            <div class="cards-section" id="cardsSection"></div>
-
-            <!-- REPORT BODY -->
-            <div class="report-body" id="reportBody">
-                <!-- Report content rendered here -->
+            <!-- INFOGRAPHIC CONTENT -->
+            <div class="infographic" id="infographicArea">
+                <!-- Rendered dynamically -->
             </div>
 
-            <!-- SUMMARY CARDS -->
-            <div class="report-summary" id="reportSummary"></div>
+            <!-- RAW FULL REPORT (collapsible) -->
+            <div class="raw-report-section">
+                <div class="raw-report-toggle" id="rawToggle" onclick="toggleRaw()">
+                    <span id="rawToggleIcon">▶</span>
+                    <span>📄 View Full Report (raw markdown)</span>
+                </div>
+                <div class="raw-report-body" id="rawReportBody">
+                    <!-- Raw markdown HTML goes here -->
+                </div>
+            </div>
         </div>
 
         <div class="error-section" id="errorContent" style="display:none;">
@@ -432,19 +536,20 @@
             pollReport(subId);
         }
 
-        let reportHtml = '';
-        let companyName = '';
+        let attemptLabel = document.createElement('div');
+        attemptLabel.className = 'attempt-counter';
 
         async function pollReport(id) {
             const maxAttempts = 60;
             let attempt = 0;
-            
+            document.querySelector('.neural-loader').appendChild(attemptLabel);
+
             while (attempt < maxAttempts) {
                 try {
                     const resp = await fetch('/report-html/' + id);
                     if (!resp.ok) throw new Error('HTTP ' + resp.status);
                     const data = await resp.json();
-                    
+
                     if (data.status === 'completed') {
                         showReport(data);
                         return;
@@ -453,7 +558,7 @@
                         return;
                     } else {
                         attempt++;
-                        document.querySelector('#loading p').textContent = 'Generating report... (attempt ' + attempt + '/' + maxAttempts + ')';
+                        attemptLabel.textContent = '↻ Polling attempt ' + attempt + '/' + maxAttempts;
                     }
                 } catch (err) {
                     console.error('Poll error:', err);
@@ -463,37 +568,29 @@
             showError();
         }
 
+        function toggleRaw() {
+            const body = document.getElementById('rawReportBody');
+            const icon = document.getElementById('rawToggleIcon');
+            body.classList.toggle('open');
+            icon.textContent = body.classList.contains('open') ? '▼' : '▶';
+        }
+
         function showReport(data) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('reportContent').style.display = 'block';
-            
-            companyName = data.company || 'Your Company';
-            reportHtml = data.html || '<p>No content</p>';
-            
+
+            const companyName = data.company || 'Your Company';
+            const reportHtml = data.html || '<p>No content</p>';
+
             document.getElementById('reportTitle').textContent = data.title || 'AI Compliance Report';
             document.getElementById('companyName').textContent = data.company || '';
             document.getElementById('reportTime').textContent = 'Generated: ' + new Date().toLocaleString('en-US');
-            
+
             renderScoreGauge(data);
-            renderCards(data);
-            document.getElementById('reportBody').innerHTML = reportHtml;
-            
-            const summary = document.getElementById('reportSummary');
-            const sectionCount = data.markdown ? (data.markdown.match(/##/g) || []).length + ' sections' : 'Comprehensive';
-            summary.innerHTML = `
-                <div class="summary-card">
-                    <div class="value" style="color: var(--accent);">${companyName}</div>
-                    <div class="label">Company</div>
-                </div>
-                <div class="summary-card">
-                    <div class="value" style="color: var(--success);">EU AI Act</div>
-                    <div class="label">Regulation</div>
-                </div>
-                <div class="summary-card">
-                    <div class="value" style="color: var(--warning);">${sectionCount}</div>
-                    <div class="label">Analysis Depth</div>
-                </div>
-            `;
+            renderInfographic(data);
+
+            // Raw report body
+            document.getElementById('rawReportBody').innerHTML = reportHtml;
         }
 
         function renderScoreGauge(data) {
@@ -527,74 +624,234 @@
             document.getElementById('scoreLevel').style.color = color;
         }
 
-        function renderCards(data) {
+        // ─── PARSE SECTIONS FROM MARKDOWN HTML ───
+        function extractSections(htmlString) {
+            const sections = {};
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlString, 'text/html');
+
+            // Find all h2 headings
+            const headings = doc.querySelectorAll('h2');
+            headings.forEach(h2 => {
+                const headingText = h2.textContent.trim().toLowerCase();
+                let key = null;
+
+                if (headingText.includes('overall conclusion') || headingText.includes('conclusion') || headingText.includes('fazit')) {
+                    key = 'conclusion';
+                } else if (headingText.includes('classification') || headingText.includes('risk categor') || headingText.includes('risk level')) {
+                    key = 'classification';
+                } else if (headingText.includes('applicable requirement') || headingText.includes('anforderung')) {
+                    key = 'requirements';
+                } else if (headingText.includes('identified gap') || headingText.includes('lücke')) {
+                    key = 'gaps';
+                } else if (headingText.includes('specific recommendation') || headingText.includes('empfehlung')) {
+                    key = 'recommendations';
+                } else if (headingText.includes('risk') && (headingText.includes('penalt') || headingText.includes('fine'))) {
+                    key = 'risks';
+                }
+
+                if (key) {
+                    let content = [];
+                    let el = h2.nextElementSibling;
+                    while (el && el.tagName !== 'H2') {
+                        content.push(el.outerHTML);
+                        el = el.nextElementSibling;
+                    }
+                    sections[key] = {
+                        title: h2.textContent.trim(),
+                        content: content.join('\n')
+                    };
+                }
+            });
+
+            // Fallback: if no sections found, put everything in 'conclusion'
+            if (Object.keys(sections).length === 0) {
+                sections.conclusion = { title: 'Full Analysis', content: htmlString };
+            }
+
+            return sections;
+        }
+
+        // ─── RENDER INFOGRAPHIC ───
+        function renderInfographic(data) {
+            const area = document.getElementById('infographicArea');
             const recommendations = data.recommendations || [];
+            const details = data.details || {};
             const score = data.score !== undefined ? data.score : 0;
+            const sections = extractSections(data.html || '');
 
-            const container = document.getElementById('cardsSection');
-            let cardsHtml = '';
+            let html = '';
 
-            const warnings = recommendations.filter(r => 
-                r.toLowerCase().includes('implement') || 
-                r.toLowerCase().includes('address') || 
-                r.toLowerCase().includes('mitigate') || 
-                r.toLowerCase().includes('appoint') ||
-                r.toLowerCase().includes('ensure')
+            // ── SECTION: CRITICAL GAPS & RISKS (RED) ──
+            let hasCritical = false;
+            let criticalContent = '';
+            if (sections.gaps) {
+                hasCritical = true;
+                criticalContent += `<div class="section-body">${sections.gaps.content}</div>`;
+            }
+            if (sections.risks) {
+                hasCritical = true;
+                criticalContent += `<div class="section-body" style="margin-top:8px;">${sections.risks.content}</div>`;
+            }
+            // Also add penalty recommendations as cards
+            const penaltyRecs = recommendations.filter(r =>
+                r.toLowerCase().includes('implement') ||
+                r.toLowerCase().includes('risk management') ||
+                r.toLowerCase().includes('address') ||
+                r.toLowerCase().includes('mitigate') ||
+                r.toLowerCase().includes('condu') ||
+                r.toLowerCase().includes('scale')
             );
-            if (warnings.length > 0) {
-                cardsHtml += `
-                    <div class="warning-card">
-                        <div class="icon">⚠️</div>
-                        <div class="card-text">
-                            <strong>Areas requiring attention</strong>
-                            <ul style="margin-top:6px;padding-left:18px;">
-                                ${warnings.map(r => `<li>${r}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                `;
+            if (penaltyRecs.length > 0) {
+                hasCritical = true;
+                criticalContent += `<div style="margin-top:12px;">`;
+                penaltyRecs.forEach(r => {
+                    criticalContent += `
+                        <div class="rec-card danger">
+                            <div class="rec-icon">⚠️</div>
+                            <div class="rec-text">${r}</div>
+                        </div>`;
+                });
+                criticalContent += `</div>`;
             }
 
-            const successes = [];
-            if (data.has_documentation === 'yes' || !recommendations.some(r => r.includes('documentation'))) {
-                successes.push('Documentation standards maintained');
-            }
-            if (data.dpo_appointed === 'yes' || !recommendations.some(r => r.includes('DPO'))) {
-                successes.push('Data Protection Officer appointed');
-            }
-            if (data.gdpr_compliant === 'yes' || !recommendations.some(r => r.includes('GDPR'))) {
-                successes.push('GDPR compliance in place');
-            }
-            if (successes.length > 0 || score >= 70) {
-                const successItems = successes.length > 0 ? successes : ['Overall compliance posture is strong'];
-                cardsHtml += `
-                    <div class="success-card">
-                        <div class="icon">✅</div>
-                        <div class="card-text">
-                            <strong>Compliant areas</strong>
-                            <ul style="margin-top:6px;padding-left:18px;">
-                                ${successItems.map(s => `<li>${s}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                `;
+            // Score details that are negative
+            const negDetails = Object.entries(details).filter(([k,v]) => v.startsWith('-'));
+            if (negDetails.length > 0) {
+                hasCritical = true;
+                criticalContent += `<div class="details-grid">`;
+                negDetails.forEach(([k,v]) => {
+                    criticalContent += `<div class="detail-item negative"><span class="detail-icon">▼</span>${v}</div>`;
+                });
+                criticalContent += `</div>`;
             }
 
-            if (recommendations.length > 0) {
-                cardsHtml += `
-                    <div class="info-card">
-                        <div class="icon">💡</div>
-                        <div class="card-text">
-                            <strong>Recommendations</strong>
-                            <ul style="margin-top:6px;padding-left:18px;">
-                                ${recommendations.map(r => `<li>${r}</li>`).join('')}
-                            </ul>
+            if (hasCritical) {
+                html += `
+                    <div class="section-block danger">
+                        <div class="section-header">
+                            <div class="section-icon">🚨</div>
+                            <div class="section-title-block">
+                                <h3>Critical Gaps & Risks</h3>
+                                <p>Issues requiring immediate attention</p>
+                            </div>
                         </div>
-                    </div>
-                `;
+                        ${criticalContent}
+                    </div>`;
             }
 
-            container.innerHTML = cardsHtml;
+            // ── SECTION: CLASSIFICATION (WARNING) ──
+            if (sections.classification) {
+                html += `
+                    <div class="section-block warning">
+                        <div class="section-header">
+                            <div class="section-icon">⚖️</div>
+                            <div class="section-title-block">
+                                <h3>EU AI Act Classification</h3>
+                                <p>${sections.classification.title}</p>
+                            </div>
+                        </div>
+                        <div class="section-body">${sections.classification.content}</div>
+                    </div>`;
+            }
+
+            // ── SECTION: APPLICABLE REQUIREMENTS (AMBER) ──
+            if (sections.requirements) {
+                html += `
+                    <div class="section-block warning">
+                        <div class="section-header">
+                            <div class="section-icon">📋</div>
+                            <div class="section-title-block">
+                                <h3>Applicable Requirements</h3>
+                                <p>EU AI Act Articles that apply</p>
+                            </div>
+                        </div>
+                        <div class="section-body">${sections.requirements.content}</div>
+                    </div>`;
+            }
+
+            // ── SECTION: RECOMMENDATIONS (BLUE) ──
+            const actionRecs = recommendations.filter(r => !penaltyRecs.includes(r));
+            if (actionRecs.length > 0) {
+                let recHtml = '<div>';
+                actionRecs.forEach(r => {
+                    const isPos = r.toLowerCase().includes('continue') || r.toLowerCase().includes('strong') || r.toLowerCase().includes('no high-risk');
+                    const cls = isPos ? 'success' : 'info';
+                    const icon = isPos ? '✅' : '💡';
+                    recHtml += `
+                        <div class="rec-card ${cls}">
+                            <div class="rec-icon">${icon}</div>
+                            <div class="rec-text">${r}</div>
+                        </div>`;
+                });
+                recHtml += '</div>';
+
+                html += `
+                    <div class="section-block info">
+                        <div class="section-header">
+                            <div class="section-icon">💡</div>
+                            <div class="section-title-block">
+                                <h3>Recommendations</h3>
+                                <p>Action plan for compliance</p>
+                            </div>
+                        </div>
+                        ${recHtml}
+                    </div>`;
+            }
+
+            // ── SECTION: CONCLUSION (GREEN) ──
+            if (sections.conclusion) {
+                html += `
+                    <div class="section-block success">
+                        <div class="section-header">
+                            <div class="section-icon">✅</div>
+                            <div class="section-title-block">
+                                <h3>Overall Conclusion</h3>
+                                <p>${sections.conclusion.title}</p>
+                            </div>
+                        </div>
+                        <div class="section-body">${sections.conclusion.content}</div>
+                    </div>`;
+            } else {
+                // Fallback conclusion from score level
+                let verdict = score >= 70 ? 'Strong compliance posture' : (score >= 40 ? 'Moderate compliance — improvements needed' : 'High risk — immediate action required');
+                html += `
+                    <div class="section-block success">
+                        <div class="section-header">
+                            <div class="section-icon">✅</div>
+                            <div class="section-title-block">
+                                <h3>Overall Conclusion</h3>
+                                <p>Assessment result</p>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <p><strong>Compliance Score:</strong> ${score}/100 — ${verdict}</p>
+                        </div>
+                    </div>`;
+            }
+
+            // ── Positive score details ──
+            const posDetails = Object.entries(details).filter(([k,v]) => v.startsWith('+'));
+            if (posDetails.length > 0) {
+                let detailHtml = '<div class="details-grid">';
+                posDetails.forEach(([k,v]) => {
+                    detailHtml += `<div class="detail-item positive"><span class="detail-icon">▲</span>${v}</div>`;
+                });
+                detailHtml += '</div>';
+                html += `
+                    <div class="section-block success">
+                        <div class="section-header">
+                            <div class="section-icon">📊</div>
+                            <div class="section-title-block">
+                                <h3>Compliance Strengths</h3>
+                                <p>Positive factors boosting your score</p>
+                            </div>
+                        </div>
+                        ${detailHtml}
+                    </div>`;
+            }
+
+            area.innerHTML = html;
         }
 
         function showError() {

@@ -213,25 +213,205 @@ async def get_report(sub_id: str, db: Session = Depends(get_db)):
     return FileResponse(path=sub.report_path, media_type='text/markdown', filename=f"report_{sub_id}.md")
 
 def calculate_compliance_score(sub: Submission) -> dict:
-    """Calculate compliance score 0-100 with level and recommendations."""
+    """Calculate compliance score 0-100 with level and recommendations.
+    Multi-variate formula weighting ALL form fields per EU AI Act logic."""
     score = 100
+    details = {}
     
-    # Risk checkboxes: each checked = -15 points
+    # ═══ PENALTIES (risk-increasing factors) ═══
+    
+    # 1. High-risk categories: each checked = -12 points
     risk_fields = [
         'risk_biometrics', 'risk_critical_infra', 'risk_education',
         'risk_employment', 'risk_credit', 'risk_law_enforcement',
         'risk_migration', 'risk_justice', 'risk_democratic'
     ]
     risk_count = sum(1 for field in risk_fields if getattr(sub, field, False))
-    score -= risk_count * 15
+    risk_penalty = risk_count * 12
+    score -= risk_penalty
+    details['risk_categories'] = f"-{risk_penalty} ({risk_count} high-risk categories)"
     
-    # Compliance status bonuses
-    if sub.has_documentation == "yes":
-        score += 15
-    if sub.dpo_appointed == "yes":
-        score += 10
-    if sub.gdpr_compliant == "yes":
-        score += 10
+    # 2. AI system volume
+    ai_count = str(getattr(sub, 'ai_systems_count', '') or '')
+    ai_penalty = 0
+    if ai_count in ('4-10',):
+        ai_penalty = 8
+    elif ai_count == '10+':
+        ai_penalty = 15
+    elif ai_count in ('1-3',):
+        ai_penalty = 3
+    score -= ai_penalty
+    details['ai_volume'] = f"-{ai_penalty} (AI systems: {ai_count or 'none'})"
+    
+    # 3. Decision type autonomy
+    decision = str(getattr(sub, 'decision_type', '') or '')
+    decision_penalty = 0
+    if decision == 'fully-automated':
+        decision_penalty = 12
+    elif decision == 'human-in-loop':
+        decision_penalty = 6
+    elif decision == 'decision-support':
+        decision_penalty = 3
+    score -= decision_penalty
+    details['decision_autonomy'] = f"-{decision_penalty} (decision type: {decision or 'none'})"
+    
+    # 4. Deployment risk: customer-facing = more regulatory impact
+    deployment = str(getattr(sub, 'deployment_type', '') or '')
+    deploy_penalty = 0
+    if deployment == 'both':
+        deploy_penalty = 8
+    elif deployment in ('customer-facing', 'third-party'):
+        deploy_penalty = 5
+    score -= deploy_penalty
+    details['deployment'] = f"-{deploy_penalty} (deployment: {deployment or 'none'})"
+    
+    # 5. Self-assessment alignment
+    self_assess = str(getattr(sub, 'risk_self_assessment', '') or '')
+    if self_assess == 'unacceptable':
+        score -= 20
+        details['self_assessment'] = '-20 (user self-assessed as unacceptable risk)'
+    elif self_assess == 'high':
+        score -= 10
+        details['self_assessment'] = '-10 (user self-assessed as high risk)'
+    elif self_assess == 'uncertain':
+        score -= 3
+        details['self_assessment'] = '-3 (unsure about risk level)'
+    else:
+        details['self_assessment'] = '0'
+    
+    # 6. Lack of human oversight (if "none" or none selected)
+    oversight = str(getattr(sub, 'human_oversight', '') or '')
+    if 'none' in oversight or 'No human' in oversight or not oversight.strip():
+        score -= 15
+        details['human_oversight'] = '-15 (no human oversight in place)'
+    elif oversight:
+        oversight_count = len([o for o in oversight.replace(', ', ',').split(',') if o.strip()])
+        if oversight_count <= 1:
+            score -= 5
+            details['human_oversight'] = '-5 (minimal oversight)'
+        else:
+            details['human_oversight'] = '0 (adequate oversight)'
+    else:
+        details['human_oversight'] = '0'
+    
+    # 7. No explainability
+    explain = str(getattr(sub, 'explainability', '') or '')
+    if 'not_applicable' in explain or 'None' in explain or not explain.strip():
+        score -= 10
+        details['explainability'] = '-10 (no explainability methods)'
+    else:
+        details['explainability'] = '0'
+    
+    # 8. Data retention
+    retention = str(getattr(sub, 'data_retention', '') or '')
+    if 'indefinite' in retention or 'No policy' in retention:
+        score -= 8
+        details['data_retention'] = '-8 (indefinite/no data retention policy)'
+    elif 'not_sure' in retention:
+        score -= 3
+        details['data_retention'] = '-3 (unsure about data retention)'
+    elif 'not_retained' in retention:
+        details['data_retention'] = '0 (data not retained — good)'
+    else:
+        details['data_retention'] = '0'
+    
+    # 9. Training data risk
+    training = str(getattr(sub, 'training_data_origin', '') or '')
+    if 'public_web' in training:
+        score -= 5
+        details['training_data'] = '-5 (public web training data — higher provenance risk)'
+    elif 'not_sure' in training:
+        score -= 3
+        details['training_data'] = '-3 (unsure about training data origin)'
+    else:
+        details['training_data'] = '0'
+    
+    # ═══ BONUSES (risk-mitigating factors) ═══
+    bonus_total = 0
+    
+    # 1. Compliance documentation
+    if getattr(sub, 'has_documentation', '') == "yes":
+        bonus_total += 12
+        details['documentation'] = '+12 (comprehensive documentation)'
+    elif getattr(sub, 'has_documentation', '') == "partial":
+        bonus_total += 5
+        details['documentation'] = '+5 (partial documentation)'
+    else:
+        details['documentation'] = '0'
+    
+    # 2. DPO
+    if getattr(sub, 'dpo_appointed', '') == "yes":
+        bonus_total += 10
+        details['dpo'] = '+10 (DPO appointed)'
+    elif getattr(sub, 'dpo_appointed', '') == "planned":
+        bonus_total += 3
+        details['dpo'] = '+3 (DPO planned)'
+    else:
+        details['dpo'] = '0'
+    
+    # 3. GDPR
+    if getattr(sub, 'gdpr_compliant', '') == "yes":
+        bonus_total += 10
+        details['gdpr'] = '+10 (GDPR compliant)'
+    elif getattr(sub, 'gdpr_compliant', '') == "in_progress":
+        bonus_total += 4
+        details['gdpr'] = '+4 (GDPR in progress)'
+    else:
+        details['gdpr'] = '0'
+    
+    # 4. Certifications
+    certs = str(getattr(sub, 'existing_certifications', '') or '')
+    cert_items = [c.strip() for c in certs.replace(', ', ',').split(',') if c.strip() and c.strip() != 'none' and c.strip() != 'None yet']
+    cert_bonus = min(len(cert_items) * 4, 12)
+    if cert_bonus > 0:
+        bonus_total += cert_bonus
+        details['certifications'] = f'+{cert_bonus} ({len(cert_items)} certifications)'
+    else:
+        details['certifications'] = '0'
+    
+    # 5. Previous audits
+    prev_audit = str(getattr(sub, 'previous_audits', '') or '')
+    audit_types = str(getattr(sub, 'audit_types', '') or '')
+    if prev_audit == 'yes' and audit_types.strip():
+        audit_count = len([a for a in audit_types.replace(', ', ',').split(',') if a.strip()])
+        audit_bonus = min(audit_count * 3, 9)
+        bonus_total += audit_bonus
+        details['audits'] = f'+{audit_bonus} ({audit_count} audit types completed)'
+    elif prev_audit == 'yes':
+        bonus_total += 3
+        details['audits'] = '+3 (has had audits)'
+    else:
+        details['audits'] = '0'
+    
+    # 6. CE marking
+    if getattr(sub, 'ce_marking', '') == "yes":
+        bonus_total += 8
+        details['ce_marking'] = '+8 (CE marking obtained)'
+    elif getattr(sub, 'ce_marking', '') == "planned":
+        bonus_total += 3
+        details['ce_marking'] = '+3 (CE marking planned)'
+    else:
+        details['ce_marking'] = '0'
+    
+    # 7. Human oversight quality (bonus for multiple methods)
+    if oversight and 'none' not in oversight and 'No human' not in oversight:
+        methods = [o for o in oversight.replace(', ', ',').split(',') if o.strip()]
+        if len(methods) >= 3:
+            bonus_total += 5
+            details['oversight_quality'] = '+5 (multiple oversight mechanisms)'
+        elif len(methods) >= 1:
+            details['oversight_quality'] = '0'
+    
+    # 8. Explainability bonus (having multiple methods)
+    if explain and 'not_applicable' not in explain and 'None' not in explain:
+        methods = [e for e in explain.replace(', ', ',').split(',') if e.strip()]
+        if len(methods) >= 2:
+            bonus_total += 5
+            details['explainability_quality'] = '+5 (multiple explainability methods)'
+        else:
+            details['explainability_quality'] = '0'
+    
+    score += bonus_total
     
     # Clamp to 0-100
     score = max(0, min(100, score))
@@ -244,8 +424,10 @@ def calculate_compliance_score(sub: Submission) -> dict:
     else:
         level = "low_risk"
     
-    # Generate recommendations
+    # ═══ GENERATE RECOMMENDATIONS ═══
     recommendations = []
+    
+    # High-risk category recommendations
     risk_labels = {
         'risk_biometrics': 'Implement risk management for biometric identification systems',
         'risk_critical_infra': 'Address critical infrastructure AI risk categories',
@@ -261,20 +443,37 @@ def calculate_compliance_score(sub: Submission) -> dict:
         if getattr(sub, field, False):
             recommendations.append(rec)
     
-    if sub.has_documentation != "yes":
-        recommendations.append("Maintain comprehensive technical documentation for AI systems")
-    if sub.dpo_appointed != "yes":
+    # Systemic gaps
+    if getattr(sub, 'has_documentation', '') != "yes":
+        recommendations.append("Maintain comprehensive technical documentation for AI systems (Art. 11-12)")
+    if getattr(sub, 'dpo_appointed', '') != "yes":
         recommendations.append("Appoint a Data Protection Officer (DPO)")
-    if sub.gdpr_compliant != "yes":
+    if getattr(sub, 'gdpr_compliant', '') != "yes":
         recommendations.append("Ensure GDPR compliance for AI data processing")
+    if 'none' in oversight or 'No human' in oversight or not oversight.strip():
+        recommendations.append("Implement human oversight mechanisms — manual review, approval workflow, or human-in-the-loop (Art. 14)")
+    if 'not_applicable' in explain or 'None' in explain or not explain.strip():
+        recommendations.append("Adopt explainability/interpretability methods (SHAP, LIME, feature importance) for transparency (Art. 13)")
+    if decision == 'fully-automated':
+        recommendations.append("Conduct fundamental rights impact assessment for fully automated decision systems (Art. 27)")
+    if ai_count in ('4-10', '10+'):
+        recommendations.append(f"Scale compliance management system — {ai_count} AI systems require structured governance framework")
+    if 'indefinite' in retention or 'no policy' in retention.lower():
+        recommendations.append("Define and implement a data retention policy aligned with GDPR Art. 5(1)(e)")
     
+    # Positive reinforcement
+    if risk_count == 0:
+        recommendations.insert(0, "No high-risk AI categories flagged — maintaining this posture is key")
+    if bonus_total >= 25:
+        recommendations.append("Strong compliance foundation — continue monitoring regulatory updates")
     if not recommendations:
         recommendations.append("Continue maintaining current compliance posture")
     
     return {
         "score": score,
         "level": level,
-        "recommendations": recommendations
+        "recommendations": recommendations,
+        "details": details
     }
 
 
