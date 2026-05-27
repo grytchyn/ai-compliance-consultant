@@ -529,11 +529,12 @@
     </div>
 
     <script>
+        let attemptLabel = null;
         const subId = new URLSearchParams(window.location.search).get('id');
         if (!subId) {
             document.getElementById('loading').innerHTML = '<h2>No report ID provided</h2><p>Please submit the form first.</p><a href="/submit-page" class="btn-new">← Start Here</a>';
         } else {
-            const attemptLabel = document.createElement('div');
+            attemptLabel = document.createElement('div');
             attemptLabel.className = 'attempt-counter';
             const neuralLoader = document.querySelector('.neural-loader');
             if (neuralLoader) neuralLoader.appendChild(attemptLabel);
