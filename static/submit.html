@@ -202,10 +202,12 @@
             justify-content: center;
             font-size: 12px;
             transition: all 0.2s;
+            opacity: 0; /* hidden by default — show only on select */
         }
         .checkbox-item.checked .check {
             background: var(--brand);
             border-color: var(--brand);
+            opacity: 1;
         }
         .checkbox-item .check-text {
             font-size: 13px;
