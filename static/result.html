@@ -843,6 +843,36 @@
                     </div>`;
             }
 
+            // ── SECTION: HOW SCORE IS CALCULATED (EXPLAINABILITY) ──
+            html += `
+                <div class="section-block" style="border-color: rgba(37,99,235,0.2);">
+                    <div class="section-header">
+                        <div class="section-icon" style="background: rgba(37,99,235,0.12);">🔬</div>
+                        <div class="section-title-block">
+                            <h3>How This Score is Calculated</h3>
+                            <p>Transparent methodology — EU AI Act Art. 13 compliance (explainability)</p>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <p style="margin-bottom: 16px; color: var(--text-tertiary);">Your compliance score is based on a weighted assessment of these factors:</p>
+                        <div class="details-grid">
+                            <div class="detail-item positive"><span class="detail-icon">▲</span>Base score: 100 points</div>
+                            ${Object.entries(details).filter(([k,v]) => v.startsWith('-')).map(([k,v]) =>
+                                `<div class="detail-item negative"><span class="detail-icon">▼</span>${v}</div>`
+                            ).join('')}
+                            ${Object.entries(details).filter(([k,v]) => v.startsWith('+')).map(([k,v]) =>
+                                `<div class="detail-item positive"><span class="detail-icon">▲</span>${v}</div>`
+                            ).join('')}
+                        </div>
+                        <p style="margin-top: 16px; font-size: 13px; color: var(--text-muted);">
+                            <strong>Methodology:</strong> AI Verify uses a rule-based scoring engine aligned with EU AI Act Articles 6–20. 
+                            Each risk factor (AI system type, deployment context, human oversight, data sources) is evaluated against regulatory requirements. 
+                            The score is recalculated in real-time based on your inputs. 
+                            <a href="/privacy#ai-act-compliance" style="color:var(--brand);text-decoration:none;">Learn more about our compliance →</a>
+                        </p>
+                    </div>
+                </div>`;
+
             // ── Positive score details ──
             const posDetails = Object.entries(details).filter(([k,v]) => v.startsWith('+'));
             if (posDetails.length > 0) {

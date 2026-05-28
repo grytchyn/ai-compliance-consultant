@@ -88,6 +88,26 @@ async def read_root():
         "Expires": "0"
     })
 
+@app.get("/imprint", response_class=HTMLResponse)
+async def imprint_page():
+    with open("static/imprint.html", "r", encoding="utf-8") as f:
+        content = f.read()
+    return Response(content=content, media_type="text/html", headers={
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+    })
+
+@app.get("/privacy", response_class=HTMLResponse)
+async def privacy_page():
+    with open("static/privacy.html", "r", encoding="utf-8") as f:
+        content = f.read()
+    return Response(content=content, media_type="text/html", headers={
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+    })
+
 @app.get("/submit-page", response_class=HTMLResponse)
 async def submit_page():
     with open("static/submit.html", "r", encoding="utf-8") as f:

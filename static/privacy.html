@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — AI Verify</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<meta property="og:title" content="Privacy Policy — AI Verify">
+<meta property="og:description" content="How AI Verify handles your data. GDPR-compliant privacy policy.">
+<meta property="og:image" content="https://ai-act-verify.onrender.com/static/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:url" content="https://ai-act-verify.onrender.com/privacy">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08090a; --surface: #0f1011; --surface2: #191a1b; --surface3: #23252a;
+  --brand: #2563EB; --brand-hover: #3b82f6; --accent: #3b82f6; --success: #10B98A;
+  --text-primary: #f7f8f8; --text-secondary: #d0d6e0; --text-tertiary: #8a8f98; --text-muted: #62666d;
+  --border: rgba(255,255,255,0.08); --border-subtle: rgba(255,255,255,0.05);
+  --radius: 8px; --radius-sm: 6px; --radius-lg: 12px; --radius-xl: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg); color: var(--text-primary); line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8,9,10,0.88); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto; padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; color: var(--text-primary); text-decoration: none; }
+.logo-icon { width: 32px; height: 32px; background: var(--brand); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; }
+.nav-back { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+.nav-back:hover { color: var(--text-primary); }
+.page-header { padding: 120px 24px 40px; text-align: center; }
+.page-header h1 { font-size: 40px; font-weight: 600; letter-spacing: -0.9px; background: linear-gradient(135deg, var(--text-primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.page-header p { font-size: 16px; color: var(--text-tertiary); margin-top: 12px; }
+.content { max-width: 800px; margin: 0 auto; padding: 0 24px 80px; }
+.content h2 { font-size: 24px; font-weight: 600; margin: 48px 0 16px; color: var(--text-primary); }
+.content h2:first-child { margin-top: 0; }
+.content h3 { font-size: 18px; font-weight: 600; margin: 32px 0 12px; color: var(--text-secondary); }
+.content p { font-size: 15px; color: var(--text-tertiary); margin-bottom: 16px; line-height: 1.8; }
+.content ul { margin: 12px 0 24px 24px; }
+.content li { font-size: 15px; color: var(--text-tertiary); margin-bottom: 8px; line-height: 1.7; }
+.content strong { color: var(--text-secondary); }
+.content .last-updated { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; }
+.divider { height: 1px; background: var(--border-subtle); margin: 32px 0; }
+.badge { display: inline-block; background: rgba(37,99,235,0.12); color: var(--brand); padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 500; margin-bottom: 16px; }
+footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
+.footer-inner { max-width: 1200px; margin: 0 auto; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 32px; }
+.footer-brand .logo { margin-bottom: 12px; }
+.footer-brand p { font-size: 13px; color: var(--text-muted); max-width: 320px; line-height: 1.7; }
+.footer-links h4 { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+.footer-links a { display: block; font-size: 13px; color: var(--text-tertiary); text-decoration: none; padding: 4px 0; transition: color 0.2s; }
+.footer-links a:hover { color: var(--text-primary); }
+.footer-bottom { border-top: 1px solid var(--border-subtle); padding-top: 24px; text-align: center; }
+.footer-bottom p { font-size: 13px; color: var(--text-muted); }
+@media (max-width: 768px) {
+  .page-header h1 { font-size: 28px; }
+  .content h2 { font-size: 20px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+  .nav-inner { padding: 12px 16px; }
+  .content { padding: 0 16px 60px; }
+}
+@media (max-width: 480px) {
+  .page-header h1 { font-size: 24px; }
+  .page-header { padding: 100px 16px 30px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo"><div class="logo-icon">◈</div>AI Verify</a>
+    <a href="/" class="nav-back">← Back to Home</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="badge">GDPR & EU AI Act</div>
+  <h1>Privacy Policy</h1>
+  <p>How AI Verify handles your data — transparent and compliant.</p>
+</div>
+
+<div class="content">
+  <p class="last-updated">Last updated: May 28, 2026</p>
+
+  <h2>1. Data Controller</h2>
+  <p>
+    <strong>AI Verify</strong> (operated by Konstantin Gritsch)<br>
+    Lübeck, Germany<br>
+    Email: <strong>dpo@ai-verify.ai</strong>
+  </p>
+  <p>We are the data controller for the personal data processed through our service at <strong>ai-act-verify.onrender.com</strong>.</p>
+
+  <div class="divider"></div>
+
+  <h2>2. What Data We Collect</h2>
+  <p>We collect only the data you voluntarily provide through our compliance check form:</p>
+  <ul>
+    <li><strong>Company name</strong> — provided by you</li>
+    <li><strong>Website URL</strong> — the website you ask us to analyze</li>
+    <li><strong>Company size, sector, revenue, HQ location</strong> — optional business context</li>
+    <li><strong>AI system details</strong> — use cases, deployment type, risk self-assessment</li>
+    <li><strong>Compliance status</strong> — existing documentation, DPO appointment</li>
+  </ul>
+  <p>We do <strong>not</strong> collect: names, email addresses, IP addresses (beyond standard server logs), cookies, or any browsing behavior data.</p>
+
+  <div class="divider"></div>
+
+  <h2>3. Legal Basis (Art. 6 GDPR)</h2>
+  <p>We process your data based on:</p>
+  <ul>
+    <li><strong>Consent (Art. 6(1)(a))</strong> — by submitting the form, you consent to processing for your compliance report</li>
+    <li><strong>Legitimate interest (Art. 6(1)(f))</strong> — improving our service and training our AI models (aggregated, anonymized data only)</li>
+  </ul>
+
+  <div class="divider"></div>
+
+  <h2>4. Purpose of Processing</h2>
+  <p>Your data is used exclusively for:</p>
+  <ul>
+    <li>Generating your EU AI Act compliance report</li>
+    <li>Improving the accuracy of our compliance analysis</li>
+    <li>Service analytics (anonymized aggregates only)</li>
+  </ul>
+  <p>We do <strong>not</strong> sell your data, share it with advertisers, or use it for marketing.</p>
+
+  <div class="divider"></div>
+
+  <h2>5. Data Retention</h2>
+  <p>We retain compliance reports and submitted data for <strong>30 days</strong>. After this period, all data is permanently deleted. Server logs are retained for 7 days for security purposes.</p>
+
+  <div class="divider"></div>
+
+  <h2>6. Your Rights (Art. 15–22 GDPR)</h2>
+  <p>You have the right to:</p>
+  <ul>
+    <li><strong>Access</strong> — request a copy of your data</li>
+    <li><strong>Rectification</strong> — correct inaccurate data</li>
+    <li><strong>Erasure</strong> ("right to be forgotten") — request deletion</li>
+    <li><strong>Restriction</strong> — limit processing</li>
+    <li><strong>Data portability</strong> — receive your data in a machine-readable format</li>
+    <li><strong>Object</strong> — object to processing based on legitimate interest</li>
+  </ul>
+  <p>To exercise any of these rights, contact us at <strong>dpo@ai-verify.ai</strong>. We will respond within 30 days as required by law.</p>
+
+  <div class="divider"></div>
+
+  <h2>7. Third-Party Processors</h2>
+  <p>We use the following sub-processors:</p>
+  <ul>
+    <li><strong>Render (Render Services Inc.)</strong> — hosting provider, US-based (EU Standard Contractual Clauses in place)</li>
+    <li><strong>Ollama Cloud</strong> — AI model inference for report generation</li>
+    <li><strong>GitHub (GitHub Inc.)</strong> — code repository and deployment</li>
+  </ul>
+  <p>All processors are bound by Data Processing Agreements (DPAs) compliant with Art. 28 GDPR.</p>
+
+  <div class="divider"></div>
+
+  <h2>8. Cookies</h2>
+  <p>AI Verify uses <strong>no cookies</strong>. We do not track users, serve ads, or use analytics cookies. No cookie consent banner is required.</p>
+
+  <div class="divider"></div>
+
+  <h2>9. Data Security</h2>
+  <p>We implement appropriate technical measures:</p>
+  <ul>
+    <li>HTTPS/TLS encryption for all data in transit</li>
+    <li>No storage of credentials, passwords, or authentication data</li>
+    <li>Regular data cleanup (30-day retention)</li>
+    <li>Minimal data collection principle</li>
+  </ul>
+
+  <div class="divider"></div>
+
+  <h2>10. EU AI Act Compliance</h2>
+  <p>As an AI-powered service, AI Verify itself complies with the EU AI Act:</p>
+  <ul>
+    <li><strong>Transparency:</strong> this policy explains how our AI works</li>
+    <li><strong>Human oversight:</strong> reports are AI-generated but reviewed by our team</li>
+    <li><strong>Accuracy:</strong> our model is regularly validated</li>
+    <li><strong>Data governance:</strong> training data is documented and bias-monitored</li>
+  </ul>
+
+  <div class="divider"></div>
+
+  <h2>11. Changes to This Policy</h2>
+  <p>We will update this privacy policy as our service evolves. Material changes will be announced on our website. The "Last updated" date at the top reflects the most recent revision.</p>
+
+  <div class="divider"></div>
+
+  <h2>12. Contact</h2>
+  <p>
+    Data Protection Officer: <strong>Konstantin Gritsch</strong><br>
+    Email: <strong>dpo@ai-verify.ai</strong><br>
+    Location: Lübeck, Germany<br><br>
+    You also have the right to lodge a complaint with your local data protection authority.
+  </p>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="logo"><div class="logo-icon" style="background: var(--brand);">◈</div>AI Verify</a>
+        <p>EU AI Act compliance checker for SMEs. Free, fast, private.</p>
+      </div>
+      <div class="footer-links">
+        <h4>LINKS</h4>
+        <a href="/#problem">Problem</a>
+        <a href="/#how">How It Works</a>
+        <a href="/#features">Features</a>
+        <a href="/#faq">FAQ</a>
+      </div>
+      <div class="footer-links">
+        <h4>LEGAL</h4>
+        <a href="/imprint">Imprint</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 AI Verify. All rights reserved.</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">DPO: Konstantin Gritsch, Lübeck, Germany — <a href="mailto:dpo@ai-verify.ai" style="color:var(--brand);text-decoration:none;">dpo@ai-verify.ai</a></p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
