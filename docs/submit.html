@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Verify — Check Your Company</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #08090a;
+            --surface: #0f1011;
+            --surface2: #191a1b;
+            --surface3: #23252a;
+            --brand: #5e6ad2;
+            --brand-hover: #828fff;
+            --accent: #7170ff;
+            --text-primary: #f7f8f8;
+            --text-secondary: #d0d6e0;
+            --text-tertiary: #8a8f98;
+            --text-muted: #62666d;
+            --border: rgba(255,255,255,0.08);
+            --border-subtle: rgba(255,255,255,0.05);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #f44336;
+            --radius: 8px;
+            --radius-sm: 6px;
+            --radius-lg: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(8,9,10,0.85); backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto; padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .logo {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 600; font-size: 18px;
+            color: var(--text-primary); text-decoration: none;
+        }
+        .logo-icon {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, var(--brand), var(--accent));
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 700;
+        }
+        .nav-back {
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 14px; font-weight: 500; transition: color 0.2s;
+        }
+        .nav-back:hover { color: var(--text-primary); }
+
+        .page-title {
+            padding: 100px 24px 40px;
+            text-align: center;
+        }
+        .page-title h1 {
+            font-size: 40px; font-weight: 510;
+            letter-spacing: -0.9px;
+            font-feature-settings: 'cv01', 'ss03';
+            margin-bottom: 12px;
+        }
+        .page-title p {
+            font-size: 16px; color: var(--text-tertiary);
+            max-width: 500px; margin: 0 auto;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+        }
+
+        .form-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        .form-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .form-section .section-desc {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .form-group .hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: 'Inter', system-ui, sans-serif;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(94,106,210,0.15);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-group select { appearance: none; cursor: pointer; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .checkbox-item:hover {
+            border-color: rgba(94,106,210,0.3);
+        }
+        .checkbox-item.checked {
+            border-color: var(--brand);
+            background: rgba(94,106,210,0.06);
+        }
+        .checkbox-item input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+        .checkbox-item .check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-muted);
+            border-radius: 4px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.2s;
+            opacity: 0; /* hidden by default — show only on select */
+        }
+        .checkbox-item.checked .check {
+            background: var(--brand);
+            border-color: var(--brand);
+            opacity: 1;
+        }
+        .checkbox-item .check-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .checkbox-item.checked .check-text {
+            color: var(--text-primary);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 32px;
+        }
+
+        .btn-primary {
+            background: var(--brand); color: white; border: none;
+            padding: 16px 40px; border-radius: var(--radius-sm);
+            font-size: 16px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary:hover {
+            background: var(--brand-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(94,106,210,0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5; cursor: not-allowed;
+            transform: none; box-shadow: none;
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.04); color: var(--text-secondary);
+            border: 1px solid var(--border); padding: 16px 40px;
+            border-radius: var(--radius-sm); font-size: 16px;
+            font-weight: 500; cursor: pointer; transition: all 0.2s;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.08); color: var(--text-primary);
+        }
+
+        .progress-bar {
+            width: 100%; height: 4px;
+            background: var(--surface2); border-radius: 2px;
+            overflow: hidden; margin-bottom: 32px;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--brand), var(--accent));
+            border-radius: 2px; transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .checkbox-group { grid-template-columns: 1fr; }
+            .form-actions { flex-direction: column; }
+            .btn-primary, .btn-secondary { justify-content: center; }
+            .page-title h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">
+                <div class="logo-icon">◈</div>
+                AI Verify
+            </a>
+        </div>
+    </nav>
+
+    <div class="page-title">
+        <h1>Check Your AI Compliance</h1>
+        <p>Fill in the details about your company and AI systems for a comprehensive EU AI Act analysis.</p>
+    </div>
+
+    <div class="form-container">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+        <form id="complianceForm" onsubmit="return false;">
+                        
+            <!-- Section 1: Company Information -->
+            <div class="form-section">
+                <h2>📋 Company Information</h2>
+                <p class="section-desc">Basic information about your organization. <span style="color: var(--brand); font-size: 12px;">Company name, sector, and HQ will be auto-detected from your website URL.</span></p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Company Size</label>
+                        <select name="company_size">
+                            <option value="">Select size...</option>
+                            <option value="startup">Startup (1-10)</option>
+                            <option value="sme">SME (11-250)</option>
+                            <option value="mid">Mid-sized (251-1000)</option>
+                            <option value="enterprise">Enterprise (1000+)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Sector / Industry</label>
+                        <select name="sector">
+                            <option value="">Select sector...</option>
+                            <option value="aerospace">Aerospace & Defense</option>
+                            <option value="agriculture">Agriculture</option>
+                            <option value="automotive">Automotive</option>
+                            <option value="banking">Banking & Finance</option>
+                            <option value="education">Education</option>
+                            <option value="energy">Energy & Utilities</option>
+                            <option value="healthcare">Healthcare & Pharma</option>
+                            <option value="insurance">Insurance</option>
+                            <option value="legal">Legal & Compliance</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="media">Media & Entertainment</option>
+                            <option value="public_sector">Public Sector / Government</option>
+                            <option value="retail">Retail & E-commerce</option>
+                            <option value="technology">Technology & SaaS</option>
+                            <option value="telecom">Telecom & Transport</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Annual Revenue</label>
+                        <select name="annual_revenue">
+                            <option value="">Select revenue band...</option>
+                            <option value="under_1m">&lt; €1M</option>
+                            <option value="1m_10m">€1M – €10M</option>
+                            <option value="10m_50m">€10M – €50M</option>
+                            <option value="50m_250m">€50M – €250M</option>
+                            <option value="250m_1b">€250M – €1B</option>
+                            <option value="over_1b">&gt; €1B</option>
+                            <option value="undisclosed">Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>HQ Location</label>
+                        <input type="text" name="hq_location" placeholder="e.g. Munich, Germany">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Website URL</label>
+                        <input type="url" name="url" placeholder="https://example.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>AI Use Cases <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="chatbot">
+                            <span class="check">✓</span>
+                            <span class="check-text">Customer support chatbot</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="content_gen">
+                            <span class="check">✓</span>
+                            <span class="check-text">Content generation</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="fraud_detection">
+                            <span class="check">✓</span>
+                            <span class="check-text">Fraud detection / Risk analysis</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="recommendation">
+                            <span class="check">✓</span>
+                            <span class="check-text">Recommendation engine</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="image_video">
+                            <span class="check">✓</span>
+                            <span class="check-text">Image / Video analysis</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="document_processing">
+                            <span class="check">✓</span>
+                            <span class="check-text">Document processing / OCR</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="predictive">
+                            <span class="check">✓</span>
+                            <span class="check-text">Predictive analytics</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="speech">
+                            <span class="check">✓</span>
+                            <span class="check-text">Speech / Voice recognition</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="code_gen">
+                            <span class="check">✓</span>
+                            <span class="check-text">Code generation</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="autonomous">
+                            <span class="check">✓</span>
+                            <span class="check-text">Autonomous systems</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="cv_screening">
+                            <span class="check">✓</span>
+                            <span class="check-text">Resume / CV screening</span>
+                        </label>
+                        <label class="checkbox-item" data-field="ai_purpose">
+                            <input type="checkbox" name="ai_purpose" value="other">
+                            <span class="check">✓</span>
+                            <span class="check-text">Other (specify in report)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: AI System Details -->
+            <div class="form-section" id="ai-details-section">
+                <h2>🤖 AI System Details</h2>
+                <p class="section-desc">Tell us about the AI systems you deploy.</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Number of AI Systems in Production</label>
+                        <select name="ai_systems_count" id="ai_systems_count">
+                            <option value="">Select...</option>
+                            <option value="0">None yet</option>
+                            <option value="1-3">1-3 systems</option>
+                            <option value="4-10">4-10 systems</option>
+                            <option value="10+">More than 10</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Deployment Type</label>
+                        <select name="deployment_type">
+                            <option value="">Select...</option>
+                            <option value="internal">Internal use only</option>
+                            <option value="customer-facing">Customer-facing</option>
+                            <option value="both">Both internal and external</option>
+                            <option value="third-party">Third-party AI integrated</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Decision Type</label>
+                        <select name="decision_type">
+                            <option value="">Select...</option>
+                            <option value="fully-automated">Fully automated decisions</option>
+                            <option value="human-in-loop">Human-in-the-loop</option>
+                            <option value="decision-support">Decision support only</option>
+                            <option value="recommendation">Recommendation only</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Risk Self-Assessment</label>
+                        <select name="risk_self_assessment">
+                            <option value="">Select...</option>
+                            <option value="minimal">Minimal risk</option>
+                            <option value="limited">Limited risk</option>
+                            <option value="high">High risk</option>
+                            <option value="unacceptable">Unacceptable risk</option>
+                            <option value="uncertain">Not sure</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Data Sources <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="public_datasets">
+                            <span class="check">✓</span>
+                            <span class="check-text">Public datasets</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="customer_data">
+                            <span class="check">✓</span>
+                            <span class="check-text">Customer data</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="third_party_apis">
+                            <span class="check">✓</span>
+                            <span class="check-text">Third-party APIs</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="user_generated">
+                            <span class="check">✓</span>
+                            <span class="check-text">User-generated content</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="web_scraping">
+                            <span class="check">✓</span>
+                            <span class="check-text">Web scraping</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="proprietary">
+                            <span class="check">✓</span>
+                            <span class="check-text">Proprietary datasets</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="synthetic">
+                            <span class="check">✓</span>
+                            <span class="check-text">Synthetic data</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="open_gov">
+                            <span class="check">✓</span>
+                            <span class="check-text">Open government data</span>
+                        </label>
+                        <label class="checkbox-item" data-field="data_sources">
+                            <input type="checkbox" name="data_sources" value="purchased">
+                            <span class="check">✓</span>
+                            <span class="check-text">Purchased data</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Technical Details -->
+            <div class="form-section">
+                <h2>🔧 Technical Details</h2>
+                <p class="section-desc">Technical characteristics of your AI systems.</p>
+                
+                <div class="form-group">
+                    <label>AI Model Types Used <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="llm">
+                            <span class="check">✓</span>
+                            <span class="check-text">Large Language Models (LLM)</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="cnn">
+                            <span class="check">✓</span>
+                            <span class="check-text">Convolutional Neural Networks (CNN)</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="transformer">
+                            <span class="check">✓</span>
+                            <span class="check-text">Transformer models</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="diffusion">
+                            <span class="check">✓</span>
+                            <span class="check-text">Diffusion models</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="regression">
+                            <span class="check">✓</span>
+                            <span class="check-text">Regression / Statistical models</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="decision_tree">
+                            <span class="check">✓</span>
+                            <span class="check-text">Decision Trees / Random Forest</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="reinforcement">
+                            <span class="check">✓</span>
+                            <span class="check-text">Reinforcement Learning</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="gan">
+                            <span class="check">✓</span>
+                            <span class="check-text">GANs / Generative models</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="recommender">
+                            <span class="check">✓</span>
+                            <span class="check-text">Recommendation systems</span>
+                        </label>
+                        <label class="checkbox-item" data-field="model_types">
+                            <input type="checkbox" name="model_types" value="other">
+                            <span class="check">✓</span>
+                            <span class="check-text">Other / Not sure</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Human Oversight Mechanisms <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="manual_review">
+                            <span class="check">✓</span>
+                            <span class="check-text">Manual review queue</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="approval_workflow">
+                            <span class="check">✓</span>
+                            <span class="check-text">Approval workflow</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="exception_handling">
+                            <span class="check">✓</span>
+                            <span class="check-text">Exception / escalation handling</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="human_in_loop">
+                            <span class="check">✓</span>
+                            <span class="check-text">Human-in-the-loop for decisions</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="audit_logs">
+                            <span class="check">✓</span>
+                            <span class="check-text">Audit logs / monitoring</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="override">
+                            <span class="check">✓</span>
+                            <span class="check-text">Human override capability</span>
+                        </label>
+                        <label class="checkbox-item" data-field="human_oversight">
+                            <input type="checkbox" name="human_oversight" value="none">
+                            <span class="check">✓</span>
+                            <span class="check-text">No human oversight</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Explainability Methods <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="shap">
+                            <span class="check">✓</span>
+                            <span class="check-text">SHAP</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="lime">
+                            <span class="check">✓</span>
+                            <span class="check-text">LIME</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="attention">
+                            <span class="check">✓</span>
+                            <span class="check-text">Attention visualization</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="feature_importance">
+                            <span class="check">✓</span>
+                            <span class="check-text">Feature importance</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="decision_tree_explain">
+                            <span class="check">✓</span>
+                            <span class="check-text">Decision tree explanations</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="counterfactual">
+                            <span class="check">✓</span>
+                            <span class="check-text">Counterfactual explanations</span>
+                        </label>
+                        <label class="checkbox-item" data-field="explainability">
+                            <input type="checkbox" name="explainability" value="not_applicable">
+                            <span class="check">✓</span>
+                            <span class="check-text">Not applicable / None</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Training Data Origin</label>
+                        <select name="training_data_origin">
+                            <option value="">Select...</option>
+                            <option value="public_web">Public web data</option>
+                            <option value="proprietary">Proprietary / company data</option>
+                            <option value="customer">Customer-provided data</option>
+                            <option value="third_party">Third-party licensed data</option>
+                            <option value="synthetic">Synthetic generated data</option>
+                            <option value="open_source">Open-source datasets</option>
+                            <option value="mixed">Mixed / Multiple sources</option>
+                            <option value="not_sure">Not sure</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Data Retention Policy</label>
+                        <select name="data_retention">
+                            <option value="">Select...</option>
+                            <option value="not_retained">Not retained</option>
+                            <option value="30_days">30 days</option>
+                            <option value="90_days">90 days</option>
+                            <option value="1_year">1 year</option>
+                            <option value="indefinite">Indefinite / No policy</option>
+                            <option value="not_sure">Not sure</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: High-Risk Categories -->
+            <div class="form-section">
+                <h2>⚠️ High-Risk Categories</h2>
+                <p class="section-desc">Select which EU AI Act high-risk categories apply to your AI systems. <a href="https://artificialintelligenceact.eu/high-risk/" target="_blank" style="color: var(--accent);">Learn more</a></p>
+                
+                <div class="checkbox-group">
+                    <label class="checkbox-item" data-risk="biometrics">
+                        <input type="checkbox" name="risk_biometrics">
+                        <span class="check">✓</span>
+                        <span class="check-text">Biometric identification / Remote biometric ID</span>
+                    </label>
+                    <label class="checkbox-item" data-risk="critical_infra">
+                        <input type="checkbox" name="risk_critical_infra">
+                        <span class="check">✓</span>
+                        <span class="check-text">Critical infrastructure management</span>
+                    </label>
+                    <label class="checkbox-item" data-risk="education">
+                        <input type="checkbox" name="risk_education">
+                        <span class="check">✓</span>
+                        <span class="check-text">Education & vocational training</span>
+                    </label>
+                    <label class="checkbox-item" data-risk="employment">
+                        <input type="checkbox" name="risk_employment">
+                        <span class="check">✓</span>
+                        <span class="check-text">Employment & worker management</span>
+                    </label>
+                    <label class="checkbox-item" data-risk="credit">
+                        <input type="checkbox" name="risk_credit">
+                        <span class="check">✓</span>
+                        <span class="check-text">Credit assessment & essential services</span>
+                    </label>
+                    <label class="checkbox-item" data-risk="law_enforcement">
+                        <input type="checkbox" name="risk_law_enforcement">
+                        <span class="check">✓</span>
+                        <span class="check-text">Law enforcement</span>
+                    </label>
+                    <label class="checkbox-item" data-risk="migration">
+                        <input type="checkbox" name="risk_migration">
+                        <span class="check">✓</span>
+                        <span class="check-text">Migration, asylum & border control</span>
+                    </label>
+                    <label class="checkbox-item" data-risk="justice">
+                        <input type="checkbox" name="risk_justice">
+                        <span class="check">✓</span>
+                        <span class="check-text">Administration of justice</span>
+                    </label>
+                    <label class="checkbox-item" data-risk="democratic">
+                        <input type="checkbox" name="risk_democratic">
+                        <span class="check">✓</span>
+                        <span class="check-text">Democratic processes (elections/voting)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Section 5: Compliance Status -->
+            <div class="form-section">
+                <h2>📄 Current Compliance Status</h2>
+                <p class="section-desc">Where are you on your compliance journey?</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Existing Compliance Documentation</label>
+                        <select name="has_documentation">
+                            <option value="">Select...</option>
+                            <option value="yes">Yes, comprehensive</option>
+                            <option value="partial">Partially</option>
+                            <option value="no">Not yet</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>DPO Appointed?</label>
+                        <select name="dpo_appointed">
+                            <option value="">Select...</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                            <option value="planned">Planned</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>GDPR Compliance Status</label>
+                        <select name="gdpr_compliant">
+                            <option value="">Select...</option>
+                            <option value="yes">Fully compliant</option>
+                            <option value="in_progress">In progress</option>
+                            <option value="no">Not yet started</option>
+                            <option value="not_applicable">Not applicable</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>CE Marking (for AI)</label>
+                        <select name="ce_marking">
+                            <option value="">Select...</option>
+                            <option value="yes">Yes, obtained</option>
+                            <option value="planned">Planned</option>
+                            <option value="no">Not yet</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Existing Certifications <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="iso_27001">
+                            <span class="check">✓</span>
+                            <span class="check-text">ISO 27001</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="iso_42001">
+                            <span class="check">✓</span>
+                            <span class="check-text">ISO 42001 (AI Management)</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="soc2">
+                            <span class="check">✓</span>
+                            <span class="check-text">SOC 2</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="iso_27701">
+                            <span class="check">✓</span>
+                            <span class="check-text">ISO 27701 (Privacy)</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="pcidss">
+                            <span class="check">✓</span>
+                            <span class="check-text">PCI DSS</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="hipaa">
+                            <span class="check">✓</span>
+                            <span class="check-text">HIPAA</span>
+                        </label>
+                        <label class="checkbox-item" data-field="certifications">
+                            <input type="checkbox" name="existing_certifications" value="none">
+                            <span class="check">✓</span>
+                            <span class="check-text">None yet</span>
+                        </label>
+                    </div>
+                    <div style="margin-top: 8px;">
+                        <input type="text" name="other_certifications" placeholder="Other certifications (comma-separated)" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--text-primary);font-size:14px;">
+                    </div>
+                </div>
+                
+                <div class="form-group" id="previous-audits-group">
+                    <label>Have you had any compliance audits before?</label>
+                    <div style="display:flex;gap:12px;margin-top:8px;">
+                        <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;">
+                            <input type="radio" name="previous_audits" value="yes" style="accent-color:var(--brand);">
+                            <span style="color:var(--text-secondary);font-size:14px;">Yes</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;">
+                            <input type="radio" name="previous_audits" value="no" style="accent-color:var(--brand);">
+                            <span style="color:var(--text-secondary);font-size:14px;">No</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="audit-details" style="display:none;">
+                    <label>Audit Types <span style="color: var(--text-muted); font-size: 12px;">(select all that apply)</span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="gdpr">
+                            <span class="check">✓</span>
+                            <span class="check-text">GDPR audit</span>
+                        </label>
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="iso">
+                            <span class="check">✓</span>
+                            <span class="check-text">ISO certification audit</span>
+                        </label>
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="internal_ai">
+                            <span class="check">✓</span>
+                            <span class="check-text">Internal AI audit</span>
+                        </label>
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="third_party_ai">
+                            <span class="check">✓</span>
+                            <span class="check-text">Third-party AI audit</span>
+                        </label>
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="security">
+                            <span class="check">✓</span>
+                            <span class="check-text">Security / penetration test</span>
+                        </label>
+                        <label class="checkbox-item" data-field="audit_types">
+                            <input type="checkbox" name="audit_types" value="other">
+                            <span class="check">✓</span>
+                            <span class="check-text">Other</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="index.html" class="btn-secondary">← Cancel</a>
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    → Generate Compliance Report
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // ── Checkbox UI — change event ──
+        document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(input => {
+            input.addEventListener('change', function() {
+                this.closest('.checkbox-item').classList.toggle('checked', this.checked);
+                updateProgress();
+            });
+            if (input.checked) {
+                input.closest('.checkbox-item').classList.add('checked');
+            }
+        });
+
+        // ── Progressive Disclosure: hide Sections 3+4 when no AI systems ──
+        function updateAISections() {
+            const count = document.getElementById('ai_systems_count').value;
+            const s3 = document.querySelector('.form-section:nth-of-type(3)');
+            const s4 = document.querySelector('.form-section:nth-of-type(4)');
+            const hide = !count || count === '0';
+            s3.style.display = hide ? 'none' : '';
+            s4.style.display = hide ? 'none' : '';
+        }
+        document.getElementById('ai_systems_count').addEventListener('change', updateAISections);
+
+        // ── Audit detail conditional ──
+        document.querySelectorAll('input[name="previous_audits"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('audit-details').style.display =
+                    this.value === 'yes' ? '' : 'none';
+            });
+        });
+
+        // ── Progress bar ──
+        function updateProgress() {
+            const form = document.getElementById('complianceForm');
+            const inputs = form.querySelectorAll('input[type="text"], input[type="url"], select, textarea');
+            const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+            const radios = form.querySelectorAll('input[type="radio"]');
+            let filled = 0;
+            let total = inputs.length + checkboxes.length + radios.length;
+
+            inputs.forEach(i => {
+                if (i.value && i.value.trim() !== '') filled++;
+            });
+            checkboxes.forEach(c => {
+                if (c.checked) filled++;
+            });
+            radios.forEach(r => {
+                if (r.checked) filled++;
+            });
+
+            const pct = Math.min(100, Math.round((filled / total) * 100));
+            document.getElementById('progressFill').style.width = pct + '%';
+        }
+
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('change', updateProgress);
+            el.addEventListener('input', updateProgress);
+        });
+
+        // ── Form submission ──
+        document.getElementById('complianceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const form = document.getElementById('complianceForm');
+
+            // Validate required fields
+            const url = form.querySelector('[name="url"]');
+            if (!url.value.trim()) {
+                url.focus();
+                url.style.borderColor = 'var(--danger)';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Processing...';
+
+            const formData = new FormData(form);
+
+            try {
+                const resp = await fetch('https://ai-compliance-consultant.onrender.com/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                if (!data.id) throw new Error('No ID returned');
+                window.location.href = 'result.html?id=' + data.id;
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = '→ Generate Compliance Report';
+                alert('Error: ' + err.message + '\nPlease try again.');
+            }
+        });
+
+        // ── Init ──
+        updateAISections();
+    </script>
+</body>
+</html>

@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your AI Compliance Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #08090a;
+            --surface: #0f1011;
+            --surface2: #191a1b;
+            --surface3: #23252a;
+            --brand: #5e6ad2;
+            --brand-hover: #828fff;
+            --accent: #7170ff;
+            --text-primary: #f7f8f8;
+            --text-secondary: #d0d6e0;
+            --text-tertiary: #8a8f98;
+            --text-muted: #62666d;
+            --border: rgba(255,255,255,0.08);
+            --border-subtle: rgba(255,255,255,0.05);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #f44336;
+            --danger-bg: rgba(244,67,54,0.08);
+            --warning-bg: rgba(245,158,11,0.08);
+            --success-bg: rgba(16,185,129,0.08);
+            --brand-bg: rgba(94,106,210,0.08);
+            --score-red: #f44336;
+            --score-yellow: #f59e0b;
+            --score-green: #10b981;
+            --radius: 8px;
+            --radius-sm: 6px;
+            --radius-lg: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── NAV ─── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(8,9,10,0.85); backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .nav-inner {
+            max-width: 900px; margin: 0 auto; padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .logo {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 600; font-size: 18px; color: var(--text-primary); text-decoration: none;
+        }
+        .logo-icon {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, var(--brand), var(--accent));
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 700;
+        }
+        .nav-back { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; }
+        .nav-back:hover { color: var(--text-primary); }
+
+        /* ─── NEURAL LOADING ANIMATION ─── */
+        @keyframes neuralPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.15); }
+        }
+        @keyframes neuralLine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        @keyframes neuralWave {
+            0% { opacity: 0.2; }
+            50% { opacity: 0.6; }
+            100% { opacity: 0.2; }
+        }
+        @keyframes neuralScan {
+            0% { top: 0; opacity: 0.8; }
+            50% { top: 60%; opacity: 1; }
+            100% { top: 0; opacity: 0.8; }
+        }
+        .status-bar {
+            margin-top: 72px;
+            padding: 60px 24px 80px;
+            text-align: center;
+        }
+        .neural-loader {
+            display: flex; flex-direction: column; align-items: center; gap: 24px;
+            max-width: 400px; margin: 0 auto;
+        }
+        .neural-network {
+            position: relative;
+            width: 300px; height: 90px;
+            overflow: hidden;
+        }
+        .neural-node {
+            position: absolute;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--brand);
+            box-shadow: 0 0 12px rgba(94,106,210,0.5);
+            animation: neuralPulse 1.5s ease-in-out infinite;
+        }
+        .neural-node:nth-child(1) { top: 10px; left: 30px; animation-delay: 0s; }
+        .neural-node:nth-child(2) { top: 40px; left: 80px; animation-delay: 0.2s; }
+        .neural-node:nth-child(3) { top: 15px; left: 140px; animation-delay: 0.35s; }
+        .neural-node:nth-child(4) { top: 50px; left: 190px; animation-delay: 0.5s; }
+        .neural-node:nth-child(5) { top: 20px; left: 240px; animation-delay: 0.65s; }
+        .neural-node:nth-child(6) { top: 60px; left: 270px; animation-delay: 0.8s; }
+
+        .neural-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--brand), transparent);
+            animation: neuralWave 2s ease-in-out infinite;
+        }
+        .neural-line:nth-child(7) { top: 17px; left: 37px; width: 50px; transform: rotate(-20deg); animation-delay: 0s; }
+        .neural-line:nth-child(8) { top: 28px; left: 44px; width: 60px; transform: rotate(15deg); animation-delay: 0.3s; }
+        .neural-line:nth-child(9) { top: 25px; left: 87px; width: 55px; transform: rotate(-10deg); animation-delay: 0.6s; }
+        .neural-line:nth-child(10) { top: 32px; left: 147px; width: 50px; transform: rotate(25deg); animation-delay: 0.1s; }
+        .neural-line:nth-child(11) { top: 28px; left: 197px; width: 45px; transform: rotate(-15deg); animation-delay: 0.4s; }
+
+        .neural-scan {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            filter: blur(2px);
+            animation: neuralScan 2.5s ease-in-out infinite;
+        }
+
+        .status-bar h2 {
+            font-size: 22px; font-weight: 600; margin-bottom: 6px;
+            background: linear-gradient(90deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .status-bar p {
+            font-size: 14px; color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .status-bar .attempt-counter {
+            font-size: 12px; color: var(--text-muted); margin-top: 4px;
+        }
+
+        /* ─── REPORT CONTAINER ─── */
+        .report-container {
+            max-width: 900px; margin: 0 auto 80px; padding: 0 24px;
+        }
+
+        .report-header {
+            margin-top: 100px;
+            background: linear-gradient(135deg, var(--surface), var(--surface2));
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px 36px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap: 24px; flex-wrap: wrap;
+        }
+        .report-header-info h1 {
+            font-size: 28px; font-weight: 600;
+            letter-spacing: -0.5px; margin-bottom: 8px;
+        }
+        .report-header-info .company {
+            font-size: 16px; color: var(--text-secondary);
+        }
+        .report-header-info .time {
+            font-size: 13px; color: var(--text-muted); margin-top: 8px;
+        }
+        .report-header-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn-new {
+            background: rgba(255,255,255,0.04); color: var(--text-secondary);
+            border: 1px solid var(--border); padding: 10px 24px;
+            border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
+            cursor: pointer; text-decoration: none; display: inline-flex;
+            align-items: center; gap: 8px; transition: all 0.2s;
+        }
+        .btn-new:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+
+        /* ─── SCORE RING ─── */
+        .score-section {
+            margin-top: 24px;
+            display: flex; align-items: center; gap: 32px;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 32px 40px; flex-wrap: wrap;
+        }
+        .score-ring-wrapper {
+            flex-shrink: 0; position: relative;
+            width: 140px; height: 140px;
+        }
+        .score-ring { transform: rotate(-90deg); width: 140px; height: 140px; }
+        .score-ring .bg-circle {
+            fill: none; stroke: var(--surface3); stroke-width: 8;
+        }
+        .score-ring .value-circle {
+            fill: none; stroke-width: 8; stroke-linecap: round;
+            transition: stroke-dashoffset 1.2s ease;
+        }
+        .score-ring-value {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px; font-weight: 700; text-align: center; line-height: 1.1;
+        }
+        .score-ring-value .score-label {
+            display: block; font-size: 11px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-tertiary); margin-top: 2px;
+        }
+        .score-ring-value .score-level {
+            display: block; font-size: 13px; font-weight: 600; margin-top: 2px;
+        }
+        .score-info { flex: 1; min-width: 200px; }
+        .score-info h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+        .score-info p { font-size: 14px; color: var(--text-tertiary); line-height: 1.7; }
+        .score-breakdown {
+            display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;
+        }
+        .score-breakdown-item {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 13px; color: var(--text-tertiary);
+        }
+        .score-breakdown-item .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot-danger { background: var(--score-red); }
+        .dot-warning { background: var(--score-yellow); }
+        .dot-success { background: var(--score-green); }
+
+        /* ─── INFOGRAPHIC SECTIONS ─── */
+        .infographic {
+            margin-top: 24px;
+            display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .section-block {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            position: relative;
+        }
+        .section-block.danger {
+            background: var(--danger-bg);
+            border-left: 4px solid var(--danger);
+            border-color: rgba(244,67,54,0.2) !important;
+        }
+        .section-block.warning {
+            background: var(--warning-bg);
+            border-left: 4px solid var(--warning);
+            border-color: rgba(245,158,11,0.2) !important;
+        }
+        .section-block.success {
+            background: var(--success-bg);
+            border-left: 4px solid var(--success);
+            border-color: rgba(16,185,129,0.2) !important;
+        }
+        .section-block.info {
+            background: var(--brand-bg);
+            border-left: 4px solid var(--brand);
+            border-color: rgba(94,106,210,0.2) !important;
+        }
+        .section-block.collapsed {
+            background: var(--surface);
+        }
+
+        .section-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 16px;
+        }
+        .section-icon {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+        .section-block.danger .section-icon { background: rgba(244,67,54,0.2); }
+        .section-block.warning .section-icon { background: rgba(245,158,11,0.2); }
+        .section-block.success .section-icon { background: rgba(16,185,129,0.2); }
+        .section-block.info .section-icon { background: rgba(94,106,210,0.2); }
+        .section-block.collapsed .section-icon { background: rgba(255,255,255,0.06); }
+
+        .section-title-block h3 {
+            font-size: 16px; font-weight: 600;
+        }
+        .section-title-block p {
+            font-size: 12px; color: var(--text-tertiary); margin-top: 1px;
+        }
+        .section-block.danger .section-title-block h3 { color: var(--danger); }
+        .section-block.warning .section-title-block h3 { color: var(--warning); }
+        .section-block.success .section-title-block h3 { color: var(--success); }
+        .section-block.info .section-title-block h3 { color: var(--accent); }
+
+        .section-body {
+            font-size: 14px; line-height: 1.7;
+            color: var(--text-secondary);
+        }
+        .section-body h1, .section-body h2, .section-body h3, .section-body h4 {
+            display: none;
+        }
+        .section-body p { margin: 6px 0; }
+        .section-body ul, .section-body ol {
+            margin: 6px 0; padding-left: 20px;
+        }
+        .section-body li { margin: 3px 0; }
+        .section-body strong { color: var(--text-primary); }
+        .section-body a { color: var(--accent); }
+
+        /* ─── RECOMMENDATION CARDS ─── */
+        .rec-card {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 12px 16px;
+            background: var(--bg);
+            border-radius: var(--radius);
+            margin-bottom: 8px;
+            border: 1px solid var(--border-subtle);
+        }
+        .rec-card:last-child { margin-bottom: 0; }
+        .rec-card .rec-icon {
+            width: 24px; height: 24px; flex-shrink: 0;
+            border-radius: 6px; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 13px; margin-top: 1px;
+        }
+        .rec-card.danger .rec-icon { background: rgba(244,67,54,0.15); }
+        .rec-card.warning .rec-icon { background: rgba(245,158,11,0.15); }
+        .rec-card.success .rec-icon { background: rgba(16,185,129,0.15); }
+        .rec-card.info .rec-icon { background: rgba(94,106,210,0.15); }
+        .rec-card .rec-text { font-size: 13px; color: var(--text-secondary); flex: 1; }
+        .rec-card.danger .rec-text { color: rgba(244,67,54,0.9); }
+        .rec-card.warning .rec-text { color: rgba(245,158,11,0.9); }
+        .rec-card.success .rec-text { color: rgba(16,185,129,0.9); }
+        .rec-card.info .rec-text { color: var(--text-secondary); }
+
+        /* ─── SCORE DETAILS GRID ─── */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 12px;
+        }
+        .detail-item {
+            display: flex; align-items: center;
+            gap: 8px; padding: 6px 10px;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--text-tertiary);
+            border: 1px solid var(--border-subtle);
+        }
+        .detail-item .detail-icon {
+            font-size: 14px; width: 20px; text-align: center;
+        }
+        .detail-item.negative { color: var(--danger); }
+        .detail-item.positive { color: var(--success); }
+        .detail-item.neutral { color: var(--text-muted); }
+
+        /* ─── RAW REPORT (collapsible) ─── */
+        .raw-report-section {
+            margin-top: 24px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            background: var(--surface);
+        }
+        .raw-report-toggle {
+            display: flex; align-items: center; gap: 10px;
+            cursor: pointer; user-select: none;
+            font-size: 14px; font-weight: 500; color: var(--text-tertiary);
+        }
+        .raw-report-toggle:hover { color: var(--text-secondary); }
+        .raw-report-body {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            font-size: 14px; line-height: 1.8;
+        }
+        .raw-report-body.open { display: block; }
+        .raw-report-body h1 { font-size: 22px; font-weight: 600; margin: 20px 0 10px; color: var(--text-primary); }
+        .raw-report-body h2 { font-size: 18px; font-weight: 600; margin: 16px 0 8px; color: var(--text-primary); }
+        .raw-report-body h3 { font-size: 15px; font-weight: 600; margin: 12px 0 6px; color: var(--accent); }
+        .raw-report-body p { margin: 6px 0; color: var(--text-secondary); }
+        .raw-report-body strong { color: var(--text-primary); }
+        .raw-report-body ul, .raw-report-body ol { margin: 6px 0; padding-left: 20px; }
+        .raw-report-body li { margin: 3px 0; color: var(--text-secondary); }
+        .raw-report-body table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .raw-report-body th {
+            background: var(--surface2); color: var(--text-primary);
+            padding: 8px 12px; text-align: left; font-weight: 600;
+            border: 1px solid var(--border); font-size: 13px;
+        }
+        .raw-report-body td {
+            padding: 8px 12px; border: 1px solid var(--border);
+            color: var(--text-secondary); font-size: 13px;
+        }
+        .raw-report-body code {
+            background: var(--surface2); padding: 2px 6px;
+            border-radius: 4px; font-size: 12px; font-family: 'JetBrains Mono', monospace;
+        }
+        .raw-report-body blockquote {
+            border-left: 3px solid var(--brand);
+            padding: 10px 14px; margin: 12px 0;
+            background: rgba(94,106,210,0.06);
+            color: var(--text-secondary); border-radius: 0 4px 4px 0;
+        }
+        .raw-report-body a { color: var(--accent); }
+        .raw-report-body hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+        .raw-report-body img { max-width: 100%; height: auto; }
+
+        .error-section {
+            text-align: center; padding: 60px 24px;
+        }
+        .error-section h2 { font-size: 24px; color: var(--danger); margin-bottom: 12px; }
+        .error-section p { color: var(--text-tertiary); margin-bottom: 24px; }
+        .error-section .btn-new { display: inline-flex; }
+
+        @media (max-width: 768px) {
+            .report-header { flex-direction: column; }
+            .score-section { flex-direction: column; align-items: center; text-align: center; }
+            .score-breakdown { justify-content: center; }
+            .score-ring-wrapper { width: 120px; height: 120px; }
+            .score-ring { width: 120px; height: 120px; }
+            .score-ring-value { font-size: 30px; }
+            .details-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">
+                <div class="logo-icon">◈</div>
+                AI Verify
+            </a>
+            <a href="index.html" class="nav-cta" style="background:none;border:1px solid var(--border);color:var(--text-secondary);padding:8px 12px;">← Back</a>
+        </div>
+    </nav>
+
+    <div id="app">
+        <div class="status-bar" id="loading">
+            <div class="neural-loader">
+                <div class="neural-network">
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-line"></div>
+                    <div class="neural-scan"></div>
+                </div>
+                <h2>Scanning your compliance data</h2>
+                <p>Analyzing against EU AI Act requirements</p>
+            </div>
+        </div>
+
+        <div class="report-container" id="reportContent" style="display:none;">
+            <div class="report-header">
+                <div class="report-header-info">
+                    <h1 id="reportTitle">AI Compliance Report</h1>
+                    <p class="company" id="companyName"></p>
+                    <p class="time" id="reportTime"></p>
+                </div>
+                <div class="report-header-actions">
+                    <a href="submit.html" class="btn-new">← New Report</a>
+                </div>
+            </div>
+
+            <div class="score-section" id="scoreSection">
+                <div class="score-ring-wrapper">
+                    <svg class="score-ring" viewBox="0 0 140 140">
+                        <circle class="bg-circle" cx="70" cy="70" r="58" />
+                        <circle class="value-circle" id="scoreValueCircle" cx="70" cy="70" r="58"
+                            stroke="var(--score-green)"
+                            stroke-dasharray="364.4"
+                            stroke-dashoffset="364.4" />
+                    </svg>
+                    <div class="score-ring-value" id="scoreRingValue">
+                        <span id="scoreNumber">—</span>
+                        <span class="score-label" id="scoreLabel">COMPLIANCE</span>
+                        <span class="score-level" id="scoreLevel"></span>
+                    </div>
+                </div>
+                <div class="score-info">
+                    <h3 id="scoreTitle">Compliance Score</h3>
+                    <p id="scoreDesc">Your AI compliance score is calculated based on risk factors and current compliance measures.</p>
+                    <div class="score-breakdown">
+                        <span class="score-breakdown-item">
+                            <span class="dot dot-success"></span> <span>Low Risk (71-100)</span>
+                        </span>
+                        <span class="score-breakdown-item">
+                            <span class="dot dot-warning"></span> <span>Medium (40-70)</span>
+                        </span>
+                        <span class="score-breakdown-item">
+                            <span class="dot dot-danger"></span> <span>High Risk (0-39)</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INFOGRAPHIC CONTENT -->
+            <div class="infographic" id="infographicArea">
+                <!-- Rendered dynamically -->
+            </div>
+
+            <!-- RAW FULL REPORT (collapsible) -->
+            <div class="raw-report-section">
+                <div class="raw-report-toggle" id="rawToggle" onclick="toggleRaw()">
+                    <span id="rawToggleIcon">▶</span>
+                    <span>📄 View Full Report (raw markdown)</span>
+                </div>
+                <div class="raw-report-body" id="rawReportBody">
+                    <!-- Raw markdown HTML goes here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="error-section" id="errorContent" style="display:none;">
+            <h2>⚠️ Report Generation Failed</h2>
+            <p>An error occurred while generating the report. Please try again.</p>
+            <a href="submit.html" class="btn-new">← Try Again</a>
+        </div>
+    </div>
+
+    <script>
+        let attemptLabel = null;
+        const subId = new URLSearchParams(window.location.search).get('id');
+        if (!subId) {
+            document.getElementById('loading').innerHTML = '<h2>No report ID provided</h2><p>Please submit the form first.</p><a href="submit.html" class="btn-new">← Start Here</a>';
+        } else {
+            attemptLabel = document.createElement('div');
+            attemptLabel.className = 'attempt-counter';
+            const neuralLoader = document.querySelector('.neural-loader');
+            if (neuralLoader) neuralLoader.appendChild(attemptLabel);
+            pollReport(subId);
+        }
+
+        async function pollReport(id) {
+            const maxAttempts = 90;
+            let attempt = 0;
+            while (attempt < maxAttempts) {
+                try {
+                    const resp = await fetch('https://ai-compliance-consultant.onrender.com/report-html/' + id);
+                    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                    const data = await resp.json();
+                    if (data.status === 'completed') {
+                        showReport(data);
+                        return;
+                    } else if (data.status === 'failed') {
+                        showError();
+                        return;
+                    } else {
+                        attempt++;
+                        if (attemptLabel) attemptLabel.textContent = '↻ Polling attempt ' + attempt + '/' + maxAttempts;
+                    }
+                } catch (err) {
+                    console.error('Poll error:', err);
+                    attempt++;
+                }
+                await new Promise(r => setTimeout(r, 3000));
+            }
+            showError();
+        }
+
+        function toggleRaw() {
+            const body = document.getElementById('rawReportBody');
+            const icon = document.getElementById('rawToggleIcon');
+            body.classList.toggle('open');
+            icon.textContent = body.classList.contains('open') ? '▼' : '▶';
+        }
+
+        function showReport(data) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('reportContent').style.display = 'block';
+
+            const companyName = data.company || 'Your Company';
+            const reportHtml = data.html || '<p>No content</p>';
+
+            document.getElementById('reportTitle').textContent = data.title || 'AI Compliance Report';
+            document.getElementById('companyName').textContent = data.company || '';
+            document.getElementById('reportTime').textContent = 'Generated: ' + new Date().toLocaleString('en-US');
+
+            renderScoreGauge(data);
+            renderInfographic(data);
+
+            // Raw report body
+            document.getElementById('rawReportBody').innerHTML = reportHtml;
+        }
+
+        function renderScoreGauge(data) {
+            const score = data.score !== undefined ? data.score : 0;
+
+            let color, levelText;
+            if (score < 40) {
+                color = 'var(--score-red)';
+                levelText = 'High Risk';
+            } else if (score <= 70) {
+                color = 'var(--score-yellow)';
+                levelText = 'Medium Risk';
+            } else {
+                color = 'var(--score-green)';
+                levelText = 'Low Risk';
+            }
+
+            const circumference = 2 * Math.PI * 58;
+            const offset = circumference - (score / 100) * circumference;
+
+            const circle = document.getElementById('scoreValueCircle');
+            circle.style.stroke = color;
+            circle.setAttribute('stroke-dasharray', circumference);
+            requestAnimationFrame(() => {
+                circle.style.strokeDashoffset = offset;
+            });
+
+            document.getElementById('scoreNumber').textContent = score;
+            document.getElementById('scoreNumber').style.color = color;
+            document.getElementById('scoreLevel').textContent = levelText;
+            document.getElementById('scoreLevel').style.color = color;
+        }
+
+        // ─── PARSE SECTIONS FROM MARKDOWN HTML ───
+        function extractSections(htmlString) {
+            const sections = {};
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlString, 'text/html');
+
+            // Find all h2 headings
+            const headings = doc.querySelectorAll('h2');
+            headings.forEach(h2 => {
+                const headingText = h2.textContent.trim().toLowerCase();
+                let key = null;
+
+                if (headingText.includes('overall conclusion') || headingText.includes('conclusion') || headingText.includes('fazit')) {
+                    key = 'conclusion';
+                } else if (headingText.includes('classification') || headingText.includes('risk categor') || headingText.includes('risk level')) {
+                    key = 'classification';
+                } else if (headingText.includes('applicable requirement') || headingText.includes('anforderung')) {
+                    key = 'requirements';
+                } else if (headingText.includes('identified gap') || headingText.includes('lücke')) {
+                    key = 'gaps';
+                } else if (headingText.includes('specific recommendation') || headingText.includes('empfehlung')) {
+                    key = 'recommendations';
+                } else if (headingText.includes('risk') && (headingText.includes('penalt') || headingText.includes('fine'))) {
+                    key = 'risks';
+                }
+
+                if (key) {
+                    let content = [];
+                    let el = h2.nextElementSibling;
+                    while (el && el.tagName !== 'H2') {
+                        content.push(el.outerHTML);
+                        el = el.nextElementSibling;
+                    }
+                    sections[key] = {
+                        title: h2.textContent.trim(),
+                        content: content.join('\n')
+                    };
+                }
+            });
+
+            // Fallback: if no sections found, put everything in 'conclusion'
+            if (Object.keys(sections).length === 0) {
+                sections.conclusion = { title: 'Full Analysis', content: htmlString };
+            }
+
+            return sections;
+        }
+
+        // ─── RENDER INFOGRAPHIC ───
+        function renderInfographic(data) {
+            const area = document.getElementById('infographicArea');
+            const recommendations = data.recommendations || [];
+            const details = data.details || {};
+            const score = data.score !== undefined ? data.score : 0;
+            const sections = extractSections(data.html || '');
+
+            let html = '';
+
+            // ── SECTION: CRITICAL GAPS & RISKS (RED) ──
+            let hasCritical = false;
+            let criticalContent = '';
+            if (sections.gaps) {
+                hasCritical = true;
+                criticalContent += `<div class="section-body">${sections.gaps.content}</div>`;
+            }
+            if (sections.risks) {
+                hasCritical = true;
+                criticalContent += `<div class="section-body" style="margin-top:8px;">${sections.risks.content}</div>`;
+            }
+            // Also add penalty recommendations as cards
+            const penaltyRecs = recommendations.filter(r =>
+                r.toLowerCase().includes('implement') ||
+                r.toLowerCase().includes('risk management') ||
+                r.toLowerCase().includes('address') ||
+                r.toLowerCase().includes('mitigate') ||
+                r.toLowerCase().includes('condu') ||
+                r.toLowerCase().includes('scale')
+            );
+            if (penaltyRecs.length > 0) {
+                hasCritical = true;
+                criticalContent += `<div style="margin-top:12px;">`;
+                penaltyRecs.forEach(r => {
+                    criticalContent += `
+                        <div class="rec-card danger">
+                            <div class="rec-icon">⚠️</div>
+                            <div class="rec-text">${r}</div>
+                        </div>`;
+                });
+                criticalContent += `</div>`;
+            }
+
+            // Score details that are negative
+            const negDetails = Object.entries(details).filter(([k,v]) => v.startsWith('-'));
+            if (negDetails.length > 0) {
+                hasCritical = true;
+                criticalContent += `<div class="details-grid">`;
+                negDetails.forEach(([k,v]) => {
+                    criticalContent += `<div class="detail-item negative"><span class="detail-icon">▼</span>${v}</div>`;
+                });
+                criticalContent += `</div>`;
+            }
+
+            if (hasCritical) {
+                html += `
+                    <div class="section-block danger">
+                        <div class="section-header">
+                            <div class="section-icon">🚨</div>
+                            <div class="section-title-block">
+                                <h3>Critical Gaps & Risks</h3>
+                                <p>Issues requiring immediate attention</p>
+                            </div>
+                        </div>
+                        ${criticalContent}
+                    </div>`;
+            }
+
+            // ── SECTION: CLASSIFICATION (WARNING) ──
+            if (sections.classification) {
+                html += `
+                    <div class="section-block warning">
+                        <div class="section-header">
+                            <div class="section-icon">⚖️</div>
+                            <div class="section-title-block">
+                                <h3>EU AI Act Classification</h3>
+                                <p>${sections.classification.title}</p>
+                            </div>
+                        </div>
+                        <div class="section-body">${sections.classification.content}</div>
+                    </div>`;
+            }
+
+            // ── SECTION: APPLICABLE REQUIREMENTS (AMBER) ──
+            if (sections.requirements) {
+                html += `
+                    <div class="section-block warning">
+                        <div class="section-header">
+                            <div class="section-icon">📋</div>
+                            <div class="section-title-block">
+                                <h3>Applicable Requirements</h3>
+                                <p>EU AI Act Articles that apply</p>
+                            </div>
+                        </div>
+                        <div class="section-body">${sections.requirements.content}</div>
+                    </div>`;
+            }
+
+            // ── SECTION: RECOMMENDATIONS (BLUE) ──
+            const actionRecs = recommendations.filter(r => !penaltyRecs.includes(r));
+            if (actionRecs.length > 0) {
+                let recHtml = '<div>';
+                actionRecs.forEach(r => {
+                    const isPos = r.toLowerCase().includes('continue') || r.toLowerCase().includes('strong') || r.toLowerCase().includes('no high-risk');
+                    const cls = isPos ? 'success' : 'info';
+                    const icon = isPos ? '✅' : '💡';
+                    recHtml += `
+                        <div class="rec-card ${cls}">
+                            <div class="rec-icon">${icon}</div>
+                            <div class="rec-text">${r}</div>
+                        </div>`;
+                });
+                recHtml += '</div>';
+
+                html += `
+                    <div class="section-block info">
+                        <div class="section-header">
+                            <div class="section-icon">💡</div>
+                            <div class="section-title-block">
+                                <h3>Recommendations</h3>
+                                <p>Action plan for compliance</p>
+                            </div>
+                        </div>
+                        ${recHtml}
+                    </div>`;
+            }
+
+            // ── SECTION: CONCLUSION (GREEN) ──
+            if (sections.conclusion) {
+                html += `
+                    <div class="section-block success">
+                        <div class="section-header">
+                            <div class="section-icon">✅</div>
+                            <div class="section-title-block">
+                                <h3>Overall Conclusion</h3>
+                                <p>${sections.conclusion.title}</p>
+                            </div>
+                        </div>
+                        <div class="section-body">${sections.conclusion.content}</div>
+                    </div>`;
+            } else {
+                // Fallback conclusion from score level
+                let verdict = score >= 70 ? 'Strong compliance posture' : (score >= 40 ? 'Moderate compliance — improvements needed' : 'High risk — immediate action required');
+                html += `
+                    <div class="section-block success">
+                        <div class="section-header">
+                            <div class="section-icon">✅</div>
+                            <div class="section-title-block">
+                                <h3>Overall Conclusion</h3>
+                                <p>Assessment result</p>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <p><strong>Compliance Score:</strong> ${score}/100 — ${verdict}</p>
+                        </div>
+                    </div>`;
+            }
+
+            // ── Positive score details ──
+            const posDetails = Object.entries(details).filter(([k,v]) => v.startsWith('+'));
+            if (posDetails.length > 0) {
+                let detailHtml = '<div class="details-grid">';
+                posDetails.forEach(([k,v]) => {
+                    detailHtml += `<div class="detail-item positive"><span class="detail-icon">▲</span>${v}</div>`;
+                });
+                detailHtml += '</div>';
+                html += `
+                    <div class="section-block success">
+                        <div class="section-header">
+                            <div class="section-icon">📊</div>
+                            <div class="section-title-block">
+                                <h3>Compliance Strengths</h3>
+                                <p>Positive factors boosting your score</p>
+                            </div>
+                        </div>
+                        ${detailHtml}
+                    </div>`;
+            }
+
+            area.innerHTML = html;
+        }
+
+        function showError() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('errorContent').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

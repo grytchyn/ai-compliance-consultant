@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Concepts — AI Compliance Checker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #08090a; --surface: #0f1011; --surface2: #191a1b; --surface3: #23252a; --text: #f7f8f8; --text2: #d0d6e0; --text3: #8a8f98; --border: rgba(255,255,255,0.08); --radius: 12px; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 40px 24px; }
+.container { max-width: 1300px; margin: 0 auto; }
+h1 { font-size: 42px; font-weight: 700; margin-bottom: 8px; background: linear-gradient(135deg, #f7f8f8, #8a8f98); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { color: var(--text3); font-size: 16px; margin-bottom: 48px; }
+
+/* Concept card */
+.concept { 
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 48px; margin-bottom: 64px; position: relative; overflow: hidden;
+}
+.concept-badge {
+  position: absolute; top: 16px; right: 16px;
+  background: var(--surface3); color: var(--text3); font-size: 12px; font-weight: 600;
+  padding: 4px 14px; border-radius: 999px; letter-spacing: 0.5px;
+}
+.concept h2 { font-size: 32px; font-weight: 700; margin-bottom: 24px; }
+
+/* Logo display */
+.logo-area { display: flex; gap: 48px; align-items: center; margin-bottom: 40px; flex-wrap: wrap; }
+.logo-display {
+  width: 120px; height: 120px; border-radius: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; font-weight: 800; position: relative; overflow: hidden;
+}
+.logo-info h3 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+.logo-info .tagline { font-size: 14px; color: var(--text3); font-weight: 400; }
+
+/* Color palette */
+.palette { display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; }
+.swatch { width: 100px; height: 80px; border-radius: 8px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding: 6px; font-size: 10px; font-weight: 500; font-family: 'JetBrains Mono', monospace; }
+.swatch .code { background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; backdrop-filter: blur(4px); }
+
+/* Brand book table */
+.brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+.brand-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.brand-item .label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.brand-item .value { font-size: 14px; color: var(--text2); font-weight: 500; }
+
+/* Mockup preview */
+.mockup-area {
+  margin-top: 32px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+}
+.mockup-header {
+  padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border);
+}
+.mockup-logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; }
+.mockup-logo-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: white; }
+.mockup-body { padding: 40px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.mockup-hero { max-width: 600px; }
+.mockup-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 9999px; font-size: 12px; font-weight: 500; margin-bottom: 24px; }
+.mockup-hero h2 { font-size: 40px; font-weight: 700; line-height: 1.1; margin-bottom: 16px; }
+.mockup-hero p { font-size: 16px; margin-bottom: 24px; }
+.mockup-input-row { display: flex; gap: 8px; max-width: 480px; width: 100%; }
+.mockup-input { flex: 1; padding: 12px 16px; border-radius: 8px; border: 1px solid; font-size: 14px; }
+.mockup-btn { padding: 12px 24px; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 14px; cursor: pointer; }
+.mockup-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; max-width: 700px; margin-top: 48px; }
+.mockup-feat { padding: 20px; border-radius: 8px; border: 1px solid; font-size: 13px; }
+.mockup-feat strong { display: block; font-size: 15px; margin-bottom: 6px; }
+
+@media (max-width: 768px) {
+  h1 { font-size: 28px; }
+  .concept { padding: 24px; }
+  .logo-area { gap: 24px; }
+  .brand-grid { grid-template-columns: 1fr; }
+  .mockup-features { grid-template-columns: 1fr; }
+  .mockup-hero h2 { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Brand Identity Concepts</h1>
+<p class="subtitle">Three distinct brand directions for the AI Compliance Checker — each with logo, color system, brand book, and page mockup</p>
+
+<!-- Concept A: ComplyShield -->
+<div class="concept">
+  <div class="concept-badge">🔵 CONCEPT A — Professional & Trustworthy</div>
+  <h2>ComplyShield</h2>
+  
+  <div class="logo-area">
+    <div class="logo-display" style="background: linear-gradient(135deg, #1E3A5F, #2563EB); color: white;">
+      <span style="display:flex;flex-direction:column;align-items:center;line-height:1;">
+        <span style="font-size:20px;font-weight:300;">◈</span>
+        <span style="font-size:32px;letter-spacing:-1px;">CS</span>
+      </span>
+    </div>
+    <div class="logo-info">
+      <h3 style="color: #2563EB;">ComplyShield</h3>
+      <div class="tagline" style="color: #7BA7E8;">Your EU AI Act Shield</div>
+    </div>
+  </div>
+
+  <div class="palette">
+    <div class="swatch" style="background: #1E3A5F;"><span class="code" style="color:white;">#1E3A5F</span></div>
+    <div class="swatch" style="background: #2563EB;"><span class="code" style="color:white;">#2563EB</span></div>
+    <div class="swatch" style="background: #3B82F6;"><span class="code" style="color:white;">#3B82F6</span></div>
+    <div class="swatch" style="background: #7BA7E8;"><span class="code" style="color:white;">#7BA7E8</span></div>
+    <div class="swatch" style="background: #F0F4FF;"><span class="code" style="color:#1E3A5F;">#F0F4FF</span></div>
+    <div class="swatch" style="background: #0A1628;"><span class="code" style="color:white;">#0A1628</span></div>
+  </div>
+
+  <div class="brand-grid">
+    <div class="brand-item"><div class="label">Brand Personality</div><div class="value">Professional, Trustworthy, Protective, Enterprise-grade</div></div>
+    <div class="brand-item"><div class="label">Target Vibe</div><div class="value">"Banks & law firms — serious, reliable, no-nonsense"</div></div>
+    <div class="brand-item"><div class="label">Typography</div><div class="value">Inter (headings), IBM Plex Sans (body), JetBrains Mono (code)</div></div>
+    <div class="brand-item"><div class="label">Logo Style</div><div class="value">Abstract shield + CS monogram. Gold accent diamond ◈ as premium mark</div></div>
+    <div class="brand-item"><div class="label">Key Taglines</div><div class="value">"Your EU AI Act Shield" · "Compliance Made Certain" · "Know your risk in 30 seconds"</div></div>
+    <div class="brand-item"><div class="label">Voice</div><div class="value">Formal but clear — legal authority without the jargon. "Sie" in DE, authoritative but helpful</div></div>
+  </div>
+
+  <div class="mockup-area" style="border-color: rgba(37,99,235,0.2);">
+    <div class="mockup-header" style="background: #0A1628;">
+      <div class="mockup-logo">
+        <div class="mockup-logo-icon" style="background: linear-gradient(135deg, #1E3A5F, #2563EB);">◈</div>
+        <span style="color: #7BA7E8;">ComplyShield</span>
+      </div>
+      <div style="display:flex;gap:24px;font-size:13px;">
+        <span style="color:#7BA7E8;">How it works</span>
+        <span style="color:#7BA7E8;">Features</span>
+        <span style="color:white;font-weight:500;">Check now →</span>
+      </div>
+    </div>
+    <div class="mockup-body" style="background: linear-gradient(135deg, #0A1628 0%, #0F172A 100%);">
+      <div class="mockup-hero">
+        <div class="mockup-badge" style="background: rgba(37,99,235,0.15); border: 1px solid rgba(37,99,235,0.3); color: #3B82F6;">⚡ EU AI Act — Effective August 2026</div>
+        <h2 style="background: linear-gradient(135deg, white, #7BA7E8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Know Your AI Compliance<br>Risk in 30 Seconds</h2>
+        <p style="color: #8A8F98;">Enter your company website. Get a full EU AI Act compliance report. Free. No signup needed.</p>
+        <div class="mockup-input-row">
+          <input class="mockup-input" placeholder="https://your-company.com" style="background:#0F172A;border-color:rgba(37,99,235,0.3);color:white;">
+          <button class="mockup-btn" style="background: #2563EB;">Scan Now →</button>
+        </div>
+      </div>
+      <div class="mockup-features">
+        <div class="mockup-feat" style="background:#0F172A;border-color:rgba(37,99,235,0.15);"><strong style="color:#3B82F6;">🔍 Auto Scan</strong><span style="color:#8A8F98;">Detects chatbots, trackers, forms — all AI components</span></div>
+        <div class="mockup-feat" style="background:#0F172A;border-color:rgba(37,99,235,0.15);"><strong style="color:#3B82F6;">📋 Legal Report</strong><span style="color:#8A8F98;">Risk score, gaps, action plan — in plain English</span></div>
+        <div class="mockup-feat" style="background:#0F172A;border-color:rgba(37,99,235,0.15);"><strong style="color:#3B82F6;">💰 Free Forever</strong><span style="color:#8A8F98;">Full report. No paywall. No credit card.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Concept B: AIVerify -->
+<div class="concept">
+  <div class="concept-badge">🟣 CONCEPT B — Modern & Tech-Forward</div>
+  <h2>AI Verify</h2>
+  
+  <div class="logo-area">
+    <div class="logo-display" style="background: linear-gradient(135deg, #4C1D95, #7C3AED); color: white;">
+      <span style="display:flex;flex-direction:column;align-items:center;line-height:1;">
+        <span style="font-size:32px;letter-spacing:-1px;">AV</span>
+        <span style="font-size:12px;font-weight:400;opacity:0.7;">✓</span>
+      </span>
+    </div>
+    <div class="logo-info">
+      <h3 style="color: #7C3AED;">AI Verify</h3>
+      <div class="tagline" style="color: #A78BFA;">AI Act compliance, verified instantly.</div>
+    </div>
+  </div>
+
+  <div class="palette">
+    <div class="swatch" style="background: #2D0A59;"><span class="code" style="color:white;">#2D0A59</span></div>
+    <div class="swatch" style="background: #7C3AED;"><span class="code" style="color:white;">#7C3AED</span></div>
+    <div class="swatch" style="background: #A78BFA;"><span class="code" style="color:white;">#A78BFA</span></div>
+    <div class="swatch" style="background: #C4B5FD;"><span class="code" style="color:#2D0A59;">#C4B5FD</span></div>
+    <div class="swatch" style="background: #06B6D4;"><span class="code" style="color:white;">#06B6D4</span></div>
+    <div class="swatch" style="background: #0C0A1E;"><span class="code" style="color:white;">#0C0A1E</span></div>
+  </div>
+
+  <div class="brand-grid">
+    <div class="brand-item"><div class="label">Brand Personality</div><div class="value">Modern, Tech-forward, Innovative, Startup-energy, Clean</div></div>
+    <div class="brand-item"><div class="label">Target Vibe</div><div class="value">"SaaS product — Stripe/Linear for compliance"</div></div>
+    <div class="brand-item"><div class="label">Typography</div><div class="value">Inter (headings + body), JetBrains Mono (UI badges)</div></div>
+    <div class="brand-item"><div class="label">Logo Style</div><div class="value">Monogram "AV" with checkmark accent + gradient purple-to-cyan pulse</div></div>
+    <div class="brand-item"><div class="label">Key Taglines</div><div class="value">"AI Act compliance, verified instantly." · "Scan. Verify. Comply." · "Built for the AI era"</div></div>
+    <div class="brand-item"><div class="label">Voice</div><div class="value">Direct, modern, startup-clear — Stripe-level copy. Short sentences. "You" not "the user".</div></div>
+  </div>
+
+  <div class="mockup-area" style="border-color: rgba(124,58,237,0.2);">
+    <div class="mockup-header" style="background: #0C0A1E;">
+      <div class="mockup-logo">
+        <div class="mockup-logo-icon" style="background: linear-gradient(135deg, #7C3AED, #06B6D4);">AV</div>
+        <span style="color: #A78BFA;">AI Verify</span>
+      </div>
+      <div style="display:flex;gap:24px;font-size:13px;">
+        <span style="color:#A78BFA;">How it works</span>
+        <span style="color:#A78BFA;">Features</span>
+        <span style="color:white;font-weight:500;">Scan now →</span>
+      </div>
+    </div>
+    <div class="mockup-body" style="background: linear-gradient(135deg, #0C0A1E 0%, #0F0B2E 100%);">
+      <div class="mockup-hero">
+        <div class="mockup-badge" style="background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); color: #A78BFA;">⚡ AI Act enforcement starts August 2026</div>
+        <h2 style="background: linear-gradient(135deg, white, #A78BFA); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Is Your Company<br>AI Act Ready?</h2>
+        <p style="color: #8A8F98;">Enter your URL. Get instant compliance analysis powered by AI. 100% free.</p>
+        <div class="mockup-input-row">
+          <input class="mockup-input" placeholder="https://your-company.com" style="background:#0F0B2E;border-color:rgba(124,58,237,0.3);color:white;">
+          <button class="mockup-btn" style="background: linear-gradient(135deg, #7C3AED, #06B6D4);">Verify →</button>
+        </div>
+      </div>
+      <div class="mockup-features">
+        <div class="mockup-feat" style="background:#0F0B2E;border-color:rgba(124,58,237,0.15);"><strong style="color:#A78BFA;">⚡ 30s Scan</strong><span style="color:#8A8F98;">AI-powered website analysis, instant results</span></div>
+        <div class="mockup-feat" style="background:#0F0B2E;border-color:rgba(124,58,237,0.15);"><strong style="color:#A78BFA;">📊 Risk Report</strong><span style="color:#8A8F98;">Clear score + actionable compliance checklist</span></div>
+        <div class="mockup-feat" style="background:#0F0B2E;border-color:rgba(124,58,237,0.15);"><strong style="color:#A78BFA;">🆓 Free</strong><span style="color:#8A8F98;">No signup, no credit card, unlimited scans</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Concept C: ComplyNow -->
+<div class="concept">
+  <div class="concept-badge">🟢 CONCEPT C — Action-Oriented & Accessible</div>
+  <h2>ComplyNow</h2>
+  
+  <div class="logo-area">
+    <div class="logo-display" style="background: linear-gradient(135deg, #064E3B, #10B98A); color: white;">
+      <span style="display:flex;flex-direction:column;align-items:center;line-height:1;">
+        <span style="font-size:14px;font-weight:300;">⚡</span>
+        <span style="font-size:28px;letter-spacing:-1px;">CN</span>
+      </span>
+    </div>
+    <div class="logo-info">
+      <h3 style="color: #10B98A;">ComplyNow</h3>
+      <div class="tagline" style="color: #6EE7B7;">Compliance, not complexity.</div>
+    </div>
+  </div>
+
+  <div class="palette">
+    <div class="swatch" style="background: #064E3B;"><span class="code" style="color:white;">#064E3B</span></div>
+    <div class="swatch" style="background: #059669;"><span class="code" style="color:white;">#059669</span></div>
+    <div class="swatch" style="background: #10B98A;"><span class="code" style="color:white;">#10B98A</span></div>
+    <div class="swatch" style="background: #6EE7B7;"><span class="code" style="color:#064E3B;">#6EE7B7</span></div>
+    <div class="swatch" style="background: #A7F3D0;"><span class="code" style="color:#064E3B;">#A7F3D0</span></div>
+    <div class="swatch" style="background: #031E15;"><span class="code" style="color:white;">#031E15</span></div>
+  </div>
+
+  <div class="brand-grid">
+    <div class="brand-item"><div class="label">Brand Personality</div><div class="value">Actionable, Accessible, Calm, Green (safe/go), Small-business friendly</div></div>
+    <div class="brand-item"><div class="label">Target Vibe</div><div class="value">"Deel for compliance — simple, fast, for the non-expert"</div></div>
+    <div class="brand-item"><div class="label">Typography</div><div class="value">Inter (headings + body), rounded buttons, friendly micro-copy</div></div>
+    <div class="brand-item"><div class="label">Logo Style</div><div class="true">Monogram "CN" with lightning bolt accent ⚡. Emerald green gradient. Circular shield optional.</div></div>
+    <div class="brand-item"><div class="label">Key Taglines</div><div class="value">"Compliance, not complexity." · "Check your AI in 30s." · "No lawyers. No forms. Just results."</div></div>
+    <div class="brand-item"><div class="label">Voice</div><div class="value">Friendly, encouraging, simple — "You've got this." Not legal-authority but helpful-assistant. "We make it easy."</div></div>
+  </div>
+
+  <div class="mockup-area" style="border-color: rgba(16,185,138,0.2);">
+    <div class="mockup-header" style="background: #031E15;">
+      <div class="mockup-logo">
+        <div class="mockup-logo-icon" style="background: linear-gradient(135deg, #064E3B, #10B98A);">⚡</div>
+        <span style="color: #6EE7B7;">ComplyNow</span>
+      </div>
+      <div style="display:flex;gap:24px;font-size:13px;">
+        <span style="color:#6EE7B7;">How it works</span>
+        <span style="color:#6EE7B7;">Features</span>
+        <span style="color:white;font-weight:500;">Check now →</span>
+      </div>
+    </div>
+    <div class="mockup-body" style="background: linear-gradient(135deg, #031E15 0%, #064E3B 100%);">
+      <div class="mockup-hero">
+        <div class="mockup-badge" style="background: rgba(16,185,138,0.15); border: 1px solid rgba(16,185,138,0.3); color: #6EE7B7;">⚡ Free AI Act check — no strings attached</div>
+        <h2 style="background: linear-gradient(135deg, white, #6EE7B7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Compliance Shouldn't<br>Be Complicated</h2>
+        <p style="color: #8A8F98;">Just drop your website URL. We'll tell you exactly where you stand with the EU AI Act — in plain English.</p>
+        <div class="mockup-input-row">
+          <input class="mockup-input" placeholder="https://your-company.com" style="background:#064E3B;border-color:rgba(16,185,138,0.3);color:white;">
+          <button class="mockup-btn" style="background: #10B98A;">Check now →</button>
+        </div>
+      </div>
+      <div class="mockup-features">
+        <div class="mockup-feat" style="background:#064E3B;border-color:rgba(16,185,138,0.15);"><strong style="color:#6EE7B7;">🔗 Paste URL</strong><span style="color:#8A8F98;">That's all. No forms, no signup.</span></div>
+        <div class="mockup-feat" style="background:#064E3B;border-color:rgba(16,185,138,0.15);"><strong style="color:#6EE7B7;">⚡ Instant Scan</strong><span style="color:#8A8F98;">AI finds every risk in under 30 seconds</span></div>
+        <div class="mockup-feat" style="background:#064E3B;border-color:rgba(16,185,138,0.15);"><strong style="color:#6EE7B7;">✅ Action Plan</strong><span style="color:#8A8F98;">Clear steps. No legal jargon. Do it today.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
