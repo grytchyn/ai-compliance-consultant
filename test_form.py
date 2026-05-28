@@ -16,19 +16,16 @@ TEST_COMPANIES = [
         "company": "Conrad Electronic SE",
         "url": "https://www.conrad.de",
         "description": "Online-Händler für Elektronik und Technik",
-        "email": "test@example.com"
     },
     {
         "company": "MediaMarkt Deutschland",
         "url": "https://www.mediamarkt.de",
         "description": "Elektronik-Fachmarkt für Unterhaltungselektronik",
-        "email": "test@example.com"
     },
     {
         "company": "Saturn Electro-Handels GmbH",
         "url": "https://www.saturn.de",
         "description": "Einzelhändler für Elektrogeräte und Elektronik",
-        "email": "test@example.com"
     }
 ]
 

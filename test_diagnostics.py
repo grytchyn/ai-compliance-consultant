@@ -39,7 +39,6 @@ def main():
         "company": "Test Firma GmbH",
         "url": "https://example.com",
         "description": "Testunternehmen",
-        "email": "test@example.com"
     }
     status, body = test_endpoint("POST", "/submit", data=test_data)
     if status == 200 and "id" in body:

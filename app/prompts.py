@@ -12,7 +12,7 @@ def build_company_profile(submission, lang: str = "en") -> str:
     import json
     
     labels = {
-        "en": {"company": "Company", "website": "Website", "email": "Email", "size": "Company Size",
+        "en": {"company": "Company", "website": "Website", "size": "Company Size",
                "sector": "Sector", "employees": "Employees", "revenue": "Annual Revenue",
                "hq": "HQ Location", "not_specified": "Not specified", "ai_details": "AI System Details",
                "ai_count": "AI Systems in Production", "ai_names": "System Names",
