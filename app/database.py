@@ -16,10 +16,33 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(String, primary_key=True, index=True)  # uuid
+    google_sub = Column(String, unique=True, index=True, nullable=False)  # Google's unique user ID
+    email = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, nullable=True)
+    avatar_url = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_login = Column(DateTime(timezone=True), server_default=func.now())
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "email": self.email,
+            "name": self.name,
+            "avatar_url": self.avatar_url,
+            "created_at": str(self.created_at) if self.created_at else None,
+            "last_login": str(self.last_login) if self.last_login else None,
+        }
+
+
 class Submission(Base):
     __tablename__ = "submissions"
 
     id = Column(String, primary_key=True, index=True)
+    user_id = Column(String, index=True, nullable=True)  # FK to users.id
     status = Column(String, default="pending")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     report_path = Column(String, nullable=True)

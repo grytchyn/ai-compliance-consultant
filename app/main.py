@@ -6,13 +6,15 @@ from fastapi.responses import HTMLResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from .database import SessionLocal, engine, Base
+from .database import SessionLocal, engine, Base, User
 from .models import Submission
 from .llm import call_ollama
 from .search import duckduckgo_instant_answer
 from .prompts import build_user_prompt, build_enhanced_prompt
 from .utils import save_report
 from .website_analyzer import analyze_website
+from .auth import verify_google_token, login_or_register, get_current_user
+from .auth import get_db as auth_get_db
 import os
 import json
 import markdown
@@ -40,6 +42,109 @@ app.add_middleware(
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+# ── Auth endpoints ─────────────────────────────────────
+
+@app.post("/auth/google")
+async def auth_google(
+    request: Request,
+    db: Session = Depends(auth_get_db),
+):
+    """
+    Exchange a Google ID token for a JWT session.
+    Body: {"credential": "google_id_token"}
+    """
+    body = await request.json()
+    credential = body.get("credential", "")
+    if not credential:
+        raise HTTPException(status_code=400, detail="Missing credential")
+
+    google_data = verify_google_token(credential)
+    if not google_data:
+        raise HTTPException(status_code=401, detail="Invalid Google token")
+
+    user, token = login_or_register(google_data, db)
+    return {
+        "token": token,
+        "user": user.to_dict(),
+    }
+
+
+@app.get("/auth/me")
+async def auth_me(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(auth_get_db),
+):
+    """Get current authenticated user info."""
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    # Also fetch user's scan count
+    scan_count = db.query(Submission).filter(Submission.user_id == current_user.id).count()
+    user_data = current_user.to_dict()
+    user_data["scan_count"] = scan_count
+    return user_data
+
+
+@app.post("/auth/save/{sub_id}")
+async def auth_save_result(
+    sub_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(auth_get_db),
+):
+    """Link an existing submission to the authenticated user."""
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    sub = db.query(Submission).filter(Submission.id == sub_id).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    
+    sub.user_id = current_user.id
+    db.commit()
+    return {"status": "ok", "message": "Result saved to your profile"}
+
+
+@app.get("/auth/results")
+async def auth_results(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(auth_get_db),
+):
+    """Get all scan results for the authenticated user."""
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    submissions = (
+        db.query(Submission)
+        .filter(Submission.user_id == current_user.id)
+        .order_by(Submission.created_at.desc())
+        .limit(50)
+        .all()
+    )
+    
+    results = []
+    for sub in submissions:
+        score = None
+        level = None
+        if sub.status == "completed":
+            try:
+                score_data = calculate_compliance_score(sub)
+                score = score_data.get("score")
+                level = score_data.get("level")
+            except:
+                pass
+        
+        results.append({
+            "id": sub.id,
+            "company": sub.company,
+            "url": sub.url,
+            "status": sub.status,
+            "created_at": str(sub.created_at) if sub.created_at else None,
+            "score": score,
+            "level": level,
+        })
+    
+    return {"results": results}
 
 @app.get("/analyze-url")
 async def analyze_url(url: str = ""):

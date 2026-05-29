@@ -1,4 +1,4 @@
-from .database import Base, Submission, engine, SessionLocal
+from .database import Base, User, Submission, engine, SessionLocal
 
 # Re-export for convenience
-__all__ = ["Base", "Submission", "engine", "SessionLocal"]
+__all__ = ["Base", "User", "Submission", "engine", "SessionLocal"]
