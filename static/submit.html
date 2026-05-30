@@ -250,14 +250,14 @@
         }
 
         .progress-bar {
-            position: sticky; top: 56px; z-index: 99;
-            width: 100%; height: 4px;
-            background: var(--surface2); border-radius: 2px;
-            overflow: hidden; margin-bottom: 32px;
+            position: fixed; top: 52px; left: 0; right: 0; z-index: 99;
+            height: 5px;
+            background: var(--surface2);
+            overflow: hidden;
         }
         .progress-fill {
             height: 100%; background: linear-gradient(90deg, var(--brand), var(--accent));
-            border-radius: 2px; transition: width 0.5s ease;
+            transition: width 0.3s ease;
             width: 0%;
         }
 
@@ -346,8 +346,55 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>HQ Location</label>
-                        <input type="text" name="hq_location" placeholder="e.g. Munich, Germany">
+        <label>Country</label>
+                        <input type="text" name="hq_location" id="countryInput" placeholder="Start typing a country..." autocomplete="off" list="countriesList">
+                        <datalist id="countriesList">
+                            <option value="Austria">
+                            <option value="Belgium">
+                            <option value="Bulgaria">
+                            <option value="Croatia">
+                            <option value="Cyprus">
+                            <option value="Czech Republic">
+                            <option value="Denmark">
+                            <option value="Estonia">
+                            <option value="Finland">
+                            <option value="France">
+                            <option value="Germany">
+                            <option value="Greece">
+                            <option value="Hungary">
+                            <option value="Iceland">
+                            <option value="Ireland">
+                            <option value="Italy">
+                            <option value="Latvia">
+                            <option value="Liechtenstein">
+                            <option value="Lithuania">
+                            <option value="Luxembourg">
+                            <option value="Malta">
+                            <option value="Netherlands">
+                            <option value="Norway">
+                            <option value="Poland">
+                            <option value="Portugal">
+                            <option value="Romania">
+                            <option value="Slovakia">
+                            <option value="Slovenia">
+                            <option value="Spain">
+                            <option value="Sweden">
+                            <option value="Switzerland">
+                            <option value="United Kingdom">
+                            <option value="United States">
+                            <option value="Canada">
+                            <option value="Australia">
+                            <option value="Japan">
+                            <option value="China">
+                            <option value="India">
+                            <option value="Brazil">
+                            <option value="Mexico">
+                            <option value="South Korea">
+                            <option value="Turkey">
+                            <option value="Ukraine">
+                            <option value="Other">
+                        </datalist>
+                        <div class="hint">EU AI Act applies to all EU member states. Select the country where your company is based.</div>
                     </div>
                 </div>
                 
@@ -909,18 +956,96 @@
     </div>
 
     <script>
-        // ── Checkbox UI — change event ──
+        const FORM_CACHE_KEY = 'aiverify_form_data';
+
+        // ── URL passthrough from index page ──
+        function loadUrlFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const url = params.get('url');
+            if (url) {
+                document.querySelector('[name="url"]').value = url;
+            }
+        }
+
+        // ── localStorage cache: save on any change ──
+        function cacheFormData() {
+            const form = document.getElementById('complianceForm');
+            const data = {};
+            // Text inputs, selects, textareas
+            form.querySelectorAll('input[type="text"], input[type="url"], select, textarea').forEach(el => {
+                data[el.name] = el.value;
+            });
+            // Checkboxes
+            form.querySelectorAll('input[type="checkbox"]').forEach(el => {
+                data[el.name + '_' + el.value] = el.checked;
+            });
+            // Radios
+            form.querySelectorAll('input[type="radio"]').forEach(el => {
+                if (el.checked) data[el.name] = el.value;
+            });
+            try {
+                localStorage.setItem(FORM_CACHE_KEY, JSON.stringify(data));
+            } catch(e) { /* storage full — ignore */ }
+        }
+
+        // ── Restore from cache ──
+        function restoreFormData() {
+            try {
+                const raw = localStorage.getItem(FORM_CACHE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                const form = document.getElementById('complianceForm');
+
+                // Text inputs, selects, textareas
+                form.querySelectorAll('input[type="text"], input[type="url"], select, textarea').forEach(el => {
+                    if (data[el.name] !== undefined) {
+                        el.value = data[el.name];
+                    }
+                });
+
+                // Checkboxes
+                form.querySelectorAll('input[type="checkbox"]').forEach(el => {
+                    const key = el.name + '_' + el.value;
+                    if (data[key] === true) {
+                        el.checked = true;
+                        el.closest('.checkbox-item')?.classList.add('checked');
+                    }
+                });
+
+                // Radios
+                form.querySelectorAll('input[type="radio"]').forEach(el => {
+                    if (data[el.name] === el.value) {
+                        el.checked = true;
+                    }
+                });
+
+                // Recalculate conditional sections
+                updateAISections();
+                const yesRadio = document.querySelector('input[name="previous_audits"][value="yes"]');
+                if (yesRadio && yesRadio.checked) {
+                    document.getElementById('audit-details').style.display = '';
+                }
+            } catch(e) { /* ignore corrupt cache */ }
+        }
+
+        // ── Clear cache after successful submission ──
+        function clearFormCache() {
+            try { localStorage.removeItem(FORM_CACHE_KEY); } catch(e) {}
+        }
+
+        // ── Checkbox UI ──
         document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(input => {
             input.addEventListener('change', function() {
                 this.closest('.checkbox-item').classList.toggle('checked', this.checked);
                 updateProgress();
+                cacheFormData();
             });
             if (input.checked) {
                 input.closest('.checkbox-item').classList.add('checked');
             }
         });
 
-        // ── Progressive Disclosure: hide Sections 3+4 when no AI systems ──
+        // ── Progressive Disclosure ──
         function updateAISections() {
             const count = document.getElementById('ai_systems_count').value;
             const s3 = document.querySelector('.form-section:nth-of-type(3)');
@@ -929,13 +1054,17 @@
             s3.style.display = hide ? 'none' : '';
             s4.style.display = hide ? 'none' : '';
         }
-        document.getElementById('ai_systems_count').addEventListener('change', updateAISections);
+        document.getElementById('ai_systems_count').addEventListener('change', function() {
+            updateAISections();
+            cacheFormData();
+        });
 
         // ── Audit detail conditional ──
         document.querySelectorAll('input[name="previous_audits"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 document.getElementById('audit-details').style.display =
                     this.value === 'yes' ? '' : 'none';
+                cacheFormData();
             });
         });
 
@@ -963,8 +1092,14 @@
         }
 
         document.querySelectorAll('input, select, textarea').forEach(el => {
-            el.addEventListener('change', updateProgress);
-            el.addEventListener('input', updateProgress);
+            el.addEventListener('change', function() {
+                updateProgress();
+                cacheFormData();
+            });
+            el.addEventListener('input', function() {
+                updateProgress();
+                cacheFormData();
+            });
         });
 
         // ── Form submission ──
@@ -994,16 +1129,34 @@
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
                 const data = await resp.json();
                 if (!data.id) throw new Error('No ID returned');
+                clearFormCache();
                 window.location.href = '/result-page?id=' + data.id;
             } catch (err) {
                 btn.disabled = false;
                 btn.textContent = '→ Generate Compliance Report';
-                alert('Error: ' + err.message + '\nPlease try again.');
+                // Show error with retry — data still in cache
+                document.getElementById('errorBox').style.display = '';
+                document.getElementById('errorMsg').textContent = err.message;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
 
         // ── Init ──
+        loadUrlFromQuery();
+        restoreFormData();
+        updateProgress();
         updateAISections();
     </script>
+
+    <!-- Error box -->
+    <div id="errorBox" style="display:none; max-width:800px; margin: -56px auto 40px; padding:0 24px;">
+        <div style="background:var(--surface); border:1px solid rgba(244,67,54,0.3); border-radius:var(--radius-lg); padding:24px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:8px;">❌</div>
+            <h3 style="margin-bottom:8px;">Analysis Failed</h3>
+            <p id="errorMsg" style="color:var(--text-tertiary); margin-bottom:16px; font-size:14px;"></p>
+            <button onclick="document.getElementById('errorBox').style.display='none';window.scrollTo({top:0,behavior:'smooth'});" class="btn-primary" style="padding:12px 32px; font-size:14px;">← Back to Form</button>
+            <p style="color:var(--text-muted); font-size:12px; margin-top:12px;">Your form data is saved. Simply scroll down and try again.</p>
+        </div>
+    </div>
 </body>
 </html>
