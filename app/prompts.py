@@ -249,6 +249,14 @@ Priority actions to take — ordered by urgency (immediate / short-term / long-t
 ## 6. PENALTY RISK (1-2 sentences)
 Potential fines and consequences if not addressed.
 
+## 7. METHODOLOGY
+How this analysis was performed: automated website scan (HTTP GET, HTML parsing, keyword detection for AI use cases, GDPR signals, privacy/cookie policies) + open-source data search (DuckDuckGo) + structured form data analysis against EU AI Act risk categories and requirements. The compliance score (0-100) is calculated from risk factors and compliance measures per the multi-variate formula defined in the AI Verify engine. Always provide this section.
+
+## 8. SOURCES
+- Official EU AI Act text: https://eur-lex.europa.eu/eli/reg/2024/1689
+- EU AI Act high-risk list: https://artificialintelligenceact.eu/high-risk/
+- European Commission AI page: https://digital-strategy.ec.europa.eu/en/policies/european-approach-artificial-intelligence
+
 Keep the entire response under 2000 characters total. Short and actionable. Write like a lawyer advising a client — direct, clear, no fluff."""
 
     return prompt
