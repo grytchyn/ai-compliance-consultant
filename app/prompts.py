@@ -5,7 +5,14 @@ Respond strictly with facts from the provided context only, using markdown forma
 
 Your response MUST be in ENGLISH. Use technical terms in English only."""
 
-SYSTEM_PROMPT = SYSTEM_PROMPT_EN  # English always
+SYSTEM_PROMPT_DE = """Sie sind ein Experte für den EU AI Act (EU-Verordnung 2024/1689 über künstliche Intelligenz). Hochrisiko-KI-Systeme umfassen: biometrische Identifizierung, kritische Infrastruktur, Beschäftigung, Bonitätsbewertung, Bildung. Wichtige Anforderungen: Risikomanagement, Datenqualität, Transparenz, menschliche Aufsicht, Protokollierung, Konformitätsbewertung.
+Antworten Sie streng mit Fakten aus dem bereitgestellten Kontext, im Markdown-Format.
+
+Ihre Antwort MUSS auf DEUTSCH sein. Verwenden Sie Fachbegriffe in der deutschen Übersetzung."""
+
+def get_system_prompt(lang: str = "en") -> str:
+    """Return system prompt in the requested language."""
+    return SYSTEM_PROMPT_DE if lang == "de" else SYSTEM_PROMPT_EN
 
 def build_company_profile(submission, lang: str = "en") -> str:
     """Build structured company profile from submission data."""
@@ -28,8 +35,24 @@ def build_company_profile(submission, lang: str = "en") -> str:
                "high_risk": "High-Risk Categories (selected)", "none_selected": "None selected",
                "additional_info": "Additional Information", "ai_activity": "AI Activity Description",
                "yes": "Yes", "no": "No"},
+        "de": {"company": "Unternehmen", "website": "Webseite", "size": "Unternehmensgröße",
+               "sector": "Branche", "employees": "Mitarbeiter", "revenue": "Jahresumsatz",
+               "hq": "Hauptsitz", "not_specified": "Nicht angegeben", "ai_details": "KI-System-Details",
+               "ai_count": "KI-Systeme im Einsatz", "ai_names": "Systemnamen",
+               "ai_purpose": "KI-Zweck", "deployment": "Einsatzart",
+               "data_sources": "Datenquellen", "decision_type": "Entscheidungsart",
+               "risk_self": "Risiko-Selbsteinschätzung", "tech_details": "Technische Details",
+               "model_types": "Modelltypen", "training_data": "Trainingsdaten-Herkunft",
+               "human_oversight": "Menschliche Aufsicht", "explainability": "Erklärbarkeit / Interpretierbarkeit",
+               "data_retention": "Datenaufbewahrungsrichtlinie", "compliance_status": "Compliance-Status",
+               "documentation": "Dokumentation", "dpo": "DSB bestellt",
+               "gdpr": "DSGVO-konform", "certifications": "Zertifizierungen",
+               "audits": "Vorherige Audits", "ce_marking": "CE-Kennzeichnung",
+               "high_risk": "Hochrisiko-Kategorien (ausgewählt)", "none_selected": "Keine ausgewählt",
+               "additional_info": "Zusätzliche Informationen", "ai_activity": "KI-Aktivitätsbeschreibung",
+               "yes": "Ja", "no": "Nein"},
     }
-    L = labels["en"]
+    L = labels.get(lang, labels["en"])
     ns = L["not_specified"]
     
     profile = []

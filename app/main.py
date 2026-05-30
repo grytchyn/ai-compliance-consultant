@@ -722,9 +722,9 @@ def process_submission(sub_id: str):
         logger.info("Building enhanced prompt with all fields")
         full_prompt = build_enhanced_prompt(sub, search_text, sub.lang, website_data)
         
-        # Add system prompt
-        from .prompts import SYSTEM_PROMPT_EN
-        full_prompt = SYSTEM_PROMPT_EN + "\n\n" + full_prompt
+        # Add system prompt in correct language
+        from .prompts import get_system_prompt
+        full_prompt = get_system_prompt(sub.lang) + "\n\n" + full_prompt
         
         # Call LLM (sync — no asyncio)
         logger.info("Calling Ollama with enhanced prompt")
