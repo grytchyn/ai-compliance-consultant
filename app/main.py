@@ -698,7 +698,7 @@ async def process_submission(sub_id: str):
         if company_url:
             logger.info(f"Analyzing website: {company_url}")
             try:
-                website_data = await analyze_website(company_url)
+                website_data = analyze_website(company_url)
                 logger.info(f"Website analysis complete: {len(website_data.get('legal_pages', {}))} legal pages, "
                            f"{len(website_data.get('tech_stack', {}))} tech categories, "
                            f"{sum(1 for v in website_data.get('gdpr_signals', {}).values() if v)} GDPR signals, "
