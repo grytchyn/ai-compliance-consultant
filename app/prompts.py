@@ -172,6 +172,42 @@ def build_enhanced_prompt(submission, search_text: str = "", lang: str = "en", w
         if parts:
             website_section = "\n## Website Analysis\n\n" + "\n".join(f"- {p}" for p in parts)
     
+    # Build raw website data section — shows what data we scraped from the URL
+    raw_website_section = ""
+    if website_data:
+        raw_parts = []
+        scanned_url = website_data.get("url", str(submission.url or "N/A"))
+        raw_parts.append(f"**Analyzed URL**: {scanned_url}")
+        
+        if website_data.get("page_title"):
+            raw_parts.append(f"**Page title**: {website_data['page_title']}")
+        if website_data.get("page_description"):
+            raw_parts.append(f"**Meta description**: {website_data['page_description'][:200]}")
+        if website_data.get("company_name"):
+            raw_parts.append(f"**Detected company name**: {website_data['company_name']}")
+        if website_data.get("sector"):
+            raw_parts.append(f"**Detected industry**: {website_data['sector']}")
+        if website_data.get("hq_location"):
+            raw_parts.append(f"**Detected HQ location**: {website_data['hq_location']}")
+        
+        ai_uses = website_data.get("ai_use_cases", [])
+        if ai_uses:
+            raw_parts.append(f"**AI-related keywords found on website**: {', '.join(ai_uses[:8])}")
+        
+        if website_data.get("privacy_policy_url"):
+            raw_parts.append(f"**Privacy policy found**: {website_data['privacy_policy_url']}")
+        if website_data.get("has_cookie_banner"):
+            raw_parts.append("**Cookie consent banner**: detected")
+        gdpr = website_data.get("gdpr_signals", [])
+        if gdpr:
+            raw_parts.append(f"**GDPR signals**: {', '.join(gdpr[:5])}")
+        
+        if website_data.get("ai_disclosures"):
+            raw_parts.append(f"**AI disclosure pages found**: {len(website_data['ai_disclosures'])}")
+        
+        if raw_parts:
+            raw_website_section = "\n## Source Data (Scraped from Website)\n\n" + "\n".join(f"- {p}" for p in raw_parts)
+    
     if not search_text:
         search_text = "No open-source data found."
 
@@ -182,8 +218,7 @@ def build_enhanced_prompt(submission, search_text: str = "", lang: str = "en", w
 {profile}
 
 Open-source data:
-{search_text}
-{website_section}
+{search_text}{website_section}{raw_website_section}
 
 Based on all provided data, provide a SHORT, CONCISE compliance report.
 

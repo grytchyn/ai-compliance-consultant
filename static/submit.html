@@ -960,6 +960,21 @@
     <script>
         const FORM_CACHE_KEY = 'aiverify_form_data';
 
+        // ── Language from URL ──
+        const urlParams = new URLSearchParams(window.location.search);
+        const lang = urlParams.get('lang') || 'en';
+        document.querySelector('html').lang = lang;
+        // Add hidden input for language
+        const form = document.getElementById('complianceForm');
+        let langInput = form.querySelector('input[name="lang"]');
+        if (!langInput) {
+            langInput = document.createElement('input');
+            langInput.type = 'hidden';
+            langInput.name = 'lang';
+            form.appendChild(langInput);
+        }
+        langInput.value = lang;
+
         // ── URL passthrough from index page ──
         function loadUrlFromQuery() {
             const params = new URLSearchParams(window.location.search);

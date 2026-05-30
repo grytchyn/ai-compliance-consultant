@@ -344,6 +344,10 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
   .hero h1 { font-size: 28px; }
   .section { padding: 60px 20px; }
 }
+.lang-switch { display: flex; align-items: center; gap: 4px; margin-right: 8px; }
+.lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+.lang-btn:hover { border-color: var(--brand); color: var(--text-secondary); }
+.lang-btn.active { background: var(--brand); border-color: var(--brand); color: white; }
 </style>
 </head>
 <body>
@@ -363,6 +367,10 @@ footer { border-top: 1px solid var(--border-subtle); padding: 48px 24px; }
       <a href="#how">How It Works</a>
       <a href="#features">Features</a>
       <a href="#faq">FAQ</a>
+      <div class="lang-switch">
+        <button class="lang-btn lang-btn-en" data-lang="en" onclick="setLanguage('en')" title="English">EN</button>
+        <button class="lang-btn lang-btn-de" data-lang="de" onclick="setLanguage('de')" title="Deutsch">DE</button>
+      </div>
       <div class="auth-section">
         <button class="auth-login-btn auth-login-btn-nav" id="googleSignInBtn"></button>
         <div class="auth-user-menu" id="authUserMenu" onclick="toggleDropdown()">
@@ -697,14 +705,60 @@ document.addEventListener('click', function(e) {
     dropdown.classList.remove('open');
   }
 });
+// ── Language ──
+function setLanguage(lang) {
+  localStorage.setItem('aiverify_lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  document.querySelector('html').lang = lang === 'de' ? 'de' : 'en';
+  // Update Google button locale
+  if (typeof google !== 'undefined' && google.accounts) {
+    google.accounts.id.cancel();
+    google.accounts.id.initialize({
+      client_id: '945886082965-qoe3vq3tgk6f9o0tu4versmrdmh7posn.apps.googleusercontent.com',
+      callback: handleGoogleCredential,
+      cancel_on_tap_outside: false,
+      locale: lang === 'de' ? 'de' : 'en',
+    });
+    var btn = document.getElementById('googleSignInBtn');
+    if (btn) {
+      google.accounts.id.renderButton(btn, {
+        type: 'standard', shape: 'pill', theme: 'outline',
+        text: 'signin_with', size: 'medium', logo_alignment: 'left',
+        locale: lang === 'de' ? 'de' : 'en',
+      });
+    }
+  }
+  // Update nav CTA link to preserve language
+  var cta = document.querySelector('.nav-cta');
+  if (cta) cta.href = '/submit-page?lang=' + lang;
+  // Update the hero form action
+  var heroForm = document.querySelector('.hero-form');
+  if (heroForm) heroForm.action = '/submit-page?lang=' + lang;
+}
+
+// Restore language on load
+function restoreLanguage() {
+  var lang = localStorage.getItem('aiverify_lang') || 'en';
+  document.querySelector('html').lang = lang === 'de' ? 'de' : 'en';
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  var cta = document.querySelector('.nav-cta');
+  if (cta) cta.href = '/submit-page?lang=' + lang;
+  var heroForm = document.querySelector('.hero-form');
+  if (heroForm) heroForm.action = '/submit-page?lang=' + lang;
+}
+
 window.onload = function() {
+  // Restore language first
+  restoreLanguage();
   // Render real Google sign-in button into the nav button
+  var lang = localStorage.getItem('aiverify_lang') || 'en';
   var btn = document.getElementById('googleSignInBtn');
   if (typeof google !== 'undefined' && google.accounts && btn) {
     google.accounts.id.initialize({
       client_id: '945886082965-qoe3vq3tgk6f9o0tu4versmrdmh7posn.apps.googleusercontent.com',
       callback: handleGoogleCredential,
       cancel_on_tap_outside: false,
+      locale: lang === 'de' ? 'de' : 'en',
     });
     google.accounts.id.renderButton(btn, {
       type: 'standard',
@@ -713,6 +767,7 @@ window.onload = function() {
       text: 'signin_with',
       size: 'medium',
       logo_alignment: 'left',
+      locale: lang === 'de' ? 'de' : 'en',
     });
   }
 };

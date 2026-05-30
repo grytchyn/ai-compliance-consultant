@@ -49,12 +49,15 @@
             --radius-lg: 12px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { min-height: 100vh; }
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--bg);
             color: var(--text-primary);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ─── NAV ─── */
@@ -166,6 +169,7 @@
         /* ─── REPORT CONTAINER ─── */
         .report-container {
             max-width: 900px; margin: 0 auto 80px; padding: 0 24px;
+            flex: 1;
         }
 
         .report-header {
@@ -592,23 +596,9 @@
                     <!-- Raw markdown HTML goes here -->
                 </div>
             </div>
-        </div>
+            </div>
 
-        <!-- ─── SAVE PROMPT ─── -->
-        <div class="auth-save-prompt" id="savePrompt">
-            <h3>🔒 Save This Report to Your Profile</h3>
-            <p>Sign in with Google to save your scan results and access them anytime. We'll store your company name, URL, and compliance score.</p>
-            <button class="auth-save-btn" onclick="handleSaveResult()">Sign in with Google to Save →</button>
-        </div>
-
-        <div class="error-section" id="errorContent" style="display:none;">
-            <h2>⚠️ Report Generation Failed</h2>
-            <p>An error occurred while generating the report. Please try again.</p>
-            <a href="/submit-page" class="btn-new">← Try Again</a>
-        </div>
-    </div>
-
-    <footer style="text-align:center;padding:32px 24px;border-top:1px solid var(--border-subtle);margin-top:60px;">
+            <footer style="text-align:center;padding:32px 24px;border-top:1px solid var(--border-subtle);margin-top:auto;">
         <p style="color:var(--text-muted);font-size:13px;">
             <a href="/" style="color:var(--text-tertiary);text-decoration:none;">AI Verify</a>
             <span style="margin:0 8px;color:var(--text-muted);">·</span>
@@ -682,10 +672,6 @@
 
             // Raw report body
             document.getElementById('rawReportBody').innerHTML = reportHtml;
-            window._reportScore = data.score;
-            window._reportLevel = data.level;
-            window._reportRecommendations = data.recommendations || [];
-            setTimeout(updateScoreSummary, 100);
         }
 
         function renderScoreGauge(data) {
@@ -1026,6 +1012,10 @@
             }
         }
         window.onload = function() {
+            // Read language
+            const rLang = new URLSearchParams(window.location.search).get('lang') || 'en';
+            document.querySelector('html').lang = rLang;
+
             var btn = document.getElementById('googleSignInBtnResult');
             if (typeof google !== 'undefined' && google.accounts && btn) {
                 google.accounts.id.initialize({
@@ -1034,14 +1024,16 @@
                         if (response && response.credential) exchangeGoogleToken(response.credential);
                     },
                     cancel_on_tap_outside: false,
+                    locale: rLang === 'de' ? 'de' : 'en',
                 });
                 google.accounts.id.renderButton(btn, {
                     type: 'standard',
                     shape: 'pill',
                     theme: 'outline',
-                    text: 'signin_with',
+                    text: rLang === 'de' ? 'signin' : 'signin_with',
                     size: 'medium',
                     logo_alignment: 'left',
+                    locale: rLang === 'de' ? 'de' : 'en',
                 });
             }
         };
@@ -1050,72 +1042,6 @@
             __origUpdate();
             if (isLoggedIn() && typeof subId !== 'undefined' && subId) saveResult(subId);
         };
-    </script>
-
-    <!-- ─── SCORE SUMMARY BLOCK (bottom) ─── -->
-    <div id="scoreSummaryBlock" style="display:none; max-width:900px; margin:0 auto 80px; padding:0 24px;">
-        <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:40px; text-align:center;">
-            <div style="margin-bottom:12px; font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Assessment Summary</div>
-            <div style="position:relative; width:160px; height:160px; margin:0 auto 20px;">
-                <svg style="transform:rotate(-90deg); width:160px; height:160px;" viewBox="0 0 180 180">
-                    <circle cx="90" cy="90" r="80" fill="none" stroke="var(--surface3)" stroke-width="12"/>
-                    <circle id="summaryScoreCircle" cx="90" cy="90" r="80" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="502.65" stroke-dashoffset="502.65" style="transition: stroke-dashoffset 1.5s ease, stroke 0.5s ease;"/>
-                </svg>
-                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
-                    <div id="summaryScoreValue" style="font-size:48px; font-weight:700; line-height:1;">—</div>
-                    <div id="summaryScoreLabel" style="font-size:13px; font-weight:500; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:1px; margin-top:4px;">Score</div>
-                </div>
-            </div>
-            <div id="summaryBadge" style="display:inline-flex; align-items:center; gap:8px; padding:8px 20px; border-radius:100px; font-size:14px; font-weight:600; margin-bottom:16px;"></div>
-            <div id="summaryRecommendations" style="text-align:left; max-width:600px; margin:0 auto;">
-                <h4 style="font-size:15px; font-weight:600; color:var(--text-secondary); margin-bottom:12px;">Key Recommendations</h4>
-                <ul id="summaryRecList" style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px;"></ul>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function updateScoreSummary() {
-            const block = document.getElementById('scoreSummaryBlock');
-            if (!block) return;
-            const score = window._reportScore;
-            const level = window._reportLevel;
-            const recs = window._reportRecommendations || [];
-            if (score === undefined) return;
-            block.style.display = '';
-            
-            document.getElementById('summaryScoreValue').textContent = score;
-            
-            const circle = document.getElementById('summaryScoreCircle');
-            const circumference = 502.65;
-            const offset = circumference - (circumference * score / 100);
-            circle.style.strokeDashoffset = offset;
-            
-            let color, badgeText, badgeBg;
-            if (score >= 80) {
-                color = '#10b981'; badgeText = '✅ Low Risk — Compliant'; badgeBg = 'rgba(16,185,129,0.12)';
-            } else if (score >= 50) {
-                color = '#f59e0b'; badgeText = '⚠️ Medium Risk — Needs Attention'; badgeBg = 'rgba(245,158,11,0.12)';
-            } else {
-                color = '#f44336'; badgeText = '❌ High Risk — Action Required'; badgeBg = 'rgba(244,67,54,0.12)';
-            }
-            circle.style.stroke = color;
-            document.getElementById('summaryBadge').style.cssText = `background:${badgeBg}; color:${color};`;
-            document.getElementById('summaryBadge').textContent = badgeText;
-            
-            const list = document.getElementById('summaryRecList');
-            list.innerHTML = '';
-            if (recs.length > 0) {
-                recs.slice(0, 6).forEach(r => {
-                    const li = document.createElement('li');
-                    li.style.cssText = 'display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:14px; color:var(--text-secondary); line-height:1.5;';
-                    li.innerHTML = `<span style="color:${color}; flex-shrink:0;">›</span><span>${r}</span>`;
-                    list.appendChild(li);
-                });
-            } else {
-                list.innerHTML = '<li style="padding:10px 14px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:14px; color:var(--text-muted);">No recommendations available.</li>';
-            }
-        }
     </script>
 </body>
 </html>
