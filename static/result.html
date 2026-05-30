@@ -762,6 +762,28 @@
             const score = data.score !== undefined ? data.score : 0;
             const sections = extractSections(data.html || '');
 
+            // Determine risk level & colors
+            let riskLevel, conclusionColor, conclusionBg, conclusionIcon, conclusionTitle;
+            if (score < 40) {
+                riskLevel = 'high';
+                conclusionColor = 'var(--danger)';
+                conclusionBg = 'var(--danger-bg)';
+                conclusionIcon = '🔴';
+                conclusionTitle = 'High Risk — Action Required';
+            } else if (score <= 70) {
+                riskLevel = 'medium';
+                conclusionColor = 'var(--warning)';
+                conclusionBg = 'var(--warning-bg)';
+                conclusionIcon = '🟡';
+                conclusionTitle = 'Medium Risk — Improvements Needed';
+            } else {
+                riskLevel = 'low';
+                conclusionColor = 'var(--success)';
+                conclusionBg = 'var(--success-bg)';
+                conclusionIcon = '✅';
+                conclusionTitle = 'Low Risk — Good Compliance';
+            }
+
             let html = '';
 
             // ── SECTION: CRITICAL GAPS & RISKS (RED) ──
@@ -852,97 +874,7 @@
                     </div>`;
             }
 
-            // ── SECTION: RECOMMENDATIONS (BLUE) ──
-            const actionRecs = recommendations.filter(r => !penaltyRecs.includes(r));
-            if (actionRecs.length > 0) {
-                let recHtml = '<div>';
-                actionRecs.forEach(r => {
-                    const isPos = r.toLowerCase().includes('continue') || r.toLowerCase().includes('strong') || r.toLowerCase().includes('no high-risk');
-                    const cls = isPos ? 'success' : 'info';
-                    const icon = isPos ? '✅' : '💡';
-                    recHtml += `
-                        <div class="rec-card ${cls}">
-                            <div class="rec-icon">${icon}</div>
-                            <div class="rec-text">${r}</div>
-                        </div>`;
-                });
-                recHtml += '</div>';
-
-                html += `
-                    <div class="section-block info">
-                        <div class="section-header">
-                            <div class="section-icon">💡</div>
-                            <div class="section-title-block">
-                                <h3>Recommendations</h3>
-                                <p>Action plan for compliance</p>
-                            </div>
-                        </div>
-                        ${recHtml}
-                    </div>`;
-            }
-
-            // ── SECTION: CONCLUSION (GREEN) ──
-            if (sections.conclusion) {
-                html += `
-                    <div class="section-block success">
-                        <div class="section-header">
-                            <div class="section-icon">✅</div>
-                            <div class="section-title-block">
-                                <h3>Overall Conclusion</h3>
-                                <p>${sections.conclusion.title}</p>
-                            </div>
-                        </div>
-                        <div class="section-body">${sections.conclusion.content}</div>
-                    </div>`;
-            } else {
-                // Fallback conclusion from score level
-                let verdict = score >= 70 ? 'Strong compliance posture' : (score >= 40 ? 'Moderate compliance — improvements needed' : 'High risk — immediate action required');
-                html += `
-                    <div class="section-block success">
-                        <div class="section-header">
-                            <div class="section-icon">✅</div>
-                            <div class="section-title-block">
-                                <h3>Overall Conclusion</h3>
-                                <p>Assessment result</p>
-                            </div>
-                        </div>
-                        <div class="section-body">
-                            <p><strong>Compliance Score:</strong> ${score}/100 — ${verdict}</p>
-                        </div>
-                    </div>`;
-            }
-
-            // ── SECTION: HOW SCORE IS CALCULATED (EXPLAINABILITY) ──
-            html += `
-                <div class="section-block" style="border-color: rgba(37,99,235,0.2);">
-                    <div class="section-header">
-                        <div class="section-icon" style="background: rgba(37,99,235,0.12);">🔬</div>
-                        <div class="section-title-block">
-                            <h3>How This Score is Calculated</h3>
-                            <p>Transparent methodology — EU AI Act Art. 13 compliance (explainability)</p>
-                        </div>
-                    </div>
-                    <div class="section-body">
-                        <p style="margin-bottom: 16px; color: var(--text-tertiary);">Your compliance score is based on a weighted assessment of these factors:</p>
-                        <div class="details-grid">
-                            <div class="detail-item positive"><span class="detail-icon">▲</span>Base score: 100 points</div>
-                            ${Object.entries(details).filter(([k,v]) => v.startsWith('-')).map(([k,v]) =>
-                                `<div class="detail-item negative"><span class="detail-icon">▼</span>${v}</div>`
-                            ).join('')}
-                            ${Object.entries(details).filter(([k,v]) => v.startsWith('+')).map(([k,v]) =>
-                                `<div class="detail-item positive"><span class="detail-icon">▲</span>${v}</div>`
-                            ).join('')}
-                        </div>
-                        <p style="margin-top: 16px; font-size: 13px; color: var(--text-muted);">
-                            <strong>Methodology:</strong> AI Verify uses a rule-based scoring engine aligned with EU AI Act Articles 6–20. 
-                            Each risk factor (AI system type, deployment context, human oversight, data sources) is evaluated against regulatory requirements. 
-                            The score is recalculated in real-time based on your inputs. 
-                            <a href="/privacy#ai-act-compliance" style="color:var(--brand);text-decoration:none;">Learn more about our compliance →</a>
-                        </p>
-                    </div>
-                </div>`;
-
-            // ── Positive score details ──
+            // ── Positive score details (Compliance Strengths) ──
             const posDetails = Object.entries(details).filter(([k,v]) => v.startsWith('+'));
             if (posDetails.length > 0) {
                 let detailHtml = '<div class="details-grid">';
@@ -962,6 +894,84 @@
                         ${detailHtml}
                     </div>`;
             }
+
+            // ── SECTION: METHODOLOGY (COLLAPSIBLE SPOILER) ──
+            html += `
+                <div class="raw-report-section" style="margin-top:24px;">
+                    <div class="raw-report-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('span:first-child').textContent = this.nextElementSibling.classList.contains('open') ? '▼' : '▶';">
+                        <span>▶</span>
+                        <span>🔬 Methodology & Score Calculation</span>
+                    </div>
+                    <div class="raw-report-body" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+                        <p style="margin-bottom: 16px; color: var(--text-tertiary);">Your compliance score is based on a weighted assessment of these factors:</p>
+                        <div class="details-grid">
+                            <div class="detail-item positive"><span class="detail-icon">▲</span>Base score: 100 points</div>
+                            ${Object.entries(details).filter(([k,v]) => v.startsWith('-')).map(([k,v]) =>
+                                `<div class="detail-item negative"><span class="detail-icon">▼</span>${v}</div>`
+                            ).join('')}
+                            ${Object.entries(details).filter(([k,v]) => v.startsWith('+')).map(([k,v]) =>
+                                `<div class="detail-item positive"><span class="detail-icon">▲</span>${v}</div>`
+                            ).join('')}
+                        </div>
+                        <p style="margin-top: 16px; font-size: 13px; color: var(--text-muted);">
+                            <strong>Methodology:</strong> AI Verify uses a rule-based scoring engine aligned with EU AI Act Articles 6–20. 
+                            Each risk factor (AI system type, deployment context, human oversight, data sources) is evaluated against regulatory requirements. 
+                            The score is recalculated in real-time based on your inputs. 
+                            <a href="/privacy#ai-act-compliance" style="color:var(--brand);text-decoration:none;">Learn more about our compliance →</a>
+                        </p>
+                    </div>
+                </div>`;
+
+            // ── SECTION: OVERALL CONCLUSION (DYNAMIC COLOR — LAST BLOCK) ──
+            let verdictText;
+            if (score < 40) {
+                verdictText = 'Your AI systems present HIGH RISK under EU AI Act. Immediate compliance actions are required to avoid penalties and regulatory sanctions.';
+            } else if (score <= 70) {
+                verdictText = 'Your AI systems show MODERATE compliance. Targeted improvements are recommended to reduce risk exposure and strengthen your compliance posture.';
+            } else {
+                verdictText = 'Your AI systems show GOOD compliance with EU AI Act requirements. Continue monitoring and maintaining your current practices.';
+            }
+
+            let conclusionHtml = '';
+            // Verdict summary
+            conclusionHtml += `<div style="background:var(--bg);border-radius:var(--radius);padding:16px;margin-bottom:16px;border:1px solid var(--border-subtle);">`;
+            conclusionHtml += `<p style="font-size:15px;line-height:1.6;color:var(--text-secondary);">${verdictText}</p>`;
+            conclusionHtml += `<div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">`;
+            conclusionHtml += `<span style="font-size:13px;color:var(--text-tertiary);"><strong>Score:</strong> <span style="color:${conclusionColor};font-weight:600;">${score}/100</span></span>`;
+            conclusionHtml += `<span style="font-size:13px;color:var(--text-tertiary);"><strong>Classification:</strong> <span style="color:${conclusionColor};font-weight:600;">${score >= 70 ? 'Low Risk' : (score >= 40 ? 'Medium Risk' : 'High Risk')}</span></span>`;
+            conclusionHtml += `</div></div>`;
+
+            // Include conclusion section content from LLM if available
+            if (sections.conclusion) {
+                conclusionHtml += `<div class="section-body">${sections.conclusion.content}</div>`;
+            }
+
+            // Include ALL recommendations inside the conclusion
+            if (recommendations.length > 0) {
+                conclusionHtml += `<div style="margin-top:16px;"><h4 style="font-size:14px;font-weight:600;margin-bottom:10px;color:${conclusionColor};">Key Recommendations</h4>`;
+                recommendations.forEach(r => {
+                    const isPos = r.toLowerCase().includes('continue') || r.toLowerCase().includes('strong') || r.toLowerCase().includes('no high-risk');
+                    const icon = isPos ? '✅' : '💡';
+                    conclusionHtml += `
+                        <div class="rec-card" style="border-left:3px solid ${conclusionColor};">
+                            <div class="rec-icon" style="background:${conclusionColor}20;">${icon}</div>
+                            <div class="rec-text" style="color:var(--text-secondary);">${r}</div>
+                        </div>`;
+                });
+                conclusionHtml += `</div>`;
+            }
+
+            html += `
+                <div class="section-block" style="background:${conclusionBg};border-left:4px solid ${conclusionColor};border-color:${conclusionColor}33 !important;margin-top:24px;">
+                    <div class="section-header">
+                        <div class="section-icon" style="background:${conclusionColor}20;">${conclusionIcon}</div>
+                        <div class="section-title-block">
+                            <h3 style="color:${conclusionColor};">Overall Conclusion</h3>
+                            <p>${conclusionTitle}</p>
+                        </div>
+                    </div>
+                    ${conclusionHtml}
+                </div>`;
 
             area.innerHTML = html;
         }

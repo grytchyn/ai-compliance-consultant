@@ -1,11 +1,12 @@
 import uuid
 import logging
-from typing import List
+from typing import List, Optional
 from fastapi import FastAPI, Form, Request, HTTPException, Depends
 from fastapi.responses import HTMLResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 from .database import SessionLocal, engine, Base, User
 from .models import Submission
 from .llm import call_ollama
@@ -233,62 +234,64 @@ async def result_page():
         "Expires": "0"
     })
 
+class SubmitRequest(BaseModel):
+    company: str = ""
+    url: str = ""
+    company_size: str = ""
+    sector: str = ""
+    annual_revenue: str = ""
+    hq_location: str = ""
+    ai_systems_count: str = ""
+    deployment_type: str = ""
+    decision_type: str = ""
+    risk_self_assessment: str = ""
+    ai_purpose: list = []
+    data_sources: list = []
+    model_types: list = []
+    human_oversight: list = []
+    explainability: list = []
+    existing_certifications: list = []
+    audit_types: list = []
+    training_data_origin: str = ""
+    data_retention: str = ""
+    has_documentation: str = ""
+    dpo_appointed: str = ""
+    gdpr_compliant: str = ""
+    other_certifications: str = ""
+    previous_audits: str = ""
+    ce_marking: str = ""
+    high_risk_categories: list = []
+    additional_info: str = "{}"
+    lang: str = "en"
+
+
 @app.post("/submit")
 async def submit_full(
+    body: SubmitRequest,
     db: Session = Depends(get_db),
-    # Company info
-    company: str = Form(""),
-    url: str = Form(""),
-    company_size: str = Form(""),
-    sector: str = Form(""),
-    annual_revenue: str = Form(""),
-    hq_location: str = Form(""),
-    # AI system details
-    ai_systems_count: str = Form(""),
-    deployment_type: str = Form(""),
-    decision_type: str = Form(""),
-    risk_self_assessment: str = Form(""),
-    # Multi-checkbox fields (receive as list, join with comma)
-    ai_purpose: List[str] = Form([]),
-    data_sources: List[str] = Form([]),
-    model_types: List[str] = Form([]),
-    human_oversight: List[str] = Form([]),
-    explainability: List[str] = Form([]),
-    existing_certifications: List[str] = Form([]),
-    audit_types: List[str] = Form([]),
-    # Technical (single value)
-    training_data_origin: str = Form(""),
-    data_retention: str = Form(""),
-    # Compliance (single value)
-    has_documentation: str = Form(""),
-    dpo_appointed: str = Form(""),
-    gdpr_compliant: str = Form(""),
-    other_certifications: str = Form(""),
-    previous_audits: str = Form(""),
-    ce_marking: str = Form(""),
-    # Risk checkboxes
-    risk_biometrics: bool = Form(False),
-    risk_critical_infra: bool = Form(False),
-    risk_education: bool = Form(False),
-    risk_employment: bool = Form(False),
-    risk_credit: bool = Form(False),
-    risk_law_enforcement: bool = Form(False),
-    risk_migration: bool = Form(False),
-    risk_justice: bool = Form(False),
-    risk_democratic: bool = Form(False),
-    # Extra
-    additional_info: str = Form("{}"),
-    lang: str = Form("en"),
 ):
+
+    # Get values from body
+    ai_purpose_list = body.ai_purpose or []
+    data_sources_list = body.data_sources or []
+    model_types_list = body.model_types or []
+    human_oversight_list = body.human_oversight or []
+    explainability_list = body.explainability or []
+    existing_certifications_list = body.existing_certifications or []
+    audit_types_list = body.audit_types or []
+    high_risk_list = body.high_risk_categories or []
+
     sub_id = str(uuid.uuid4())
     
     # Parse additional_info JSON
     try:
-        extra_json = json.loads(additional_info) if additional_info else {}
+        extra_json = json.loads(body.additional_info) if body.additional_info else {}
     except:
         extra_json = {}
     
     # If company is empty, try to extract from URL
+    company = body.company
+    url = body.url
     if not company.strip() and url.strip():
         from urllib.parse import urlparse
         try:
@@ -298,55 +301,60 @@ async def submit_full(
         except:
             pass
     
-    # Combine certifications from checkboxes + text field
-    certs_parts = list(existing_certifications) if isinstance(existing_certifications, list) else []
-    if other_certifications:
-        certs_parts.append(other_certifications)
+    # Combine certifications from list + text field
+    certs_parts = list(existing_certifications_list)
+    if body.other_certifications:
+        certs_parts.append(body.other_certifications)
     combined_certs = ", ".join(filter(None, certs_parts))
 
-    # Convert checkbox lists to comma-separated strings
-    def join_list(v):
-        if isinstance(v, list):
-            return ", ".join(filter(None, v))
-        return v
-    
+    # Risk booleans from multiselect
+    risk_bio = "risk_biometrics" in high_risk_list
+    risk_cri = "risk_critical_infra" in high_risk_list
+    risk_edu = "risk_education" in high_risk_list
+    risk_emp = "risk_employment" in high_risk_list
+    risk_cre = "risk_credit" in high_risk_list
+    risk_law = "risk_law_enforcement" in high_risk_list
+    risk_mig = "risk_migration" in high_risk_list
+    risk_jus = "risk_justice" in high_risk_list
+    risk_dem = "risk_democratic" in high_risk_list
+
     sub = Submission(
         id=sub_id,
         status="processing",
         company=company or "Unknown Company",
         url=url,
-        company_size=company_size,
-        sector=sector,
-        annual_revenue=annual_revenue,
-        hq_location=hq_location,
-        ai_systems_count=ai_systems_count,
-        ai_purpose=join_list(ai_purpose),
-        deployment_type=deployment_type,
-        data_sources=join_list(data_sources),
-        decision_type=decision_type,
-        risk_self_assessment=risk_self_assessment,
-        model_types=join_list(model_types),
-        training_data_origin=training_data_origin,
-        human_oversight=join_list(human_oversight),
-        explainability=join_list(explainability),
-        data_retention=data_retention,
-        has_documentation=has_documentation,
-        dpo_appointed=dpo_appointed,
-        gdpr_compliant=gdpr_compliant,
+        company_size=body.company_size,
+        sector=body.sector,
+        annual_revenue=body.annual_revenue,
+        hq_location=body.hq_location,
+        ai_systems_count=body.ai_systems_count,
+        ai_purpose=", ".join(ai_purpose_list),
+        deployment_type=body.deployment_type,
+        data_sources=", ".join(data_sources_list),
+        decision_type=body.decision_type,
+        risk_self_assessment=body.risk_self_assessment,
+        model_types=", ".join(model_types_list),
+        training_data_origin=body.training_data_origin,
+        human_oversight=", ".join(human_oversight_list),
+        explainability=", ".join(explainability_list),
+        data_retention=body.data_retention,
+        has_documentation=body.has_documentation,
+        dpo_appointed=body.dpo_appointed,
+        gdpr_compliant=body.gdpr_compliant,
         existing_certifications=combined_certs,
-        previous_audits=previous_audits,
-        ce_marking=ce_marking,
-        risk_biometrics=risk_biometrics,
-        risk_critical_infra=risk_critical_infra,
-        risk_education=risk_education,
-        risk_employment=risk_employment,
-        risk_credit=risk_credit,
-        risk_law_enforcement=risk_law_enforcement,
-        risk_migration=risk_migration,
-        risk_justice=risk_justice,
-        risk_democratic=risk_democratic,
+        previous_audits=body.previous_audits,
+        ce_marking=body.ce_marking,
+        risk_biometrics=risk_bio,
+        risk_critical_infra=risk_cri,
+        risk_education=risk_edu,
+        risk_employment=risk_emp,
+        risk_credit=risk_cre,
+        risk_law_enforcement=risk_law,
+        risk_migration=risk_mig,
+        risk_justice=risk_jus,
+        risk_democratic=risk_dem,
         additional_info=json.dumps(extra_json),
-        lang=lang,
+        lang=body.lang,
     )
     db.add(sub)
     db.commit()

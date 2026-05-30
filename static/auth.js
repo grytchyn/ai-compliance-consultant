@@ -180,7 +180,8 @@ function updateUIBasedOnAuth() {
           avatar.textContent = (user.name || user.email)[0].toUpperCase();
         }
       }
-      if (name) name.textContent = user.name || user.email;
+      // Hide username text — keep only avatar circle
+      if (name) name.style.display = 'none';
     });
     savePrompts.forEach(el => el.style.display = 'none');
   } else {
