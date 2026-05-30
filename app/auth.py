@@ -18,7 +18,7 @@ from .database import SessionLocal, User
 logger = logging.getLogger(__name__)
 
 # ── Configuration ──────────────────────────────────────
-GOOGLE_CLIENT_ID = "945886082965-7sr7hpo44cs44snba4a6cbk1nv5ii0n7.apps.googleusercontent.com"
+GOOGLE_CLIENT_ID = "945886082965-qoe3vq3tgk6f9o0tu4versmrdmh7posn.apps.googleusercontent.com"
 JWT_SECRET = os.getenv("JWT_SECRET", "ai-verify-jwt-secret-change-in-production")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRY_HOURS = 24 * 7  # 7 days

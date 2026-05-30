@@ -5,7 +5,7 @@
 
 // ── Configuration ──────────────────────────────────────
 const AUTH = {
-  CLIENT_ID: '945886082965-7sr7hpo44cs44snba4a6cbk1nv5ii0n7.apps.googleusercontent.com',
+  CLIENT_ID: '945886082965-qoe3vq3tgk6f9o0tu4versmrdmh7posn.apps.googleusercontent.com',
   TOKEN_KEY: 'aiverify_jwt',
   USER_KEY: 'aiverify_user',
 };
