@@ -353,8 +353,10 @@ async def submit_full(
     db.commit()
     db.refresh(sub)
     
-    loop = asyncio.get_event_loop()
-    loop.create_task(process_submission(sub_id))
+    # Run in background via thread pool to avoid async issues
+    import threading
+    thread = threading.Thread(target=process_submission, args=(sub_id,), daemon=True)
+    thread.start()
     return {"id": sub_id, "status": "processing"}
 
 @app.get("/report/{sub_id}")
@@ -683,7 +685,7 @@ async def get_report_html(sub_id: str, db: Session = Depends(get_db)):
         **score_data
     }
 
-async def process_submission(sub_id: str):
+def process_submission(sub_id: str):
     db = SessionLocal()
     try:
         sub = db.query(Submission).filter(Submission.id == sub_id).first()
@@ -693,16 +695,13 @@ async def process_submission(sub_id: str):
         
         logger.info(f"Processing enhanced submission {sub_id} for {sub.company}")
         
-        # Website analysis (sync function wrapped in run_in_executor to avoid blocking event loop)
+        # Website analysis (sync)
         website_data = {}
         company_url = str(sub.url or "")
         if company_url:
             logger.info(f"Analyzing website: {company_url}")
             try:
-                import asyncio
-                website_data = await asyncio.get_event_loop().run_in_executor(
-                    None, analyze_website, company_url
-                )
+                website_data = analyze_website(company_url)
                 logger.info(f"Website analysis complete for {company_url}")
             except Exception as e:
                 logger.error(f"Website analysis failed: {e}", exc_info=True)
@@ -711,7 +710,8 @@ async def process_submission(sub_id: str):
         # Search
         logger.info(f"Searching for {sub.company}")
         try:
-            search_results = await duckduckgo_instant_answer(sub.company)
+            import asyncio
+            search_results = asyncio.run(duckduckgo_instant_answer(sub.company))
             logger.info(f"Search results: {len(search_results)} items")
             search_text = "\n".join([r.get("content", "") for r in search_results if r.get("content")])
         except Exception as e:
@@ -728,9 +728,10 @@ async def process_submission(sub_id: str):
         from .prompts import SYSTEM_PROMPT_EN
         full_prompt = SYSTEM_PROMPT_EN + "\n\n" + full_prompt
         
-        # Call LLM
+        # Call LLM (async via asyncio.run)
         logger.info("Calling Ollama with enhanced prompt")
-        report_md = await call_ollama(full_prompt, temperature=0.2)
+        import asyncio
+        report_md = asyncio.run(call_ollama(full_prompt, temperature=0.2))
         logger.info(f"Report generated, length: {len(report_md)} chars")
         
         # Save report
