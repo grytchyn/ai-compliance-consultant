@@ -1,5 +1,4 @@
 import uuid
-import asyncio
 import logging
 from typing import List
 from fastapi import FastAPI, Form, Request, HTTPException, Depends
@@ -653,7 +652,7 @@ async def get_report_html(sub_id: str, db: Session = Depends(get_db)):
     if not sub:
         raise HTTPException(status_code=404, detail="Not found")
     if sub.status != "completed" or not sub.report_path:
-        return {"status": sub.status, "html": ""}
+        return {"status": sub.status, "html": "", "error_message": sub.error_message}
     
     # Read the markdown report
     import markdown
@@ -707,11 +706,10 @@ def process_submission(sub_id: str):
                 logger.error(f"Website analysis failed: {e}", exc_info=True)
                 website_data = {"error": str(e)}
         
-        # Search
+        # Search (sync)
         logger.info(f"Searching for {sub.company}")
         try:
-            import asyncio
-            search_results = asyncio.run(duckduckgo_instant_answer(sub.company))
+            search_results = duckduckgo_instant_answer(sub.company)
             logger.info(f"Search results: {len(search_results)} items")
             search_text = "\n".join([r.get("content", "") for r in search_results if r.get("content")])
         except Exception as e:
@@ -728,10 +726,9 @@ def process_submission(sub_id: str):
         from .prompts import SYSTEM_PROMPT_EN
         full_prompt = SYSTEM_PROMPT_EN + "\n\n" + full_prompt
         
-        # Call LLM (async via asyncio.run)
+        # Call LLM (sync — no asyncio)
         logger.info("Calling Ollama with enhanced prompt")
-        import asyncio
-        report_md = asyncio.run(call_ollama(full_prompt, temperature=0.2))
+        report_md = call_ollama(full_prompt, temperature=0.2)
         logger.info(f"Report generated, length: {len(report_md)} chars")
         
         # Save report
@@ -741,8 +738,10 @@ def process_submission(sub_id: str):
         db.commit()
         logger.info(f"Enhanced submission {sub_id} completed, report at {report_path}")
     except Exception as e:
-        logger.error(f"Submission {sub_id} failed: {str(e)}", exc_info=True)
+        err_msg = f"{type(e).__name__}: {str(e)}"
+        logger.error(f"Submission {sub_id} failed: {err_msg}", exc_info=True)
         sub.status = "failed"
+        sub.error_message = err_msg
         db.commit()
     finally:
         db.close()

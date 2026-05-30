@@ -1,9 +1,12 @@
 import httpx
-from typing import List, Dict, Any
+import logging
+from typing import List, Dict
 
-async def duckduckgo_instant_answer(query: str) -> List[Dict]:
+logger = logging.getLogger(__name__)
+
+def duckduckgo_instant_answer(query: str) -> List[Dict]:
     """
-    Async wrapper around DuckDuckGo Instant Answer API.
+    Synchronous DuckDuckGo Instant Answer API call.
     Returns list of results with 'content' key.
     """
     url = "https://api.duckduckgo.com/"
@@ -15,13 +18,12 @@ async def duckduckgo_instant_answer(query: str) -> List[Dict]:
     }
     
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            resp = await client.get(url, params=params)
+        with httpx.Client(timeout=10.0) as client:
+            resp = client.get(url, params=params)
             resp.raise_for_status()
             data = resp.json()
             
         results = []
-        # RelatedTopics may contain nested structures; we'll extract simple ones.
         for topic in data.get("RelatedTopics", []):
             if isinstance(topic, dict) and topic.get("FirstURL") and topic.get("Text"):
                 results.append({
@@ -30,7 +32,6 @@ async def duckduckgo_instant_answer(query: str) -> List[Dict]:
             if len(results) >= 3:
                 break
                 
-        # If not enough, fallback to Abstract
         if not results and data.get("Abstract"):
             results.append({
                 "content": f"{data.get('Heading') or query}. {data.get('Abstract')[:300]}"
@@ -38,7 +39,5 @@ async def duckduckgo_instant_answer(query: str) -> List[Dict]:
             
         return results[:3]
     except Exception as e:
-        # Return empty list on failure — DuckDuckGo API is often blocked
-        import logging
-        logging.getLogger(__name__).warning(f"Search failed for '{query}': {type(e).__name__}: {e}")
+        logger.warning(f"Search failed for '{query}': {type(e).__name__}: {e}")
         return []

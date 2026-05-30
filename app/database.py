@@ -100,6 +100,9 @@ class Submission(Base):
     # Language preference
     lang = Column(String, default="en")
     
+    # Error message for debugging failed submissions
+    error_message = Column(Text, nullable=True)
+    
     def to_dict(self):
         """Convert submission to dict for prompt building."""
         d = {c.name: getattr(self, c.name) for c in self.__table__.columns}

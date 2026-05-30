@@ -16,7 +16,8 @@ API_KEY = os.getenv("OLLAMA_API_KEY", "")
 
 logger.info(f"LLM config: url={OLLAMA_URL} model={MODEL} key_set={'yes' if API_KEY else 'no'}")
 
-async def call_ollama(prompt: str, temperature: float = 0.2) -> str:
+def call_ollama(prompt: str, temperature: float = 0.2) -> str:
+    """Synchronous Ollama API call — no asyncio needed."""
     headers = {"Content-Type": "application/json"}
     if API_KEY:
         headers["Authorization"] = f"Bearer {API_KEY}"
@@ -29,8 +30,8 @@ async def call_ollama(prompt: str, temperature: float = 0.2) -> str:
     }
     
     logger.info(f"Sending request to {OLLAMA_URL} with model {MODEL}")
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        response = await client.post(OLLAMA_URL, json=payload, headers=headers)
+    with httpx.Client(timeout=120.0) as client:
+        response = client.post(OLLAMA_URL, json=payload, headers=headers)
         logger.info(f"Response status: {response.status_code}")
         response.raise_for_status()
         data = response.json()
