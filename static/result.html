@@ -678,13 +678,13 @@
 
             <footer style="text-align:center;padding:32px 24px;border-top:1px solid var(--border-subtle);margin-top:auto;">
         <p style="color:var(--text-muted);font-size:13px;">
-            <a href="/" style="color:var(--text-tertiary);text-decoration:none;">AI Verify</a>
+            <a href="/" style="color:var(--text-tertiary);text-decoration:none;" data-i18n="footerAIVerify">AI Verify</a>
             <span style="margin:0 8px;color:var(--text-muted);">·</span>
-            <a href="/privacy" style="color:var(--text-tertiary);text-decoration:none;">Privacy</a>
+            <a href="/privacy" style="color:var(--text-tertiary);text-decoration:none;" data-i18n="footerPrivacy">Privacy</a>
             <span style="margin:0 8px;color:var(--text-muted);">·</span>
-            <a href="/imprint" style="color:var(--text-tertiary);text-decoration:none;">Imprint</a>
+            <a href="/imprint" style="color:var(--text-tertiary);text-decoration:none;" data-i18n="footerImprint">Imprint</a>
         </p>
-        <p style="color:var(--text-muted);font-size:11px;margin-top:4px;">© 2026 AI Verify. Automated EU AI Act analysis for small and medium-sized businesses. Not legal advice.</p>
+        <p style="color:var(--text-muted);font-size:11px;margin-top:4px;" data-i18n="footerCopyright">© 2026 AI Verify. Automated EU AI Act analysis for small and medium-sized businesses. Not legal advice.</p>
     </footer>
 
     <script>
@@ -819,10 +819,6 @@
         if (!subId) {
             document.getElementById('loading').innerHTML = '<h2 data-i18n="noReportId">' + (translations[currentLang]?.noReportId || 'No report ID provided') + '</h2><p data-i18n="noReportDesc">' + (translations[currentLang]?.noReportDesc || 'Please submit the form first.') + '</p><a href="/submit-page" class="btn-new" data-i18n="noReportBtn">' + (translations[currentLang]?.noReportBtn || '← Start Here') + '</a>';
         } else {
-            attemptLabel = document.createElement('div');
-            attemptLabel.className = 'attempt-counter';
-            const neuralLoader = document.querySelector('.neural-loader');
-            if (neuralLoader) neuralLoader.appendChild(attemptLabel);
             pollReport(subId);
         }
 
@@ -842,7 +838,6 @@
                         return;
                     } else {
                         attempt++;
-                        if (attemptLabel) attemptLabel.textContent = '↻ ' + (translations[currentLang]?.pollAttempt || 'Polling attempt') + ' ' + attempt + '/' + maxAttempts;
                     }
                 } catch (err) {
                     console.error('Poll error:', err);

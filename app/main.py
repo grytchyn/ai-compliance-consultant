@@ -129,7 +129,7 @@ async def auth_results(
         level = None
         if sub.status == "completed":
             try:
-                score_data = calculate_compliance_score(sub)
+                score_data = calculate_compliance_score(sub, sub.lang)
                 score = score_data.get("score")
                 level = score_data.get("level")
             except:
@@ -375,9 +375,10 @@ async def get_report(sub_id: str, db: Session = Depends(get_db)):
         return {"status": sub.status}
     return FileResponse(path=sub.report_path, media_type='text/markdown', filename=f"report_{sub_id}.md")
 
-def calculate_compliance_score(sub: Submission) -> dict:
+def calculate_compliance_score(sub: Submission, lang: str = "en") -> dict:
     """Calculate compliance score 0-100 with level and recommendations.
     Multi-variate formula weighting ALL form fields per EU AI Act logic."""
+    L = lambda en, de: de if lang == "de" else en
     score = 100
     details = {}
     
@@ -392,7 +393,7 @@ def calculate_compliance_score(sub: Submission) -> dict:
     risk_count = sum(1 for field in risk_fields if getattr(sub, field, False))
     risk_penalty = risk_count * 12
     score -= risk_penalty
-    details['risk_categories'] = f"-{risk_penalty} ({risk_count} high-risk categories)"
+    details['risk_categories'] = f"-{risk_penalty} ({risk_count} {L('high-risk categories', 'Hochrisiko-Kategorien')})"
     
     # 2. AI system volume
     ai_count = str(getattr(sub, 'ai_systems_count', '') or '')
@@ -404,7 +405,7 @@ def calculate_compliance_score(sub: Submission) -> dict:
     elif ai_count in ('1-3',):
         ai_penalty = 3
     score -= ai_penalty
-    details['ai_volume'] = f"-{ai_penalty} (AI systems: {ai_count or 'none'})"
+    details['ai_volume'] = f"-{ai_penalty} ({L('AI systems:', 'KI-Systeme:')} {ai_count or L('none', 'keine')})"
     
     # 3. Decision type autonomy
     decision = str(getattr(sub, 'decision_type', '') or '')
@@ -416,7 +417,7 @@ def calculate_compliance_score(sub: Submission) -> dict:
     elif decision == 'decision-support':
         decision_penalty = 3
     score -= decision_penalty
-    details['decision_autonomy'] = f"-{decision_penalty} (decision type: {decision or 'none'})"
+    details['decision_autonomy'] = f"-{decision_penalty} ({L('decision type:', 'Entscheidungsart:')} {decision or L('none', 'keine')})"
     
     # 4. Deployment risk: customer-facing = more regulatory impact
     deployment = str(getattr(sub, 'deployment_type', '') or '')
@@ -426,19 +427,19 @@ def calculate_compliance_score(sub: Submission) -> dict:
     elif deployment in ('customer-facing', 'third-party'):
         deploy_penalty = 5
     score -= deploy_penalty
-    details['deployment'] = f"-{deploy_penalty} (deployment: {deployment or 'none'})"
+    details['deployment'] = f"-{deploy_penalty} ({L('deployment:', 'Einsatzart:')} {deployment or L('none', 'keine')})"
     
     # 5. Self-assessment alignment
     self_assess = str(getattr(sub, 'risk_self_assessment', '') or '')
     if self_assess == 'unacceptable':
         score -= 20
-        details['self_assessment'] = '-20 (user self-assessed as unacceptable risk)'
+        details['self_assessment'] = f'-20 ({L("user self-assessed as unacceptable risk", "vom Nutzer als inakzeptables Risiko eingestuft")})'
     elif self_assess == 'high':
         score -= 10
-        details['self_assessment'] = '-10 (user self-assessed as high risk)'
+        details['self_assessment'] = f'-10 ({L("user self-assessed as high risk", "vom Nutzer als hohes Risiko eingestuft")})'
     elif self_assess == 'uncertain':
         score -= 3
-        details['self_assessment'] = '-3 (unsure about risk level)'
+        details['self_assessment'] = f'-3 ({L("unsure about risk level", "Unsicherheit über Risikostufe")})'
     else:
         details['self_assessment'] = '0'
     
@@ -446,14 +447,14 @@ def calculate_compliance_score(sub: Submission) -> dict:
     oversight = str(getattr(sub, 'human_oversight', '') or '')
     if 'none' in oversight or 'No human' in oversight or not oversight.strip():
         score -= 15
-        details['human_oversight'] = '-15 (no human oversight in place)'
+        details['human_oversight'] = f'-15 ({L("no human oversight in place", "keine menschliche Aufsicht vorhanden")})'
     elif oversight:
         oversight_count = len([o for o in oversight.replace(', ', ',').split(',') if o.strip()])
         if oversight_count <= 1:
             score -= 5
-            details['human_oversight'] = '-5 (minimal oversight)'
+            details['human_oversight'] = f'-5 ({L("minimal oversight", "minimale Aufsicht")})'
         else:
-            details['human_oversight'] = '0 (adequate oversight)'
+            details['human_oversight'] = f'0 ({L("adequate oversight", "ausreichende Aufsicht")})'
     else:
         details['human_oversight'] = '0'
     
@@ -461,7 +462,7 @@ def calculate_compliance_score(sub: Submission) -> dict:
     explain = str(getattr(sub, 'explainability', '') or '')
     if 'not_applicable' in explain or 'None' in explain or not explain.strip():
         score -= 10
-        details['explainability'] = '-10 (no explainability methods)'
+        details['explainability'] = f'-10 ({L("no explainability methods", "keine Erklärbarkeitsmethoden")})'
     else:
         details['explainability'] = '0'
     
@@ -469,12 +470,12 @@ def calculate_compliance_score(sub: Submission) -> dict:
     retention = str(getattr(sub, 'data_retention', '') or '')
     if 'indefinite' in retention or 'No policy' in retention:
         score -= 8
-        details['data_retention'] = '-8 (indefinite/no data retention policy)'
+        details['data_retention'] = f'-8 ({L("indefinite/no data retention policy", "unbegrenzt/keine Datenaufbewahrungsrichtlinie")})'
     elif 'not_sure' in retention:
         score -= 3
-        details['data_retention'] = '-3 (unsure about data retention)'
+        details['data_retention'] = f'-3 ({L("unsure about data retention", "Unsicherheit über Datenaufbewahrung")})'
     elif 'not_retained' in retention:
-        details['data_retention'] = '0 (data not retained — good)'
+        details['data_retention'] = f'0 ({L("data not retained — good", "Daten werden nicht aufbewahrt — gut")})'
     else:
         details['data_retention'] = '0'
     
@@ -482,10 +483,10 @@ def calculate_compliance_score(sub: Submission) -> dict:
     training = str(getattr(sub, 'training_data_origin', '') or '')
     if 'public_web' in training:
         score -= 5
-        details['training_data'] = '-5 (public web training data — higher provenance risk)'
+        details['training_data'] = f'-5 ({L("public web training data — higher provenance risk", "öffentliche Web-Trainingsdaten — höheres Herkunftsrisiko")})'
     elif 'not_sure' in training:
         score -= 3
-        details['training_data'] = '-3 (unsure about training data origin)'
+        details['training_data'] = f'-3 ({L("unsure about training data origin", "Unsicherheit über Trainingsdaten-Herkunft")})'
     else:
         details['training_data'] = '0'
     
@@ -495,30 +496,30 @@ def calculate_compliance_score(sub: Submission) -> dict:
     # 1. Compliance documentation
     if getattr(sub, 'has_documentation', '') == "yes":
         bonus_total += 12
-        details['documentation'] = '+12 (comprehensive documentation)'
+        details['documentation'] = f'+12 ({L("comprehensive documentation", "umfassende Dokumentation")})'
     elif getattr(sub, 'has_documentation', '') == "partial":
         bonus_total += 5
-        details['documentation'] = '+5 (partial documentation)'
+        details['documentation'] = f'+5 ({L("partial documentation", "teilweise Dokumentation")})'
     else:
         details['documentation'] = '0'
     
     # 2. DPO
     if getattr(sub, 'dpo_appointed', '') == "yes":
         bonus_total += 10
-        details['dpo'] = '+10 (DPO appointed)'
+        details['dpo'] = f'+10 ({L("DPO appointed", "DSB bestellt")})'
     elif getattr(sub, 'dpo_appointed', '') == "planned":
         bonus_total += 3
-        details['dpo'] = '+3 (DPO planned)'
+        details['dpo'] = f'+3 ({L("DPO planned", "DSB geplant")})'
     else:
         details['dpo'] = '0'
     
     # 3. GDPR
     if getattr(sub, 'gdpr_compliant', '') == "yes":
         bonus_total += 10
-        details['gdpr'] = '+10 (GDPR compliant)'
+        details['gdpr'] = f'+10 ({L("GDPR compliant", "DSGVO-konform")})'
     elif getattr(sub, 'gdpr_compliant', '') == "in_progress":
         bonus_total += 4
-        details['gdpr'] = '+4 (GDPR in progress)'
+        details['gdpr'] = f'+4 ({L("GDPR in progress", "DSGVO in Bearbeitung")})'
     else:
         details['gdpr'] = '0'
     
@@ -528,7 +529,7 @@ def calculate_compliance_score(sub: Submission) -> dict:
     cert_bonus = min(len(cert_items) * 4, 12)
     if cert_bonus > 0:
         bonus_total += cert_bonus
-        details['certifications'] = f'+{cert_bonus} ({len(cert_items)} certifications)'
+        details['certifications'] = f'+{cert_bonus} ({len(cert_items)} {L("certifications", "Zertifizierungen")})'
     else:
         details['certifications'] = '0'
     
@@ -539,20 +540,20 @@ def calculate_compliance_score(sub: Submission) -> dict:
         audit_count = len([a for a in audit_types.replace(', ', ',').split(',') if a.strip()])
         audit_bonus = min(audit_count * 3, 9)
         bonus_total += audit_bonus
-        details['audits'] = f'+{audit_bonus} ({audit_count} audit types completed)'
+        details['audits'] = f'+{audit_bonus} ({audit_count} {L("audit types completed", "Audit-Typen durchgeführt")})'
     elif prev_audit == 'yes':
         bonus_total += 3
-        details['audits'] = '+3 (has had audits)'
+        details['audits'] = f'+3 ({L("has had audits", "hatte bereits Audits")})'
     else:
         details['audits'] = '0'
     
     # 6. CE marking
     if getattr(sub, 'ce_marking', '') == "yes":
         bonus_total += 8
-        details['ce_marking'] = '+8 (CE marking obtained)'
+        details['ce_marking'] = f'+8 ({L("CE marking obtained", "CE-Kennzeichnung erhalten")})'
     elif getattr(sub, 'ce_marking', '') == "planned":
         bonus_total += 3
-        details['ce_marking'] = '+3 (CE marking planned)'
+        details['ce_marking'] = f'+3 ({L("CE marking planned", "CE-Kennzeichnung geplant")})'
     else:
         details['ce_marking'] = '0'
     
@@ -561,7 +562,7 @@ def calculate_compliance_score(sub: Submission) -> dict:
         methods = [o for o in oversight.replace(', ', ',').split(',') if o.strip()]
         if len(methods) >= 3:
             bonus_total += 5
-            details['oversight_quality'] = '+5 (multiple oversight mechanisms)'
+            details['oversight_quality'] = f'+5 ({L("multiple oversight mechanisms", "mehrere Aufsichtsmechanismen")})'
         elif len(methods) >= 1:
             details['oversight_quality'] = '0'
     
@@ -570,7 +571,7 @@ def calculate_compliance_score(sub: Submission) -> dict:
         methods = [e for e in explain.replace(', ', ',').split(',') if e.strip()]
         if len(methods) >= 2:
             bonus_total += 5
-            details['explainability_quality'] = '+5 (multiple explainability methods)'
+            details['explainability_quality'] = f'+5 ({L("multiple explainability methods", "mehrere Erklärbarkeitsmethoden")})'
         else:
             details['explainability_quality'] = '0'
     
@@ -591,7 +592,18 @@ def calculate_compliance_score(sub: Submission) -> dict:
     recommendations = []
     
     # High-risk category recommendations
-    risk_labels = {
+    risk_labels_de = {
+        'risk_biometrics': 'Risikomanagement für biometrische Identifikationssysteme implementieren',
+        'risk_critical_infra': 'Hochrisiko-KI-Kategorien für kritische Infrastruktur adressieren',
+        'risk_education': 'Risiken in KI-Systemen für Bildung und Berufsausbildung mindern',
+        'risk_employment': 'Beschäftigungsbezogene KI-Risikobedenken adressieren',
+        'risk_credit': 'Schutzmaßnahmen für KI-Kreditbewertungssysteme implementieren',
+        'risk_law_enforcement': 'Compliance-Anforderungen für KI in der Strafverfolgung adressieren',
+        'risk_migration': 'Risikokontrollen für KI in Migration und Grenzkontrolle implementieren',
+        'risk_justice': 'Risiken in KI-Systemen der Rechtspflege adressieren',
+        'risk_democratic': 'Risiken für demokratische Prozesse durch KI-Systeme mindern',
+    }
+    risk_labels_en = {
         'risk_biometrics': 'Implement risk management for biometric identification systems',
         'risk_critical_infra': 'Address critical infrastructure AI risk categories',
         'risk_education': 'Mitigate risks in education and vocational training AI systems',
@@ -602,35 +614,36 @@ def calculate_compliance_score(sub: Submission) -> dict:
         'risk_justice': 'Address risks in administration of justice AI systems',
         'risk_democratic': 'Mitigate risks to democratic processes from AI systems',
     }
+    risk_labels = risk_labels_de if lang == 'de' else risk_labels_en
     for field, rec in risk_labels.items():
         if getattr(sub, field, False):
             recommendations.append(rec)
     
     # Systemic gaps
     if getattr(sub, 'has_documentation', '') != "yes":
-        recommendations.append("Maintain comprehensive technical documentation for AI systems (Art. 11-12)")
+        recommendations.append(L("Maintain comprehensive technical documentation for AI systems (Art. 11-12)", "Umfassende technische Dokumentation für KI-Systeme führen (Art. 11-12)"))
     if getattr(sub, 'dpo_appointed', '') != "yes":
-        recommendations.append("Appoint a Data Protection Officer (DPO)")
+        recommendations.append(L("Appoint a Data Protection Officer (DPO)", "Datenschutzbeauftragten (DSB) bestellen"))
     if getattr(sub, 'gdpr_compliant', '') != "yes":
-        recommendations.append("Ensure GDPR compliance for AI data processing")
+        recommendations.append(L("Ensure GDPR compliance for AI data processing", "DSGVO-Compliance für KI-Datenverarbeitung sicherstellen"))
     if 'none' in oversight or 'No human' in oversight or not oversight.strip():
-        recommendations.append("Implement human oversight mechanisms — manual review, approval workflow, or human-in-the-loop (Art. 14)")
+        recommendations.append(L("Implement human oversight mechanisms — manual review, approval workflow, or human-in-the-loop (Art. 14)", "Menschliche Aufsichtsmechanismen implementieren — manuelle Prüfung, Genehmigungsworkflow oder Human-in-the-Loop (Art. 14)"))
     if 'not_applicable' in explain or 'None' in explain or not explain.strip():
-        recommendations.append("Adopt explainability/interpretability methods (SHAP, LIME, feature importance) for transparency (Art. 13)")
+        recommendations.append(L("Adopt explainability/interpretability methods (SHAP, LIME, feature importance) for transparency (Art. 13)", "Erklärbarkeits-/Interpretierbarkeitsmethoden (SHAP, LIME, Feature Importance) für Transparenz übernehmen (Art. 13)"))
     if decision == 'fully-automated':
-        recommendations.append("Conduct fundamental rights impact assessment for fully automated decision systems (Art. 27)")
+        recommendations.append(L("Conduct fundamental rights impact assessment for fully automated decision systems (Art. 27)", "Grundrechte-Folgenabschätzung für vollautomatisierte Entscheidungssysteme durchführen (Art. 27)"))
     if ai_count in ('4-10', '10+'):
-        recommendations.append(f"Scale compliance management system — {ai_count} AI systems require structured governance framework")
+        recommendations.append(L(f"Scale compliance management system — {ai_count} AI systems require structured governance framework", f"Compliance-Management-System skalieren — {ai_count} KI-Systeme erfordern strukturierten Governance-Rahmen"))
     if 'indefinite' in retention or 'no policy' in retention.lower():
-        recommendations.append("Define and implement a data retention policy aligned with GDPR Art. 5(1)(e)")
+        recommendations.append(L("Define and implement a data retention policy aligned with GDPR Art. 5(1)(e)", "Datenaufbewahrungsrichtlinie gemäß DSGVO Art. 5(1)(e) definieren und implementieren"))
     
     # Positive reinforcement
     if risk_count == 0:
-        recommendations.insert(0, "No high-risk AI categories flagged — maintaining this posture is key")
+        recommendations.insert(0, L("No high-risk AI categories flagged — maintaining this posture is key", "Keine Hochrisiko-KI-Kategorien markiert — diese Haltung beibehalten ist entscheidend"))
     if bonus_total >= 25:
-        recommendations.append("Strong compliance foundation — continue monitoring regulatory updates")
+        recommendations.append(L("Strong compliance foundation — continue monitoring regulatory updates", "Starke Compliance-Grundlage — regulatorische Updates weiterverfolgen"))
     if not recommendations:
-        recommendations.append("Continue maintaining current compliance posture")
+        recommendations.append(L("Continue maintaining current compliance posture", "Aktuelle Compliance-Haltung beibehalten"))
     
     return {
         "score": score,
@@ -646,7 +659,7 @@ async def get_report_score(sub_id: str, db: Session = Depends(get_db)):
     sub = db.query(Submission).filter(Submission.id == sub_id).first()
     if not sub:
         raise HTTPException(status_code=404, detail="Not found")
-    score_data = calculate_compliance_score(sub)
+    score_data = calculate_compliance_score(sub, sub.lang if hasattr(sub, 'lang') else 'en')
     return {
         "status": sub.status,
         **score_data
@@ -680,7 +693,7 @@ async def get_report_html(sub_id: str, db: Session = Depends(get_db)):
                 break
     
     # Calculate compliance score
-    score_data = calculate_compliance_score(sub)
+    score_data = calculate_compliance_score(sub, sub.lang if hasattr(sub, 'lang') else 'en')
     
     return {
         "status": sub.status,
