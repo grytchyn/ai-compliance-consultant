@@ -153,15 +153,83 @@
         }
         .form-group textarea { resize: vertical; min-height: 80px; }
         .form-group select { appearance: none; cursor: pointer; }
-        .form-group select[multiple] {
-            appearance: auto;
-            min-height: 120px;
-            cursor: pointer;
+        /* ─── CUSTOM MULTISELECT ─── */
+        .custom-multiselect {
+            position: relative;
+            width: 100%;
         }
-        .form-group select[multiple] option:checked {
+        .ms-trigger {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: 'Inter', system-ui, sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            transition: border-color 0.2s;
+            text-align: left;
+        }
+        .ms-trigger:hover, .ms-trigger:focus { border-color: var(--brand); outline: none; }
+        .ms-trigger .ms-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ms-trigger .ms-arrow { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
+        .ms-trigger .ms-arrow.open { transform: rotate(180deg); }
+        .ms-trigger .ms-count {
+            font-size: 11px;
             background: var(--brand);
             color: white;
+            border-radius: 10px;
+            padding: 1px 7px;
+            margin-left: 4px;
+            flex-shrink: 0;
         }
+        .ms-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0; right: 0;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 50;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .ms-dropdown.open { display: block; }
+        .ms-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .ms-option:hover { background: var(--surface3); }
+        .ms-option.selected { background: rgba(94,106,210,0.1); color: var(--text-primary); }
+        .ms-option input[type="checkbox"] { accent-color: var(--brand); width: 16px; height: 16px; flex-shrink: 0; pointer-events: none; }
+        .ms-check-icon {
+            width: 18px; height: 18px;
+            border: 2px solid var(--text-muted);
+            border-radius: 3px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: all 0.15s;
+        }
+        .ms-option.selected .ms-check-icon { background: var(--brand); border-color: var(--brand); }
+        .ms-option.selected .ms-check-icon::after { content: "✓"; color: white; font-size: 11px; font-weight: 700; }
+        .ms-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 49; display: none; }
+        .ms-overlay.open { display: block; }
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -347,20 +415,75 @@
 
                 <div class="form-group">
                     <label data-i18n="labelAiUseCases">AI Use Cases <span style="color: var(--text-muted); font-size: 12px;" data-i18n="aiUseCasesHint">(select all that apply)</span></label>
-                    <select multiple name="ai_purpose" size="6">
-                        <option value="chatbot" data-i18n="optChatbot">Customer support chatbot</option>
-                        <option value="content_gen" data-i18n="optContentGen">Content generation</option>
-                        <option value="fraud_detection" data-i18n="optFraudDetection">Fraud detection / Risk analysis</option>
-                        <option value="recommendation" data-i18n="optRecommendation">Recommendation engine</option>
-                        <option value="image_video" data-i18n="optImageVideo">Image / Video analysis</option>
-                        <option value="document_processing" data-i18n="optDocProcessing">Document processing / OCR</option>
-                        <option value="predictive" data-i18n="optPredictive">Predictive analytics</option>
-                        <option value="speech" data-i18n="optSpeech">Speech / Voice recognition</option>
-                        <option value="code_gen" data-i18n="optCodeGen">Code generation</option>
-                        <option value="autonomous" data-i18n="optAutonomous">Autonomous systems</option>
-                        <option value="cv_screening" data-i18n="optCvScreening">Resume / CV screening</option>
-                        <option value="other" data-i18n="optOtherAi">Other (specify in report)</option>
-                    </select>
+                    <div class="custom-multiselect" data-name="ai_purpose">
+                        <button type="button" class="ms-trigger" onclick="toggleMS(this)">
+                            <span class="ms-label" data-i18n="labelai_purpose">AI Use Cases</span>
+                            <span class="ms-count" style="display:none">0</span>
+                            <span class="ms-arrow">▾</span>
+                        </button>
+                        <div class="ms-dropdown">
+                                                        <label class="ms-option" data-value="chatbot" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="chatbot" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optChatbot">Customer support chatbot</span>
+                            </label>
+                            <label class="ms-option" data-value="content_gen" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="content_gen" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optContentGen">Content generation</span>
+                            </label>
+                            <label class="ms-option" data-value="fraud_detection" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="fraud_detection" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optFraudDetection">Fraud detection / Risk analysis</span>
+                            </label>
+                            <label class="ms-option" data-value="recommendation" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="recommendation" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optRecommendation">Recommendation engine</span>
+                            </label>
+                            <label class="ms-option" data-value="image_video" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="image_video" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optImageVideo">Image / Video analysis</span>
+                            </label>
+                            <label class="ms-option" data-value="document_processing" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="document_processing" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optDocProcessing">Document processing / OCR</span>
+                            </label>
+                            <label class="ms-option" data-value="predictive" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="predictive" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optPredictive">Predictive analytics</span>
+                            </label>
+                            <label class="ms-option" data-value="speech" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="speech" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optSpeech">Speech / Voice recognition</span>
+                            </label>
+                            <label class="ms-option" data-value="code_gen" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="code_gen" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optCodeGen">Code generation</span>
+                            </label>
+                            <label class="ms-option" data-value="autonomous" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="autonomous" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optAutonomous">Autonomous systems</span>
+                            </label>
+                            <label class="ms-option" data-value="cv_screening" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="cv_screening" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optCvScreening">Resume / CV screening</span>
+                            </label>
+                            <label class="ms-option" data-value="other" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="other" name="ai_purpose">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optOtherAi">Other (specify in report)</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -418,17 +541,60 @@
                 
                 <div class="form-group">
                     <label data-i18n="labelDataSources">Data Sources <span style="color: var(--text-muted); font-size: 12px;" data-i18n="selectAllHint">(select all that apply)</span></label>
-                    <select multiple name="data_sources" size="5">
-                        <option value="public_datasets" data-i18n="optPublicDatasets">Public datasets</option>
-                        <option value="customer_data" data-i18n="optCustomerData">Customer data</option>
-                        <option value="third_party_apis" data-i18n="optThirdPartyApis">Third-party APIs</option>
-                        <option value="user_generated" data-i18n="optUserGenerated">User-generated content</option>
-                        <option value="web_scraping" data-i18n="optWebScraping">Web scraping</option>
-                        <option value="proprietary" data-i18n="optProprietaryDatasets">Proprietary datasets</option>
-                        <option value="synthetic" data-i18n="optSyntheticData">Synthetic data</option>
-                        <option value="open_gov" data-i18n="optOpenGov">Open government data</option>
-                        <option value="purchased" data-i18n="optPurchasedData">Purchased data</option>
-                    </select>
+                    <div class="custom-multiselect" data-name="data_sources">
+                        <button type="button" class="ms-trigger" onclick="toggleMS(this)">
+                            <span class="ms-label" data-i18n="labeldata_sources">Data Sources</span>
+                            <span class="ms-count" style="display:none">0</span>
+                            <span class="ms-arrow">▾</span>
+                        </button>
+                        <div class="ms-dropdown">
+                                                        <label class="ms-option" data-value="public_datasets" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="public_datasets" name="data_sources">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optPublicDatasets">Public datasets</span>
+                            </label>
+                            <label class="ms-option" data-value="customer_data" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="customer_data" name="data_sources">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optCustomerData">Customer data</span>
+                            </label>
+                            <label class="ms-option" data-value="third_party_apis" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="third_party_apis" name="data_sources">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optThirdPartyApis">Third-party APIs</span>
+                            </label>
+                            <label class="ms-option" data-value="user_generated" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="user_generated" name="data_sources">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optUserGenerated">User-generated content</span>
+                            </label>
+                            <label class="ms-option" data-value="web_scraping" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="web_scraping" name="data_sources">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optWebScraping">Web scraping</span>
+                            </label>
+                            <label class="ms-option" data-value="proprietary" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="proprietary" name="data_sources">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optProprietaryDatasets">Proprietary datasets</span>
+                            </label>
+                            <label class="ms-option" data-value="synthetic" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="synthetic" name="data_sources">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optSyntheticData">Synthetic data</span>
+                            </label>
+                            <label class="ms-option" data-value="open_gov" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="open_gov" name="data_sources">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optOpenGov">Open government data</span>
+                            </label>
+                            <label class="ms-option" data-value="purchased" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="purchased" name="data_sources">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optPurchasedData">Purchased data</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -439,44 +605,161 @@
                 
                 <div class="form-group">
                     <label data-i18n="labelModelTypes">AI Model Types Used <span style="color: var(--text-muted); font-size: 12px;" data-i18n="selectAllHint">(select all that apply)</span></label>
-                    <select multiple name="model_types" size="5">
-                        <option value="llm" data-i18n="optLLM">Large Language Models (LLM)</option>
-                        <option value="cnn" data-i18n="optCNN">Convolutional Neural Networks (CNN)</option>
-                        <option value="transformer" data-i18n="optTransformer">Transformer models</option>
-                        <option value="diffusion" data-i18n="optDiffusion">Diffusion models</option>
-                        <option value="regression" data-i18n="optRegression">Regression / Statistical models</option>
-                        <option value="decision_tree" data-i18n="optDecisionTree">Decision Trees / Random Forest</option>
-                        <option value="reinforcement" data-i18n="optReinforcement">Reinforcement Learning</option>
-                        <option value="gan" data-i18n="optGan">GANs / Generative models</option>
-                        <option value="recommender" data-i18n="optRecommender">Recommendation systems</option>
-                        <option value="other" data-i18n="optOtherNotSure">Other / Not sure</option>
-                    </select>
+                    <div class="custom-multiselect" data-name="model_types">
+                        <button type="button" class="ms-trigger" onclick="toggleMS(this)">
+                            <span class="ms-label" data-i18n="labelmodel_types">AI Model Types Used</span>
+                            <span class="ms-count" style="display:none">0</span>
+                            <span class="ms-arrow">▾</span>
+                        </button>
+                        <div class="ms-dropdown">
+                                                        <label class="ms-option" data-value="llm" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="llm" name="model_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optLLM">Large Language Models (LLM)</span>
+                            </label>
+                            <label class="ms-option" data-value="cnn" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="cnn" name="model_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optCNN">Convolutional Neural Networks (CNN)</span>
+                            </label>
+                            <label class="ms-option" data-value="transformer" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="transformer" name="model_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optTransformer">Transformer models</span>
+                            </label>
+                            <label class="ms-option" data-value="diffusion" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="diffusion" name="model_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optDiffusion">Diffusion models</span>
+                            </label>
+                            <label class="ms-option" data-value="regression" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="regression" name="model_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optRegression">Regression / Statistical models</span>
+                            </label>
+                            <label class="ms-option" data-value="decision_tree" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="decision_tree" name="model_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optDecisionTree">Decision Trees / Random Forest</span>
+                            </label>
+                            <label class="ms-option" data-value="reinforcement" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="reinforcement" name="model_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optReinforcement">Reinforcement Learning</span>
+                            </label>
+                            <label class="ms-option" data-value="gan" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="gan" name="model_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optGan">GANs / Generative models</span>
+                            </label>
+                            <label class="ms-option" data-value="recommender" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="recommender" name="model_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optRecommender">Recommendation systems</span>
+                            </label>
+                            <label class="ms-option" data-value="other" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="other" name="model_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optOtherNotSure">Other / Not sure</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label data-i18n="labelHumanOversight">Human Oversight Mechanisms <span style="color: var(--text-muted); font-size: 12px;" data-i18n="selectAllHint">(select all that apply)</span></label>
-                    <select multiple name="human_oversight" size="5">
-                        <option value="manual_review" data-i18n="optManualReview">Manual review queue</option>
-                        <option value="approval_workflow" data-i18n="optApprovalWorkflow">Approval workflow</option>
-                        <option value="exception_handling" data-i18n="optExceptionHandling">Exception / escalation handling</option>
-                        <option value="human_in_loop" data-i18n="optHumanInLoopOversight">Human-in-the-loop for decisions</option>
-                        <option value="audit_logs" data-i18n="optAuditLogs">Audit logs / monitoring</option>
-                        <option value="override" data-i18n="optOverride">Human override capability</option>
-                        <option value="none" data-i18n="optNoOversight">No human oversight</option>
-                    </select>
+                    <div class="custom-multiselect" data-name="human_oversight">
+                        <button type="button" class="ms-trigger" onclick="toggleMS(this)">
+                            <span class="ms-label" data-i18n="labelhuman_oversight">Human Oversight Mechanisms</span>
+                            <span class="ms-count" style="display:none">0</span>
+                            <span class="ms-arrow">▾</span>
+                        </button>
+                        <div class="ms-dropdown">
+                                                        <label class="ms-option" data-value="manual_review" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="manual_review" name="human_oversight">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optManualReview">Manual review queue</span>
+                            </label>
+                            <label class="ms-option" data-value="approval_workflow" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="approval_workflow" name="human_oversight">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optApprovalWorkflow">Approval workflow</span>
+                            </label>
+                            <label class="ms-option" data-value="exception_handling" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="exception_handling" name="human_oversight">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optExceptionHandling">Exception / escalation handling</span>
+                            </label>
+                            <label class="ms-option" data-value="human_in_loop" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="human_in_loop" name="human_oversight">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optHumanInLoopOversight">Human-in-the-loop for decisions</span>
+                            </label>
+                            <label class="ms-option" data-value="audit_logs" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="audit_logs" name="human_oversight">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optAuditLogs">Audit logs / monitoring</span>
+                            </label>
+                            <label class="ms-option" data-value="override" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="override" name="human_oversight">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optOverride">Human override capability</span>
+                            </label>
+                            <label class="ms-option" data-value="none" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="none" name="human_oversight">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optNoOversight">No human oversight</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label data-i18n="labelExplainability">Explainability Methods <span style="color: var(--text-muted); font-size: 12px;" data-i18n="selectAllHint">(select all that apply)</span></label>
-                    <select multiple name="explainability" size="5">
-                        <option value="shap" data-i18n="optShap">SHAP</option>
-                        <option value="lime" data-i18n="optLime">LIME</option>
-                        <option value="attention" data-i18n="optAttention">Attention visualization</option>
-                        <option value="feature_importance" data-i18n="optFeatureImportance">Feature importance</option>
-                        <option value="decision_tree_explain" data-i18n="optDecisionTreeExplain">Decision tree explanations</option>
-                        <option value="counterfactual" data-i18n="optCounterfactual">Counterfactual explanations</option>
-                        <option value="not_applicable" data-i18n="optNotApplicableNone">Not applicable / None</option>
-                    </select>
+                    <div class="custom-multiselect" data-name="explainability">
+                        <button type="button" class="ms-trigger" onclick="toggleMS(this)">
+                            <span class="ms-label" data-i18n="labelexplainability">Explainability Methods</span>
+                            <span class="ms-count" style="display:none">0</span>
+                            <span class="ms-arrow">▾</span>
+                        </button>
+                        <div class="ms-dropdown">
+                                                        <label class="ms-option" data-value="shap" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="shap" name="explainability">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optShap">SHAP</span>
+                            </label>
+                            <label class="ms-option" data-value="lime" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="lime" name="explainability">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optLime">LIME</span>
+                            </label>
+                            <label class="ms-option" data-value="attention" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="attention" name="explainability">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optAttention">Attention visualization</span>
+                            </label>
+                            <label class="ms-option" data-value="feature_importance" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="feature_importance" name="explainability">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optFeatureImportance">Feature importance</span>
+                            </label>
+                            <label class="ms-option" data-value="decision_tree_explain" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="decision_tree_explain" name="explainability">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optDecisionTreeExplain">Decision tree explanations</span>
+                            </label>
+                            <label class="ms-option" data-value="counterfactual" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="counterfactual" name="explainability">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optCounterfactual">Counterfactual explanations</span>
+                            </label>
+                            <label class="ms-option" data-value="not_applicable" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="not_applicable" name="explainability">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optNotApplicableNone">Not applicable / None</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="form-row">
@@ -514,17 +797,60 @@
                 <h2 data-i18n="sec4Title">⚠️ High-Risk Categories</h2>
                 <p class="section-desc" data-i18n="sec4Desc">Select which EU AI Act high-risk categories apply to your AI systems. <a href="https://artificialintelligenceact.eu/high-risk/" target="_blank" style="color: var(--accent);" data-i18n="learnMore">Learn more</a></p>
                 
-                <select multiple name="high_risk_categories" size="5">
-                    <option value="risk_biometrics" data-i18n="optBiometrics">Biometric identification / Remote biometric ID</option>
-                    <option value="risk_critical_infra" data-i18n="optCriticalInfra">Critical infrastructure management</option>
-                    <option value="risk_education" data-i18n="optEducationTraining">Education & vocational training</option>
-                    <option value="risk_employment" data-i18n="optEmployment">Employment & worker management</option>
-                    <option value="risk_credit" data-i18n="optCredit">Credit assessment & essential services</option>
-                    <option value="risk_law_enforcement" data-i18n="optLawEnforcement">Law enforcement</option>
-                    <option value="risk_migration" data-i18n="optMigration">Migration, asylum & border control</option>
-                    <option value="risk_justice" data-i18n="optJustice">Administration of justice</option>
-                    <option value="risk_democratic" data-i18n="optDemocratic">Democratic processes (elections/voting)</option>
-                </select>
+                <div class="custom-multiselect" data-name="high_risk_categories">
+                        <button type="button" class="ms-trigger" onclick="toggleMS(this)">
+                            <span class="ms-label" data-i18n="labelhigh_risk_categories">High-Risk Categories</span>
+                            <span class="ms-count" style="display:none">0</span>
+                            <span class="ms-arrow">▾</span>
+                        </button>
+                        <div class="ms-dropdown">
+                                                        <label class="ms-option" data-value="risk_biometrics" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="risk_biometrics" name="high_risk_categories">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optBiometrics">Biometric identification / Remote biometric ID</span>
+                            </label>
+                            <label class="ms-option" data-value="risk_critical_infra" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="risk_critical_infra" name="high_risk_categories">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optCriticalInfra">Critical infrastructure management</span>
+                            </label>
+                            <label class="ms-option" data-value="risk_education" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="risk_education" name="high_risk_categories">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optEducationTraining">Education & vocational training</span>
+                            </label>
+                            <label class="ms-option" data-value="risk_employment" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="risk_employment" name="high_risk_categories">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optEmployment">Employment & worker management</span>
+                            </label>
+                            <label class="ms-option" data-value="risk_credit" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="risk_credit" name="high_risk_categories">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optCredit">Credit assessment & essential services</span>
+                            </label>
+                            <label class="ms-option" data-value="risk_law_enforcement" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="risk_law_enforcement" name="high_risk_categories">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optLawEnforcement">Law enforcement</span>
+                            </label>
+                            <label class="ms-option" data-value="risk_migration" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="risk_migration" name="high_risk_categories">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optMigration">Migration, asylum & border control</span>
+                            </label>
+                            <label class="ms-option" data-value="risk_justice" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="risk_justice" name="high_risk_categories">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optJustice">Administration of justice</span>
+                            </label>
+                            <label class="ms-option" data-value="risk_democratic" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="risk_democratic" name="high_risk_categories">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optDemocratic">Democratic processes (elections/voting)</span>
+                            </label>
+                        </div>
+                    </div>
             </div>
 
             <!-- Section 5: Compliance Status -->
@@ -577,15 +903,50 @@
                 
                 <div class="form-group">
                     <label data-i18n="labelCertifications">Existing Certifications <span style="color: var(--text-muted); font-size: 12px;" data-i18n="selectAllHint">(select all that apply)</span></label>
-                    <select multiple name="existing_certifications" size="5">
-                        <option value="iso_27001" data-i18n="optIso27001">ISO 27001</option>
-                        <option value="iso_42001" data-i18n="optIso42001">ISO 42001 (AI Management)</option>
-                        <option value="soc2" data-i18n="optSoc2">SOC 2</option>
-                        <option value="iso_27701" data-i18n="optIso27701">ISO 27701 (Privacy)</option>
-                        <option value="pcidss" data-i18n="optPcidss">PCI DSS</option>
-                        <option value="hipaa" data-i18n="optHipaa">HIPAA</option>
-                        <option value="none" data-i18n="optNoneYetCert">None yet</option>
-                    </select>
+                    <div class="custom-multiselect" data-name="existing_certifications">
+                        <button type="button" class="ms-trigger" onclick="toggleMS(this)">
+                            <span class="ms-label" data-i18n="labelexisting_certifications">Existing Certifications</span>
+                            <span class="ms-count" style="display:none">0</span>
+                            <span class="ms-arrow">▾</span>
+                        </button>
+                        <div class="ms-dropdown">
+                                                        <label class="ms-option" data-value="iso_27001" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="iso_27001" name="existing_certifications">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optIso27001">ISO 27001</span>
+                            </label>
+                            <label class="ms-option" data-value="iso_42001" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="iso_42001" name="existing_certifications">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optIso42001">ISO 42001 (AI Management)</span>
+                            </label>
+                            <label class="ms-option" data-value="soc2" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="soc2" name="existing_certifications">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optSoc2">SOC 2</span>
+                            </label>
+                            <label class="ms-option" data-value="iso_27701" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="iso_27701" name="existing_certifications">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optIso27701">ISO 27701 (Privacy)</span>
+                            </label>
+                            <label class="ms-option" data-value="pcidss" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="pcidss" name="existing_certifications">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optPcidss">PCI DSS</span>
+                            </label>
+                            <label class="ms-option" data-value="hipaa" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="hipaa" name="existing_certifications">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optHipaa">HIPAA</span>
+                            </label>
+                            <label class="ms-option" data-value="none" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="none" name="existing_certifications">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optNoneYetCert">None yet</span>
+                            </label>
+                        </div>
+                    </div>
                     <div style="margin-top: 8px;">
                         <input type="text" name="other_certifications" data-i18n-placeholder="placeholderOtherCerts" placeholder="Other certifications (comma-separated)" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--text-primary);font-size:14px;">
                     </div>
@@ -607,14 +968,45 @@
 
                 <div class="form-group" id="audit-details" style="display:none;">
                     <label data-i18n="labelAuditTypes">Audit Types <span style="color: var(--text-muted); font-size: 12px;" data-i18n="selectAllHint">(select all that apply)</span></label>
-                    <select multiple name="audit_types" size="5">
-                        <option value="gdpr" data-i18n="optGdprAudit">GDPR audit</option>
-                        <option value="iso" data-i18n="optIsoAudit">ISO certification audit</option>
-                        <option value="internal_ai" data-i18n="optInternalAiAudit">Internal AI audit</option>
-                        <option value="third_party_ai" data-i18n="optThirdPartyAiAudit">Third-party AI audit</option>
-                        <option value="security" data-i18n="optSecurityTest">Security / penetration test</option>
-                        <option value="other" data-i18n="optOtherAudit">Other</option>
-                    </select>
+                    <div class="custom-multiselect" data-name="audit_types">
+                        <button type="button" class="ms-trigger" onclick="toggleMS(this)">
+                            <span class="ms-label" data-i18n="labelaudit_types">Audit Types</span>
+                            <span class="ms-count" style="display:none">0</span>
+                            <span class="ms-arrow">▾</span>
+                        </button>
+                        <div class="ms-dropdown">
+                                                        <label class="ms-option" data-value="gdpr" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="gdpr" name="audit_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optGdprAudit">GDPR audit</span>
+                            </label>
+                            <label class="ms-option" data-value="iso" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="iso" name="audit_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optIsoAudit">ISO certification audit</span>
+                            </label>
+                            <label class="ms-option" data-value="internal_ai" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="internal_ai" name="audit_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optInternalAiAudit">Internal AI audit</span>
+                            </label>
+                            <label class="ms-option" data-value="third_party_ai" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="third_party_ai" name="audit_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optThirdPartyAiAudit">Third-party AI audit</span>
+                            </label>
+                            <label class="ms-option" data-value="security" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="security" name="audit_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optSecurityTest">Security / penetration test</span>
+                            </label>
+                            <label class="ms-option" data-value="other" onclick="toggleMSOption(this)">
+                                <input type="checkbox" value="other" name="audit_types">
+                                <span class="ms-check-icon"></span>
+                                <span class="ms-check-text" data-i18n="optOtherAudit">Other</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1048,6 +1440,80 @@
             }
         };
 
+
+        // ── Custom Multiselect Functions ──
+        function toggleMS(btn) {
+            event.stopPropagation();
+            const dd = btn.nextElementSibling;
+            const overlay = document.getElementById('msOverlay');
+            const wasOpen = dd.classList.contains('open');
+            closeAllMS();
+            if (!wasOpen) {
+                dd.classList.add('open');
+                btn.querySelector('.ms-arrow').classList.add('open');
+                if (overlay) overlay.classList.add('open');
+            }
+        }
+
+        function toggleMSOption(label) {
+            const cb = label.querySelector('input[type="checkbox"]');
+            cb.checked = !cb.checked;
+            label.classList.toggle('selected', cb.checked);
+            // Prevent event from closing
+            event.stopPropagation();
+            updateMSLabel(label.closest('.custom-multiselect'));
+        }
+
+        function updateMSLabel(ms) {
+            const checked = ms.querySelectorAll('input[type="checkbox"]:checked');
+            const count = checked.length;
+            const countEl = ms.querySelector('.ms-count');
+            const labelEl = ms.querySelector('.ms-label');
+            const name = ms.dataset.name;
+            const transKey = 'label' + name.charAt(0).toUpperCase() + name.slice(1);
+            if (count > 0) {
+                countEl.style.display = 'inline';
+                countEl.textContent = count;
+                labelEl.textContent = count + ' ' + (translations[currentLang]?.[transKey] || labelEl.textContent.split(' ').slice(1).join(' '));
+            } else {
+                countEl.style.display = 'none';
+                labelEl.textContent = translations[currentLang]?.[transKey] || name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            }
+        }
+
+        function closeAllMS() {
+            document.querySelectorAll('.ms-dropdown.open').forEach(d => d.classList.remove('open'));
+            document.querySelectorAll('.ms-arrow.open').forEach(a => a.classList.remove('open'));
+            const overlay = document.getElementById('msOverlay');
+            if (overlay) overlay.classList.remove('open');
+        }
+
+        function getMSValues(name) {
+            const ms = document.querySelector(`.custom-multiselect[data-name="${name}"]`);
+            if (!ms) return [];
+            return Array.from(ms.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+        }
+
+        function setMSValues(name, values) {
+            const ms = document.querySelector(`.custom-multiselect[data-name="${name}"]`);
+            if (!ms) return;
+            ms.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                const shouldCheck = values.includes(cb.value);
+                cb.checked = shouldCheck;
+                cb.closest('.ms-option').classList.toggle('selected', shouldCheck);
+            });
+            updateMSLabel(ms);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!document.getElementById('msOverlay')) {
+                const overlay = document.createElement('div');
+                overlay.id = 'msOverlay';
+                overlay.className = 'ms-overlay';
+                overlay.onclick = closeAllMS;
+                document.body.appendChild(overlay);
+            }
+        });
         // ── Language ──
         let currentLang = localStorage.getItem('aiverify_lang') || 'en';
         const urlLang = new URLSearchParams(window.location.search).get('lang');
@@ -1084,6 +1550,9 @@
             const cancelBtn = document.querySelector('a.btn-secondary');
             if (cancelBtn) cancelBtn.textContent = translations[currentLang]?.btnCancel || '← Cancel';
         }
+        // Also update multiselect labels on language change
+        document.querySelectorAll('.custom-multiselect').forEach(el => updateMSLabel(el));
+        }
         applyLanguage();
 
         // Add hidden input for language
@@ -1114,9 +1583,9 @@
             form.querySelectorAll('input[type="text"], input[type="url"], select:not([multiple]), textarea').forEach(el => {
                 data[el.name] = el.value;
             });
-            // Multiselects
-            form.querySelectorAll('select[multiple]').forEach(el => {
-                data[el.name] = Array.from(el.selectedOptions).map(o => o.value);
+            // Custom multiselects
+            document.querySelectorAll('.custom-multiselect').forEach(el => {
+                data[el.dataset.name] = getMSValues(el.dataset.name);
             });
             // Radios
             form.querySelectorAll('input[type="radio"]').forEach(el => {
@@ -1201,7 +1670,7 @@
         function updateProgress() {
             const form = document.getElementById('complianceForm');
             const inputs = form.querySelectorAll('input[type="text"], input[type="url"], select:not([multiple]), textarea');
-            const multiselects = form.querySelectorAll('select[multiple]');
+            const multiselects = form.querySelectorAll('.custom-multiselect');
             const radios = form.querySelectorAll('input[type="radio"]');
             let filled = 0;
             let total = inputs.length + multiselects.length + radios.length;
@@ -1209,8 +1678,8 @@
             inputs.forEach(i => {
                 if (i.value && i.value.trim() !== '') filled++;
             });
-            multiselects.forEach(s => {
-                if (s.selectedOptions.length > 0) filled++;
+            multiselects.forEach(el => {
+                if (getMSValues(el.dataset.name).length > 0) filled++;
             });
             radios.forEach(r => {
                 if (r.checked) filled++;
@@ -1254,9 +1723,9 @@
             form.querySelectorAll('input[type="text"], input[type="url"], select:not([multiple]), textarea').forEach(el => {
                 payload[el.name] = el.value;
             });
-            // Multiselects
-            form.querySelectorAll('select[multiple]').forEach(el => {
-                payload[el.name] = Array.from(el.selectedOptions).map(o => o.value);
+            // Custom multiselects
+            document.querySelectorAll('.custom-multiselect').forEach(el => {
+                payload[el.dataset.name] = getMSValues(el.dataset.name);
             });
             // Hidden inputs
             form.querySelectorAll('input[type="hidden"]').forEach(el => {
