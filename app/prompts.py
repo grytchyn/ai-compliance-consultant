@@ -234,27 +234,10 @@ def build_enhanced_prompt(submission, search_text: str = "", lang: str = "en", w
     if not search_text:
         search_text = "No open-source data found."
 
-    prompt = f"""Analyze the following company and its AI systems for EU AI Act compliance.
-
-## Company Profile
-
-{profile}
-
-Open-source data:
-{search_text}{website_section}{raw_website_section}
-
-Based on all provided data, provide a SHORT, CONCISE compliance report.
-
-IMPORTANT FORMAT RULES:
-- MAXIMUM 3-4 sentences per section. No long paragraphs.
-- Use short bullet points (max 5 per section), not long lists.
-- NO tables unless absolutely necessary.
-- Focus on the MOST CRITICAL findings only — don't list everything.
-- The report should be EASY TO SCAN in 30 seconds.
-
-Provide these sections:
-
-## 1. OVERALL CONCLUSION (1-2 sentences only)
+    # Build bilingual prompt sections
+    lang_upper = "GERMAN" if lang == "de" else "ENGLISH"
+    
+    sections_en = """## 1. OVERALL CONCLUSION (1-2 sentences only)
 Is the company's activity regulated by the EU AI Act? What is the overall risk level?
 
 ## 2. KEY FINDINGS (3-5 bullet points max)
@@ -278,7 +261,70 @@ How this analysis was performed: automated website scan (HTTP GET, HTML parsing,
 ## 8. SOURCES
 - Official EU AI Act text: https://eur-lex.europa.eu/eli/reg/2024/1689
 - EU AI Act high-risk list: https://artificialintelligenceact.eu/high-risk/
-- European Commission AI page: https://digital-strategy.ec.europa.eu/en/policies/european-approach-artificial-intelligence
+- European Commission AI page: https://digital-strategy.ec.europa.eu/en/policies/european-approach-artificial-intelligence"""
+
+    sections_de = """## 1. GESAMTFAZIT (1-2 Sätze)
+Wird die Tätigkeit des Unternehmens durch den EU AI Act reguliert? Wie hoch ist das Gesamtrisiko?
+
+## 2. WICHTIGSTE ERKENNTNISSE (max. 3-5 Stichpunkte)
+Die kritischsten Compliance-Probleme.
+
+## 3. RISIKOSTUFE (eine Zeile)
+Inakzeptabel / Hoch / Begrenzt / Minimal — mit einem Satz Begründung.
+
+## 4. KRITISCHE LÜCKEN (max. 3-5 Stichpunkte)
+Nur die dringendsten Compliance-Lücken.
+
+## 5. WICHTIGSTE EMPFEHLUNGEN (max. 3-5 Stichpunkte)
+Prioritäre Maßnahmen — geordnet nach Dringlichkeit (sofort / kurzfristig / langfristig).
+
+## 6. STRAFRISTIKO (1-2 Sätze)
+Mögliche Geldbußen und Konsequenzen bei Nichtbeachtung.
+
+## 7. METHODIK
+Diese Analyse wurde durchgeführt mittels: automatisiertem Website-Scan (HTTP GET, HTML-Parsing, Schlüsselwort-Erkennung für KI-Anwendungsfälle, GDPR-Signale, Datenschutz-/Cookie-Richtlinien) + Open-Source-Datensuche (DuckDuckGo) + strukturierte Formulardatenanalyse nach EU AI Act-Risikokategorien und -Anforderungen. Der Compliance-Score (0-100) wird aus Risikofaktoren und Compliance-Maßnahmen nach der multivariaten Formel der AI Verify Engine berechnet. Diese Sektion immer angeben.
+
+## 8. QUELLEN
+- Offizieller EU AI Act Text: https://eur-lex.europa.eu/eli/reg/2024/1689
+- EU AI Act Hochrisiko-Liste: https://artificialintelligenceact.eu/high-risk/
+- Europäische Kommission KI-Seite: https://digital-strategy.ec.europa.eu/en/policies/european-approach-artificial-intelligence"""
+
+    format_rules_en = """- MAXIMUM 3-4 sentences per section. No long paragraphs.
+- Use short bullet points (max 5 per section), not long lists.
+- NO tables unless absolutely necessary.
+- Focus on the MOST CRITICAL findings only — don't list everything.
+- The report should be EASY TO SCAN in 30 seconds."""
+
+    format_rules_de = """- MAXIMAL 3-4 Sätze pro Abschnitt. Keine langen Absätze.
+- Verwenden Sie kurze Aufzählungspunkte (max. 5 pro Abschnitt), keine langen Listen.
+- KEINE Tabellen, es sei denn, unbedingt erforderlich.
+- Konzentrieren Sie sich NUR auf die KRITISCHSTEN Erkenntnisse — nicht alles auflisten.
+- Der Bericht sollte in 30 Sekunden EINFACH ÜBERBLICKBAR sein."""
+
+    sections = sections_de if lang == "de" else sections_en
+    format_rules = format_rules_de if lang == "de" else format_rules_en
+    
+    profile_banner = "## Company Profile (Unternehmensprofil)" if lang == "de" else "## Company Profile"
+
+    prompt = f"""Analyze the following company and its AI systems for EU AI Act compliance.
+
+{profile_banner}
+
+{profile}
+
+Open-source data / Öffentliche Daten:
+{search_text}{website_section}{raw_website_section}
+
+Based on all provided data, provide a SHORT, CONCISE compliance report.
+
+IMPORTANT FORMAT RULES:
+{format_rules}
+
+You MUST write the entire report in {lang_upper}. All section headers MUST be in {lang_upper}. Use {lang_upper} terminology throughout.
+
+Provide these sections:
+
+{sections}
 
 Keep the entire response under 2000 characters total. Short and actionable. Write like a lawyer advising a client — direct, clear, no fluff."""
 

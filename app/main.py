@@ -686,7 +686,7 @@ async def get_report_html(sub_id: str, db: Session = Depends(get_db)):
         "status": sub.status,
         "html": html,
         "markdown": md,
-        "title": f"AI Compliance Report: {sub.company}",
+        "title": f"{'KI-Compliance-Bericht' if sub.lang == 'de' else 'AI Compliance Report'}: {sub.company}",
         "company": sub.company,
         "summary": summary,
         **score_data
