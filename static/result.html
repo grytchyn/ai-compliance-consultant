@@ -673,36 +673,7 @@
                 <!-- Rendered dynamically -->
             </div>
 
-            <!-- METHODOLOGY (collapsible, separate) -->
-            <div class="raw-report-section" id="methodologySection">
-                <div class="raw-report-toggle" id="methToggle" onclick="toggleMeth()">
-                    <span id="methToggleIcon">▶</span>
-                    <span data-i18n="rawToggleMethodology">🔬 Methodology & Score Calculation</span>
-                </div>
-                <div class="raw-report-body" id="methReportBody">
-                    <p style="margin-bottom: 16px; color: var(--text-tertiary);">Your compliance score is based on a weighted assessment of these factors:</p>
-                    <div class="details-grid" id="methDetailsGrid">
-                        <div class="detail-item positive"><span class="detail-icon">▲</span>Base score: 100 points</div>
-                    </div>
-                    <p style="margin-top: 16px; font-size: 13px; color: var(--text-muted);">
-                        <strong>Methodology:</strong> AI Verify uses a rule-based scoring engine aligned with EU AI Act Articles 6–20. 
-                        Each risk factor (AI system type, deployment context, human oversight, data sources) is evaluated against regulatory requirements. 
-                        The score is recalculated in real-time based on your inputs. 
-                        <a href="/privacy#ai-act-compliance" style="color:var(--brand);text-decoration:none;">Learn more about our compliance →</a>
-                    </p>
-                </div>
-            </div>
-
-            <!-- RAW FULL REPORT (collapsible) -->
-            <div class="raw-report-section">
-                <div class="raw-report-toggle" id="rawToggle" onclick="toggleRaw()">
-                    <span id="rawToggleIcon">▶</span>
-                    <span data-i18n="rawToggle">📄 View Full Report (raw markdown)</span>
-                </div>
-                <div class="raw-report-body" id="rawReportBody">
-                    <!-- Raw markdown HTML goes here -->
-                </div>
-            </div>
+            <!-- RAW FULL REPORT (collapsible) hidden — use /report/<id> endpoint for raw markdown -->
             </div>
 
             <footer style="text-align:center;padding:32px 24px;border-top:1px solid var(--border-subtle);margin-top:auto;">
@@ -884,14 +855,8 @@
 
         function toggleRaw() {
             const body = document.getElementById('rawReportBody');
+            if (!body) return;
             const icon = document.getElementById('rawToggleIcon');
-            body.classList.toggle('open');
-            icon.textContent = body.classList.contains('open') ? '▼' : '▶';
-        }
-
-        function toggleMeth() {
-            const body = document.getElementById('methReportBody');
-            const icon = document.getElementById('methToggleIcon');
             body.classList.toggle('open');
             icon.textContent = body.classList.contains('open') ? '▼' : '▶';
         }
@@ -910,20 +875,9 @@
             renderScoreGauge(data);
             renderInfographic(data);
 
-            // Populate methodology details
-            const methGrid = document.getElementById('methDetailsGrid');
-            if (methGrid && data.details) {
-                let methHtml = '<div class="detail-item positive"><span class="detail-icon">▲</span>' + (translations[currentLang]?.baseScore || 'Base score: 100 points') + '</div>';
-                Object.entries(data.details).forEach(([k,v]) => {
-                    const cls = v.startsWith('-') ? 'negative' : 'positive';
-                    const icon = v.startsWith('-') ? '▼' : '▲';
-                    methHtml += `<div class="detail-item ${cls}"><span class="detail-icon">${icon}</span>${v}</div>`;
-                });
-                methGrid.innerHTML = methHtml;
-            }
-            
-            // Raw report body
-            document.getElementById('rawReportBody').innerHTML = reportHtml;
+            // Raw report body — safe check (hidden now)
+            const rawBody = document.getElementById('rawReportBody');
+            if (rawBody) rawBody.innerHTML = reportHtml;
         }
 
         function renderScoreGauge(data) {
