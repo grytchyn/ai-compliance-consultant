@@ -241,7 +241,7 @@
         /* ─── REPORT CONTAINER ─── */
         .report-container {
             max-width: 900px; margin: 0 auto 80px; padding: 0 24px;
-            flex: 1;
+            flex: 1; overflow-x: hidden;
         }
 
         .report-header {
@@ -256,6 +256,7 @@
         .report-header-info h1 {
             font-size: 28px; font-weight: 600;
             letter-spacing: -0.5px; margin-bottom: 8px;
+            overflow-wrap: break-word; word-break: break-word; max-width: 100%;
         }
         .report-header-info .company {
             font-size: 16px; color: var(--text-secondary);
@@ -376,6 +377,7 @@
         .section-body {
             font-size: 14px; line-height: 1.7;
             color: var(--text-secondary);
+            overflow-wrap: break-word; word-break: break-word;
         }
         .section-body h1, .section-body h2, .section-body h3, .section-body h4 {
             display: none;
@@ -1014,7 +1016,12 @@
                 r.toLowerCase().includes('address') ||
                 r.toLowerCase().includes('mitigate') ||
                 r.toLowerCase().includes('condu') ||
-                r.toLowerCase().includes('scale')
+                r.toLowerCase().includes('scale') ||
+                r.toLowerCase().includes('implementieren') ||
+                r.toLowerCase().includes('adressieren') ||
+                r.toLowerCase().includes('mindern') ||
+                r.toLowerCase().includes('durchf') ||
+                r.toLowerCase().includes('skalieren')
             );
             if (penaltyRecs.length > 0) {
                 hasCritical = true;
