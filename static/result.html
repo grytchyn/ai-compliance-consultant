@@ -120,18 +120,16 @@
         }
         .icon-ring svg { width: 20px; height: 20px; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { min-height: 100vh; }
+        html { min-height: 100vh; }
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--bg);
             color: var(--text-primary);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
-        #app { width: 100%; }
+        #app { min-height: calc(100vh - 1px); }
+        .status-bar { flex: 1; }
         
         /* ─── NAV ─── */
         nav {
